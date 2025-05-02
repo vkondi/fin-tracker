@@ -2,6 +2,7 @@ import AuthProvider from "@/components/auth-provider";
 import Navbar from "@/components/navbar";
 import "./globals.css";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Next.js Auth App",
@@ -17,8 +18,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <Navbar />
-          <main>{children}</main>
+          <Suspense>
+            <Navbar />
+            <main>{children}</main>
+          </Suspense>
         </AuthProvider>
       </body>
     </html>
