@@ -9,6 +9,7 @@
 }
 
 .wrapperCls {
+  background-color: var(--header-background);
   display: flex;
   align-items: center;
   justify-content: space-between;

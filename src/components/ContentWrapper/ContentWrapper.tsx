@@ -8,8 +8,10 @@ interface ContentWrapperProps {
 
 const ContentWrapper: FC<ContentWrapperProps> = ({ children, className }) => {
   return (
-    <div className={clsx("w-full max-w-[2200px] mx-auto", className)}>
-      {children}
+    <div className="w-full bg-gray-100">
+      <div className={clsx("max-w-[2200px] mx-auto", className)}>
+        {children}
+      </div>
     </div>
   );
 };

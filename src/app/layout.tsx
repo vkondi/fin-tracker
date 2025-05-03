@@ -1,4 +1,4 @@
-import AuthProvider from "@/components/auth-provider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Suspense } from "react";
