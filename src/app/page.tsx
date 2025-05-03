@@ -1,5 +1,6 @@
 "use client";
 
+import DriveManager from "@/components/DriveManager";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
@@ -10,7 +11,12 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
+
+<DriveManager />
+
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
+        
+
         <div className="text-center">
           <h1 className="text-3xl font-bold">Next.js Authentication</h1>
           <p className="mt-2 text-gray-600">

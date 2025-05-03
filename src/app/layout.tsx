@@ -3,6 +3,7 @@ import Navbar from "@/components/navbar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import GoogleAuthProvider from "@/components/GoogleAuthProvider";
 
 export const metadata: Metadata = {
   title: "Next.js Auth App",
@@ -17,12 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <Suspense>
-            <Navbar />
-            <main>{children}</main>
-          </Suspense>
-        </AuthProvider>
+        <GoogleAuthProvider>
+          <AuthProvider>
+            <Suspense>
+              <Navbar />
+              <main>{children}</main>
+            </Suspense>
+          </AuthProvider>
+        </GoogleAuthProvider>
       </body>
     </html>
   );
