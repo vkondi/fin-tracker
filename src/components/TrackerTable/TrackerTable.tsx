@@ -2,30 +2,10 @@ import React from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useRootContext } from "@/context/RootContext";
 import styles from "./TrackerTable.module.css";
-
-const data = [
-  {
-    platform: "Platform A",
-    type: "Stock",
-    owner: "John Doe",
-    investedAmount: 1000,
-    currentAmount: 1200,
-    absReturn: 200,
-    absReturnPercentage: "20%",
-  },
-  {
-    platform: "Platform B",
-    type: "Crypto",
-    owner: "Jane Smith",
-    investedAmount: 500,
-    currentAmount: 450,
-    absReturn: -50,
-    absReturnPercentage: "-10%",
-  },
-];
+import TrackerTableEmptyState from "./TrackerTableEmptyState";
 
 const TrackerTable = () => {
-  const { showFinanceForm } = useRootContext();
+  const { showFinanceForm, financeData } = useRootContext();
 
   const handleAddNew = () => {
     showFinanceForm("add");
@@ -38,6 +18,10 @@ const TrackerTable = () => {
   const handleDelete = (index: number) => {
     console.log(`Delete row ${index}`);
   };
+
+  if(!financeData || financeData.length === 0) {
+    return <TrackerTableEmptyState />
+  }
 
   return (
     <div className="p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white w-full">
@@ -69,7 +53,7 @@ const TrackerTable = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
+            {financeData.map((row, index) => (
               <tr
                 key={index}
                 className={`odd:bg-white even:bg-gray-50 ${styles.responsiveRow}`}
