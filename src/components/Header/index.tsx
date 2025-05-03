@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, type FC } from "react";
+import { useState, useEffect, useRef, type FC } from "react";
 import Link from "next/link";
 import { useMediaQuery } from "react-responsive";
 import styles from "./styles.module.css";
@@ -15,8 +15,8 @@ type MenuItem = {
   items?: MenuItem[];
 };
 
-const Header: FC<{ title: string }> = ({ title = "Header Title" }) => {
-  const { data: session, status } = useSession();
+const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
+  const { data: session } = useSession();
   const pathname = usePathname();
 
   const isMobile = useMediaQuery({ maxWidth: 768 });

@@ -14,7 +14,6 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 5vw;
-  color: white;
 }
 
 .titleLeft {
@@ -31,7 +30,6 @@
 .nav {
   display: flex;
   gap: 20px;
-  /* background-color: rgb(102, 102, 100); */
   align-items: center;
 }
 
@@ -42,13 +40,12 @@
 
 .navLink {
   text-decoration: none;
-  color: white;
   font-size: 1rem;
   padding: 8px;
 }
 
 .navLink:hover {
-  color: #facc15; /* Yellow */
+  color: rgb(97, 97, 97);
 }
 
 .dropdown {
