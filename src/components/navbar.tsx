@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
@@ -10,9 +10,11 @@ export default function Navbar() {
   return (
     <nav className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold">
-          Next.js Auth
+        
+        <Link href="/" className="text-2xl font-bold">
+          FINTRAKR
         </Link>
+        
         <div className="flex space-x-4 items-center">
           <Link href="/" className="hover:text-gray-300">
             Home

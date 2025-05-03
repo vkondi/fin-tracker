@@ -9,8 +9,8 @@ export default function Home() {
   console.log("Session data:", session);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+    <main className="flex min-h-screen flex-col items-center justify-center">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Next.js Authentication</h1>
           <p className="mt-2 text-gray-600">
