@@ -1,0 +1,143 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 5vw;
+  background-color: var(--header-background);
+  color: white;
+  position: fixed; /* Fixed to the top */
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000; /* Ensures it stays above other content */
+}
+
+.titleLeft {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.titleCenter {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 auto;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+  /* background-color: rgb(102, 102, 100); */
+  align-items: center;
+}
+
+.menuItem {
+  position: relative;
+  cursor: pointer;
+}
+
+.navLink {
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  padding: 8px;
+}
+
+.navLink:hover {
+  color: #facc15; /* Yellow */
+}
+
+.dropdown {
+  position: relative;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--header-background);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.dropdownItem {
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.dropdownItem:hover {
+  background-color: #858585; /* Darker gray */
+}
+
+.menuButton {
+  display: none;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: var(--header-background);
+  padding: 20px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.drawerItem {
+  margin-top: 10px;
+}
+
+.drawerLink {
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  display: block;
+  padding: 10px;
+}
+
+.drawerLink:hover {
+  background-color: #4b5563;
+}
+
+.drawerSubmenu {
+  display: flex;
+  flex-direction: column;
+  padding-left: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menuButton {
+    display: block;
+  }
+
+  .nav {
+    display: none;
+  }
+}

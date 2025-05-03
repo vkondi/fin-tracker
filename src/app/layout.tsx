@@ -1,8 +1,8 @@
 import AuthProvider from "@/components/auth-provider";
-import Navbar from "@/components/navbar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "Next.js Auth App",
@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <Suspense>
-            <Navbar />
+            <Header title="FINTRAKR" />
             <main>{children}</main>
           </Suspense>
         </AuthProvider>
