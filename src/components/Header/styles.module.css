@@ -1,16 +1,19 @@
 .container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 5vw;
   background-color: var(--header-background);
-  color: white;
   position: fixed; /* Fixed to the top */
   top: 0;
   left: 0;
   right: 0;
   width: 100%;
   z-index: 1000; /* Ensures it stays above other content */
+}
+
+.wrapperCls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 5vw;
+  color: white;
 }
 
 .titleLeft {

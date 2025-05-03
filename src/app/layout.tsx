@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import Header from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "Next.js Auth App",
-  description: "Next.js application with Google OAuth",
+  title: "FINTRAKR",
+  description: "Your personal finance tracker",
 };
 
 export default function RootLayout({

@@ -6,6 +6,7 @@ import { useMediaQuery } from "react-responsive";
 import styles from "./styles.module.css";
 import { usePathname } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
+import ContentWrapper from "../ContentWrapper/ContentWrapper";
 
 type MenuItem = {
   title: string;
@@ -27,7 +28,7 @@ const Header: FC<{ title: string }> = ({ title = "Header Title" }) => {
 
   // Configure menu items based on session
   const menuItems: MenuItem[] = [
-    { title: "Home", href: "/" },
+    ...(session ? [{ title: "Home", href: "/" }] : []),
     session
       ? { title: "Sign Out", onClick: () => signOut() }
       : { title: "Sign In", onClick: () => signIn() },
@@ -68,115 +69,117 @@ const Header: FC<{ title: string }> = ({ title = "Header Title" }) => {
 
   return (
     <header className={styles.container}>
-      <Link href="/">
-        <div className={isMobile ? styles.titleCenter : styles.titleLeft}>
-          {title}
-        </div>
-      </Link>
+      <ContentWrapper className={styles.wrapperCls}>
+        <Link href="/">
+          <div className={isMobile ? styles.titleCenter : styles.titleLeft}>
+            {title}
+          </div>
+        </Link>
 
-      {isMobile ? (
-        <button
-          className={styles.menuButton}
-          onClick={() => setIsDrawerOpen(!isDrawerOpen)} // Toggle drawer visibility
-        >
-          ☰
-        </button>
-      ) : (
-        <nav className={styles.nav}>
-          {menuItems.map((item) => (
-            <div key={item.title} className={styles.menuItem}>
-              {item.items ? (
-                <div
-                  className={styles.dropdown}
-                  onClick={() =>
-                    setOpenDropdown(
-                      openDropdown === item.title ? null : item.title
-                    )
-                  }
-                  ref={dropdownRef}
-                >
-                  {item.title} ▾
-                  {openDropdown === item.title && (
-                    <div className={styles.dropdownMenu}>
+        {isMobile ? (
+          <button
+            className={styles.menuButton}
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)} // Toggle drawer visibility
+          >
+            ☰
+          </button>
+        ) : (
+          <nav className={styles.nav}>
+            {menuItems.map((item) => (
+              <div key={item.title} className={styles.menuItem}>
+                {item.items ? (
+                  <div
+                    className={styles.dropdown}
+                    onClick={() =>
+                      setOpenDropdown(
+                        openDropdown === item.title ? null : item.title
+                      )
+                    }
+                    ref={dropdownRef}
+                  >
+                    {item.title} ▾
+                    {openDropdown === item.title && (
+                      <div className={styles.dropdownMenu}>
+                        {item.items.map((subItem) => (
+                          <Link
+                            key={subItem.title}
+                            href={subItem.href || "#"}
+                            className={styles.dropdownItem}
+                            onClick={() => setOpenDropdown(null)} // Close dropdown on item click
+                          >
+                            {subItem.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : item.onClick ? (
+                  <button
+                    className={styles.navLink}
+                    onClick={item.onClick} // Execute onClick if provided
+                  >
+                    {item.title}
+                  </button>
+                ) : (
+                  <Link href={item.href || "#"} className={styles.navLink}>
+                    {item.title}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </nav>
+        )}
+
+        {isMobile && isDrawerOpen && (
+          <div className={styles.drawer} ref={drawerRef}>
+            <button
+              className={styles.closeButton}
+              onClick={() => setIsDrawerOpen(false)} // Close drawer on button click
+            >
+              ✕
+            </button>
+            {menuItems.map((item) => (
+              <div key={item.title} className={styles.drawerItem}>
+                {item.items ? (
+                  <details>
+                    <summary>{item.title}</summary>
+                    <div className={styles.drawerSubmenu}>
                       {item.items.map((subItem) => (
                         <Link
                           key={subItem.title}
                           href={subItem.href || "#"}
-                          className={styles.dropdownItem}
-                          onClick={() => setOpenDropdown(null)} // Close dropdown on item click
+                          className={styles.drawerLink}
+                          onClick={() => setIsDrawerOpen(false)} // Close drawer on item click
                         >
                           {subItem.title}
                         </Link>
                       ))}
                     </div>
-                  )}
-                </div>
-              ) : item.onClick ? (
-                <button
-                  className={styles.navLink}
-                  onClick={item.onClick} // Execute onClick if provided
-                >
-                  {item.title}
-                </button>
-              ) : (
-                <Link href={item.href || "#"} className={styles.navLink}>
-                  {item.title}
-                </Link>
-              )}
-            </div>
-          ))}
-        </nav>
-      )}
-
-      {isMobile && isDrawerOpen && (
-        <div className={styles.drawer} ref={drawerRef}>
-          <button
-            className={styles.closeButton}
-            onClick={() => setIsDrawerOpen(false)} // Close drawer on button click
-          >
-            ✕
-          </button>
-          {menuItems.map((item) => (
-            <div key={item.title} className={styles.drawerItem}>
-              {item.items ? (
-                <details>
-                  <summary>{item.title}</summary>
-                  <div className={styles.drawerSubmenu}>
-                    {item.items.map((subItem) => (
-                      <Link
-                        key={subItem.title}
-                        href={subItem.href || "#"}
-                        className={styles.drawerLink}
-                        onClick={() => setIsDrawerOpen(false)} // Close drawer on item click
-                      >
-                        {subItem.title}
-                      </Link>
-                    ))}
-                  </div>
-                </details>
-              ) : item.onClick ? (
-                <button
-                  className={styles.drawerLink}
-                  onClick={() => {
-                    item.onClick();
-                    setIsDrawerOpen(false); // Close drawer after click
-                  }}
-                >
-                  {item.title}
-                </button>
-              ) : (
-                <Link
-                  href={item.href || "#"}
-                  className={styles.drawerLink}
-                  onClick={() => setIsDrawerOpen(false)} // Close drawer on item click
-                >
-                  {item.title}
-                </Link>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+                  </details>
+                ) : item.onClick ? (
+                  <button
+                    className={styles.drawerLink}
+                    onClick={() => {
+                      item.onClick();
+                      setIsDrawerOpen(false); // Close drawer after click
+                    }}
+                  >
+                    {item.title}
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href || "#"}
+                    className={styles.drawerLink}
+                    onClick={() => setIsDrawerOpen(false)} // Close drawer on item click
+                  >
+                    {item.title}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </ContentWrapper>
     </header>
   );
 };
