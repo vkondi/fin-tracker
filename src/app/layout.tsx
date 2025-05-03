@@ -1,10 +1,10 @@
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import Header from "@/components/Header";
+import { ReactNode, Suspense } from "react";
+import Header from "@/components/Header/Header";
 import { RootProvider } from "@/context/RootContext";
-import NewFinanceForm from "@/components/NewFinanceForm/NewFinanceForm";
+import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 
 export const metadata: Metadata = {
   title: "FINTRAKR",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="en">
@@ -24,7 +24,7 @@ export default function RootLayout({
             <Suspense>
               <Header />
               <main>{children}</main>
-              <NewFinanceForm />
+              <FinanceFormPopup />
             </Suspense>
           </AuthProvider>
         </RootProvider>

@@ -1,11 +1,11 @@
 "use client";
 
-import { ChangeEvent, FC, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
 import { useRootContext } from "@/context/RootContext";
 
-const NewFinanceForm = () => {
+const FinanceFormPopup = () => {
   const {
     financePopupState: { isVisible, mode },
     hideFinanceForm,
@@ -154,4 +154,4 @@ const NewFinanceForm = () => {
   );
 };
 
-export default NewFinanceForm;
+export default FinanceFormPopup;

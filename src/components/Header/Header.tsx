@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, type FC } from "react";
 import Link from "next/link";
 import { useMediaQuery } from "react-responsive";
-import styles from "./styles.module.css";
+import styles from "./Header.module.css";
 import { usePathname } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
 import ContentWrapper from "../ContentWrapper/ContentWrapper";
