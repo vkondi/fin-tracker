@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-// import { migrate } from "./migration";
+import { migrate } from "./migration";
 
 const dbConfig = {
   connectionString: process.env.DATABASE_URL,
@@ -13,11 +13,16 @@ pool.on("connect", () => {
   console.log("Connected to Neon (PostgreSQL) database!");
 });
 
-// // Global flag to ensure migration runs only once
-// let isInitialized = false;
+// Global flag to ensure migration runs only once
+let isInitialized = false;
 
-const initDatabase = async () => {
-  console.log("✅ Database migrations complete.");
+export const initDatabase = async () => {
+  if (!isInitialized) {
+    console.log("⚡Running database migrations...");
+    await migrate();
+    isInitialized = true;
+    console.log("✅ Database migrations complete.");
+  }
 };
 
 initDatabase(); // Run when server starts

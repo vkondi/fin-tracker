@@ -1,25 +1,51 @@
 "use client";
 
 import {
+  APIResponseType,
   FinanceFormDataType,
   FinanceFormMode,
   FinancePopupContextStateType,
 } from "@/components/component.types";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { useSession } from "next-auth/react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type RootContextType = {
   showFinanceForm: (mode: FinanceFormMode, data?: FinanceFormDataType) => void;
   hideFinanceForm: () => void;
   financePopupState: FinancePopupContextStateType;
 
+  addFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
   financeData: FinanceFormDataType[];
+  loading: boolean;
+
+  name?: string;
+  email?: string;
+
+  isUserRegistered?: boolean;
 };
 
 const RootContext = createContext<RootContextType | undefined>(undefined);
 
 export const RootProvider = ({ children }: { children: ReactNode }) => {
+  const [name, setName] = useState<string>("");
+
+  const { data: session } = useSession();
+  const email = session?.user?.email;
+
+  const isUserRegistered = !!email && !!name;
+
+  const [loading, setLoading] = useState<boolean>(false);
   const [financePopupState, setFinancePopupState] =
     useState<FinancePopupContextStateType>({ isVisible: false });
+
+  const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
 
   const showFinanceForm = (
     mode: FinanceFormMode,
@@ -32,33 +58,115 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     setFinancePopupState({ isVisible: false });
   };
 
+  const getAllFinances = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/finance`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setFinanceData(data?.data ?? []);
+    } catch (error) {
+      console.error("[RootContext][getAllFinances] >> Exception:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addFinance = async (
+    data: FinanceFormDataType
+  ): Promise<APIResponseType> => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/finance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (result) {
+        setFinanceData((prev) => [...prev, data]);
+      }
+
+      return { success: true, message: "Finance data added successfully!" };
+    } catch (error) {
+      console.error("[RootContext][addFinance] >> Exception:", error);
+      return {
+        success: false,
+        message: "Failed to add finance data. Please try again.",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const updateFinance = (data: FinanceFormDataType) => {
+  //   // setFinanceData((prev) => [...prev, newData]);
+  // };
+
+  // const deleteFinance = (id: string) => {
+  //   // setFinanceData((prev) => [...prev, newData]);
+  // };
+
+  const registerUser = useCallback(async () => {
+    console.log("[RootContext] >> [registerUser]");
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, name: session?.user?.name }),
+      });
+      const data = await response.json();
+
+      if (data) {
+        setName(data?.data?.name ?? "");
+      }
+    } catch (error) {
+      console.error("[RootContext][registerUser] >> Exception:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [email, session?.user?.name]);
+
+  // Fetch data only when registered user is logged in
+  useEffect(() => {
+    if (isUserRegistered) {
+      getAllFinances();
+    }
+  }, [isUserRegistered]);
+
+  // Register user once email is available from session
+  useEffect(() => {
+    if (email && !name) {
+      registerUser();
+    }
+  }, [email, name, registerUser]);
+
   return (
     <RootContext.Provider
       value={{
+        // popup
         showFinanceForm,
         hideFinanceForm,
         financePopupState,
 
-        financeData: [
-          {
-            platform: "Platform A",
-            type: "Stock",
-            owner: "John Doe",
-            investedAmount: 1000,
-            currentAmount: 1200,
-            absReturn: 200,
-            absReturnPercentage: "20%",
-          },
-          {
-            platform: "Platform B",
-            type: "Crypto",
-            owner: "Jane Smith",
-            investedAmount: 500,
-            currentAmount: 450,
-            absReturn: -50,
-            absReturnPercentage: "-10%",
-          },
-        ], // Placeholder for finance data
+        // finance tracker
+        addFinance,
+        financeData,
+        loading,
+
+        name,
+        email: email ?? undefined,
+        isUserRegistered,
       }}
     >
       {children}

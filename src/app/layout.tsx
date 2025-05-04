@@ -11,23 +11,19 @@ export const metadata: Metadata = {
   description: "Your personal finance tracker",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <RootProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <RootProvider>
             <Suspense>
               <Header />
               <main>{children}</main>
               <FinanceFormPopup />
             </Suspense>
-          </AuthProvider>
-        </RootProvider>
+          </RootProvider>
+        </AuthProvider>
       </body>
     </html>
   );

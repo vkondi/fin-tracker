@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     if (status === "unauthenticated") {
       router.push(`/auth/signin?callbackUrl=${pathname ?? "/"}`);
     }
-  }, [status, router]);
+  }, [status, router, pathname]);
 
   if (status === "loading") {
     return (

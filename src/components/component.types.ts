@@ -16,3 +16,5 @@ export type FinancePopupContextStateType = {
   mode?: FinanceFormMode;
   data?: FinanceFormDataType;
 };
+
+export type APIResponseType = { success: boolean; message?: string };

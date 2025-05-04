@@ -21,6 +21,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/next-auth": "^3.15.0",
     "@types/node": "^20",
     "@types/pg": "^8.11.14",
     "@types/react": "^19",

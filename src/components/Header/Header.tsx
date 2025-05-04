@@ -160,7 +160,7 @@ const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
                   <button
                     className={styles.drawerLink}
                     onClick={() => {
-                      item.onClick();
+                      item?.onClick?.(); // Execute onClick if provided
                       setIsDrawerOpen(false); // Close drawer after click
                     }}
                   >
