@@ -9,6 +9,15 @@ export type FinanceFormDataType = {
   id?: string;
 };
 
+export type FinanceRecordType = {
+  platform: string;
+  platform_type: string;
+  amount_invested: number;
+  amount_current: number;
+  updated_date: Date;
+  owner: string;
+};
+
 export type FinanceFormMode = "add" | "edit" | "delete";
 
 export type FinancePopupContextStateType = {

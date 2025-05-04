@@ -19,8 +19,8 @@ const TrackerTable = () => {
     console.log(`Delete row ${index}`);
   };
 
-  if(!financeData || financeData.length === 0) {
-    return <TrackerTableEmptyState />
+  if (!financeData || financeData.length === 0) {
+    return <TrackerTableEmptyState />;
   }
 
   return (
@@ -59,10 +59,12 @@ const TrackerTable = () => {
                 className={`odd:bg-white even:bg-gray-50 ${styles.responsiveRow}`}
               >
                 <td className={styles.responsiveCell}>{row.platform}</td>
-                <td className={styles.responsiveCell}>{row.type}</td>
+                <td className={styles.responsiveCell}>{row.platform_type}</td>
                 <td className={styles.responsiveCell}>{row.owner}</td>
-                <td className={styles.responsiveCell}>${row.investedAmount}</td>
-                <td className={styles.responsiveCell}>${row.currentAmount}</td>
+                <td className={styles.responsiveCell}>
+                  ${row.amount_invested}
+                </td>
+                <td className={styles.responsiveCell}>${row.amount_current}</td>
                 <td className={styles.responsiveCell}>${row.absReturn}</td>
                 <td className={styles.responsiveCell}>
                   {row.absReturnPercentage}

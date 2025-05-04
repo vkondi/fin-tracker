@@ -9,6 +9,8 @@ const FinanceFormPopup = () => {
   const {
     financePopupState: { isVisible, mode },
     hideFinanceForm,
+    addFinance,
+    loading,
   } = useRootContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode === "add" ? "Add New Finance" : "Edit Finance";
@@ -43,7 +45,20 @@ const FinanceFormPopup = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // onSubmit(formData);
+
+    addFinance(formData)
+      .then((res) => {
+        if (res.success) {
+          alert("Finance record added successfully!");
+          hideFinanceForm();
+        } else {
+          alert("Failed to add finance record: " + res.message);
+          console.error("Failed to add finance record:", res.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding finance record:", error);
+      });
   };
 
   if (!isVisible) return null; // Don't render if not visible
@@ -141,6 +156,7 @@ const FinanceFormPopup = () => {
               Cancel
             </button>
             <button
+              disabled={loading}
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >

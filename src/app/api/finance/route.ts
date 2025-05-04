@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
+import { pool } from "../database";
+import { FINANCES_TABLE } from "@/utils/constants";
 
 export async function GET(request: Request) {
   try {
@@ -9,44 +11,41 @@ export async function GET(request: Request) {
 
     const url = new URL(request.url);
     const { searchParams } = url;
-    const id = searchParams.get("id");
+    const userId = searchParams.get("userId");
 
-    if (id) {
-      // Fetch data from the database using the id
+    const queryText = `
+      SELECT 
+        id,
+        platform,
+        platform_type,
+        amount_invested,
+        amount_current,
+        updated_date,
+        owner
+      FROM 
+        ${FINANCES_TABLE}
+      WHERE 
+        user_id = $1
+      ORDER BY 
+        updated_date DESC;
+    `;
+
+    const { rows } = await pool.query(queryText, [userId]);
+
+    if (rows.length) {
+      return NextResponse.json(
+        { message: "success", data: rows },
+        { status: 200 }
+      );
     } else {
-      // Fetch all data from the database
+      return NextResponse.json(
+        { message: `Failed to find finances for user with id ${userId}` },
+        { status: 404 }
+      );
     }
-
-    // TODO: Fetch data from the database and return it in the response
-    return NextResponse.json(
-      {
-        message: "Hello from finance API!",
-        email,
-        data: [
-          {
-            platform: "Platform A",
-            type: "Stock",
-            owner: "John Doe",
-            investedAmount: 1000,
-            currentAmount: 1200,
-            absReturn: 200,
-            absReturnPercentage: "20%",
-          },
-          {
-            platform: "Platform B",
-            type: "Crypto",
-            owner: "Jane Smith",
-            investedAmount: 500,
-            currentAmount: 450,
-            absReturn: -50,
-            absReturnPercentage: "-10%",
-          },
-        ],
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("[finance] >> [GET]: ", error);
+
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -56,22 +55,43 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const {
-      id,
-      // ...data
-    } = body;
+    const newRecord = await request.json();
 
-    if (id) {
-      // Update the existing record in the database
+    const queryText = `
+      INSERT INTO FINANCES (
+        platform,
+        platform_type,
+        amount_invested,
+        amount_current,
+        updated_date,
+        owner,
+        user_id
+      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5, $6)
+      RETURNING *;
+    `;
+
+    const values = [
+      newRecord.platform,
+      newRecord.type,
+      newRecord.investedAmount,
+      newRecord.currentAmount,
+      newRecord.owner,
+      newRecord.userId,
+    ];
+
+    const { rows } = await pool.query(queryText, values);
+
+    if (rows.length) {
+      return NextResponse.json(
+        { message: "success", data: rows[0] },
+        { status: 201 }
+      );
     } else {
-      // Create a new record in the database
+      return NextResponse.json(
+        { message: "Failed to add finance record" },
+        { status: 400 }
+      );
     }
-
-    return NextResponse.json(
-      { message: "Finance data processed successfully!" },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("[finance] >> [POST]: ", error);
     return NextResponse.json(

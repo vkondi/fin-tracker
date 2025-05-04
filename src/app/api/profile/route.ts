@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       } else {
         return NextResponse.json(
           { message: `Failed to find user with id ${id}` },
-          { status: 204 }
+          { status: 404 }
         );
       }
     } else {
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
     // Insert the new user
     const result = await pool.query(
-      `INSERT INTO SYS_USERS (email, name) VALUES ($1, $2) RETURNING email, name`,
+      `INSERT INTO SYS_USERS (email, name) VALUES ($1, $2) RETURNING *`,
       [email, name]
     );
 

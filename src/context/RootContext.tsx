@@ -5,6 +5,7 @@ import {
   FinanceFormDataType,
   FinanceFormMode,
   FinancePopupContextStateType,
+  FinanceRecordType,
 } from "@/components/component.types";
 import { useSession } from "next-auth/react";
 import {
@@ -26,6 +27,7 @@ type RootContextType = {
   loading: boolean;
 
   name?: string;
+  userId?: string;
   email?: string;
 
   isUserRegistered?: boolean;
@@ -35,6 +37,7 @@ const RootContext = createContext<RootContextType | undefined>(undefined);
 
 export const RootProvider = ({ children }: { children: ReactNode }) => {
   const [name, setName] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
 
   const { data: session } = useSession();
   const email = session?.user?.email;
@@ -61,14 +64,19 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
   const getAllFinances = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/finance`, {
+      const response = await fetch(`/api/finance?userId=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
       const data = await response.json();
-      setFinanceData(data?.data ?? []);
+      const massagedData = data?.data?.map((item: FinanceRecordType) => ({
+        ...item,
+        investedAmount: item?.amount_invested,
+        currentAmount: item?.amount_current,
+      }));
+      setFinanceData(massagedData);
     } catch (error) {
       console.error("[RootContext][getAllFinances] >> Exception:", error);
     } finally {
@@ -86,12 +94,14 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, userId }),
       });
       const result = await response.json();
-      if (result) {
-        setFinanceData((prev) => [...prev, data]);
-      }
+      // if (result) {
+      //   setFinanceData((prev) => [...prev, data]);
+      // }
+
+      getAllFinances(); // Refresh the finance data after adding a new record
 
       return { success: true, message: "Finance data added successfully!" };
     } catch (error) {
@@ -129,6 +139,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
 
       if (data) {
         setName(data?.data?.name ?? "");
+        setUserId(data?.data?.id ?? "");
       }
     } catch (error) {
       console.error("[RootContext][registerUser] >> Exception:", error);
@@ -165,6 +176,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         loading,
 
         name,
+        userId,
         email: email ?? undefined,
         isUserRegistered,
       }}
