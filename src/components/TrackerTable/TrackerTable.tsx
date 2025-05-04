@@ -1,22 +1,14 @@
 import React from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import { useRootContext } from "@/context/RootContext";
 import styles from "./TrackerTable.module.css";
 import TrackerTableEmptyState from "./TrackerTableEmptyState";
+import TrackerTableRow from "./TrackerTableRow";
 
 const TrackerTable = () => {
   const { showFinanceForm, financeData } = useRootContext();
 
   const handleAddNew = () => {
     showFinanceForm("add");
-  };
-
-  const handleEdit = (index: number) => {
-    console.log(`Edit row ${index}`);
-  };
-
-  const handleDelete = (index: number) => {
-    console.log(`Delete row ${index}`);
   };
 
   if (!financeData || financeData.length === 0) {
@@ -54,38 +46,7 @@ const TrackerTable = () => {
           </thead>
           <tbody>
             {financeData.map((row, index) => (
-              <tr
-                key={index}
-                className={`odd:bg-white even:bg-gray-50 ${styles.responsiveRow}`}
-              >
-                <td className={styles.responsiveCell}>{row.platform}</td>
-                <td className={styles.responsiveCell}>{row.platform_type}</td>
-                <td className={styles.responsiveCell}>{row.owner}</td>
-                <td className={styles.responsiveCell}>
-                  ${row.amount_invested}
-                </td>
-                <td className={styles.responsiveCell}>${row.amount_current}</td>
-                <td className={styles.responsiveCell}>${row.absReturn}</td>
-                <td className={styles.responsiveCell}>
-                  {row.absReturnPercentage}
-                </td>
-                <td
-                  className={`${styles.responsiveCell} flex justify-center space-x-2`}
-                >
-                  <button
-                    onClick={() => handleEdit(index)}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
+              <TrackerTableRow data={row} key={index} />
             ))}
           </tbody>
         </table>

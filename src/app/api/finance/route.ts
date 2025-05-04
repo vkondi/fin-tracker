@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/authOptions";
 import { pool } from "../database";
 import { FINANCES_TABLE } from "@/utils/constants";
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    const email = session?.user?.email;
-
     const url = new URL(request.url);
     const { searchParams } = url;
     const userId = searchParams.get("userId");

@@ -61,7 +61,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     setFinancePopupState({ isVisible: false });
   };
 
-  const getAllFinances = async () => {
+  const getAllFinances = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/finance?userId=${userId}`, {
@@ -73,6 +73,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
       const massagedData = data?.data?.map((item: FinanceRecordType) => ({
         ...item,
+        type: item?.platform_type,
         investedAmount: item?.amount_invested,
         currentAmount: item?.amount_current,
       }));
@@ -82,24 +83,20 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   const addFinance = async (
     data: FinanceFormDataType
   ): Promise<APIResponseType> => {
     setLoading(true);
     try {
-      const response = await fetch("/api/finance", {
+      await fetch("/api/finance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ ...data, userId }),
       });
-      const result = await response.json();
-      // if (result) {
-      //   setFinanceData((prev) => [...prev, data]);
-      // }
 
       getAllFinances(); // Refresh the finance data after adding a new record
 
@@ -153,7 +150,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     if (isUserRegistered) {
       getAllFinances();
     }
-  }, [isUserRegistered]);
+  }, [isUserRegistered, getAllFinances]);
 
   // Register user once email is available from session
   useEffect(() => {

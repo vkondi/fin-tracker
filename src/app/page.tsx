@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <ProtectedRoute>
       <ContentWrapper>
-        <div className="flex min-h-screen flex-col items-center p-24 bg-sky-100">
+        <div className="flex min-h-screen flex-col items-center p-24 bg-gray-200">
           <TrackerTable />
         </div>
       </ContentWrapper>
