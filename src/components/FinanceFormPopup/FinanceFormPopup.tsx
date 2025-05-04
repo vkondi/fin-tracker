@@ -1,34 +1,42 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
 import { useRootContext } from "@/context/RootContext";
 
+const formDefaultState: FinanceFormDataType = {
+  platform: "",
+  type: "None",
+  owner: "",
+  investedAmount: 0,
+  currentAmount: 0,
+};
+
 const FinanceFormPopup = () => {
   const {
-    financePopupState: { isVisible, mode },
+    financePopupState: { isVisible, mode, data: editData },
     hideFinanceForm,
     addFinance,
+    updateFinance,
     loading,
   } = useRootContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode === "add" ? "Add New Finance" : "Edit Finance";
   const buttonText = mode === "add" ? "Add" : "Update";
+  const [formData, setFormData] =
+    useState<FinanceFormDataType>(formDefaultState);
+
+  const closePopup = () => {
+    setFormData(formDefaultState); // Reset form data to default state
+    hideFinanceForm(); // Call the hideFinanceForm function to close the popup
+  };
 
   const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
     if (overlayRef.current && e.target === overlayRef.current) {
-      hideFinanceForm();
+      closePopup();
     }
   };
-
-  const [formData, setFormData] = useState<FinanceFormDataType>({
-    platform: "",
-    type: "None",
-    owner: "",
-    investedAmount: 0,
-    currentAmount: 0,
-  });
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -46,20 +54,44 @@ const FinanceFormPopup = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    addFinance(formData)
-      .then((res) => {
-        if (res.success) {
-          alert("Finance record added successfully!");
-          hideFinanceForm();
-        } else {
-          alert("Failed to add finance record: " + res.message);
-          console.error("Failed to add finance record:", res.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding finance record:", error);
-      });
+    if (mode === "add") {
+      addFinance(formData)
+        .then((res) => {
+          if (res.success) {
+            alert("Finance record added successfully!");
+            closePopup();
+          } else {
+            alert("Failed to add finance record: " + res.message);
+            console.error("Failed to add finance record:", res.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding finance record:", error);
+        });
+    }
+
+    if (mode === "edit") {
+      updateFinance(formData)
+        .then((res) => {
+          if (res.success) {
+            alert("Finance record updated successfully!");
+            closePopup();
+          } else {
+            alert("Failed to uupdate finance record: " + res.message);
+            console.error("Failed to update finance record:", res.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating finance record:", error);
+        });
+    }
   };
+
+  useEffect(() => {
+    if (editData) {
+      setFormData(editData);
+    }
+  }, [editData]);
 
   if (!isVisible) return null; // Don't render if not visible
 
@@ -74,7 +106,7 @@ const FinanceFormPopup = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">{title}</h2>
           <button
-            onClick={hideFinanceForm}
+            onClick={closePopup}
             className="text-gray-500 hover:text-gray-700"
           >
             ✖
@@ -150,7 +182,7 @@ const FinanceFormPopup = () => {
           <div className="flex justify-end space-x-2">
             <button
               type="button"
-              onClick={hideFinanceForm}
+              onClick={closePopup}
               className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
             >
               Cancel

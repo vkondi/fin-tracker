@@ -23,6 +23,8 @@ type RootContextType = {
   financePopupState: FinancePopupContextStateType;
 
   addFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
+  deleteFinance: (id: string) => Promise<APIResponseType>;
+  updateFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
   financeData: FinanceFormDataType[];
   loading: boolean;
 
@@ -98,7 +100,8 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({ ...data, userId }),
       });
 
-      getAllFinances(); // Refresh the finance data after adding a new record
+      // Refresh the finance data after adding a new record
+      getAllFinances();
 
       return { success: true, message: "Finance data added successfully!" };
     } catch (error) {
@@ -112,13 +115,59 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // const updateFinance = (data: FinanceFormDataType) => {
-  //   // setFinanceData((prev) => [...prev, newData]);
-  // };
+  const updateFinance = async (data: FinanceFormDataType) => {
+    setLoading(true);
+    try {
+      await fetch("/api/finance", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-  // const deleteFinance = (id: string) => {
-  //   // setFinanceData((prev) => [...prev, newData]);
-  // };
+      // Refresh the finance data after deleting a record
+      getAllFinances();
+
+      return { success: true, message: "Finance data updated successfully!" };
+    } catch (error) {
+      console.error("[RootContext][updateFinance] >> Exception:", error);
+
+      return {
+        success: false,
+        message: "Failed to update finance data. Please try again.",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteFinance = async (id: string) => {
+    setLoading(true);
+    try {
+      await fetch("/api/finance", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      // Refresh the finance data after deleting a record
+      getAllFinances();
+
+      return { success: true, message: "Finance data deleted successfully!" };
+    } catch (error) {
+      console.error("[RootContext][deleteFinance] >> Exception:", error);
+
+      return {
+        success: false,
+        message: "Failed to delete finance data. Please try again.",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const registerUser = useCallback(async () => {
     console.log("[RootContext] >> [registerUser]");
@@ -169,6 +218,8 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
 
         // finance tracker
         addFinance,
+        deleteFinance,
+        updateFinance,
         financeData,
         loading,
 

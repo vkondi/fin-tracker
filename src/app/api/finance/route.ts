@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { pool } from "../database";
 import { FINANCES_TABLE } from "@/utils/constants";
 
+// Get user finance(s)
+// This endpoint retrieves the finance records for a specific user based on their userId.
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -48,6 +50,7 @@ export async function GET(request: Request) {
   }
 }
 
+// Add new finance record
 export async function POST(request: Request) {
   try {
     const newRecord = await request.json();
@@ -96,27 +99,57 @@ export async function POST(request: Request) {
   }
 }
 
+// Update finance record
 export async function PUT(request: Request) {
   try {
-    const body = await request.json();
-    const {
-      id,
-      // ...data
-    } = body;
+    const updatedRecord = await request.json();
 
-    if (id) {
-      // Update the existing record in the database using the id
-    } else {
+    // Validate that we have an ID to update
+    if (!updatedRecord.id) {
       return NextResponse.json(
-        { error: "ID is required to update a record" },
+        { error: "ID is required for updating a record" },
         { status: 400 }
       );
     }
 
-    return NextResponse.json(
-      { message: "Finance data updated successfully!" },
-      { status: 200 }
-    );
+    const queryText = `
+        UPDATE ${FINANCES_TABLE}
+        SET 
+          platform = $1,
+          platform_type = $2,
+          amount_invested = $3,
+          amount_current = $4,
+          updated_date = CURRENT_TIMESTAMP,
+          owner = $5
+        WHERE 
+          id = $6
+        RETURNING *;
+      `;
+
+    const values = [
+      updatedRecord.platform,
+      updatedRecord.type,
+      updatedRecord.investedAmount,
+      updatedRecord.currentAmount,
+      updatedRecord.owner,
+      updatedRecord.id,
+    ];
+
+    const { rows } = await pool.query(queryText, values);
+
+    if (rows.length) {
+      return NextResponse.json(
+        { message: "success", data: rows[0] },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          message: `Failed to update finance record with id ${updatedRecord.id}`,
+        },
+        { status: 404 }
+      );
+    }
   } catch (error) {
     console.error("[finance] >> [PUT]: ", error);
     return NextResponse.json(
@@ -126,25 +159,40 @@ export async function PUT(request: Request) {
   }
 }
 
+// Delete finance record
 export async function DELETE(request: Request) {
   try {
-    const url = new URL(request.url);
-    const { searchParams } = url;
-    const id = searchParams.get("id");
+    const requestObj = await request.json();
+    const recordId = requestObj?.id;
 
-    if (id) {
-      // Delete the record from the database using the id
-    } else {
+    if (!recordId) {
       return NextResponse.json(
-        { error: "ID is required to delete a record" },
+        { error: "ID is required for deleting a record" },
         { status: 400 }
       );
     }
 
-    return NextResponse.json(
-      { message: "Finance data deleted successfully!" },
-      { status: 200 }
-    );
+    const queryText = `
+        DELETE FROM ${FINANCES_TABLE}
+        WHERE id = $1
+        RETURNING *;
+      `;
+
+    const { rows } = await pool.query(queryText, [recordId]);
+
+    if (rows.length) {
+      return NextResponse.json(
+        { message: "success", data: rows[0] },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          message: `Failed to find finance record with id ${recordId} to delete`,
+        },
+        { status: 404 }
+      );
+    }
   } catch (error) {
     console.error("[finance] >> [DELETE]: ", error);
     return NextResponse.json(
