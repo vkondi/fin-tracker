@@ -17,7 +17,11 @@ const TrackerTable = () => {
   }
 
   return (
-    <div className="p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white w-full">
+    <div
+      className={`p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white ${
+        isMobile ? "" : "w-full"
+      }`}
+    >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Finance Tracker</h2>
 

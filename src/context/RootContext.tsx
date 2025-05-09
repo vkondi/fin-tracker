@@ -6,11 +6,14 @@ import {
   FinanceFormMode,
   FinancePopupContextStateType,
   FinanceRecordType,
+  LoaderProps,
 } from "@/components/component.types";
 import { useSession } from "next-auth/react";
 import {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -36,13 +39,20 @@ type RootContextType = {
   isUserRegistered?: boolean;
 
   isMobile: boolean;
+
+  loader: LoaderProps;
+  setLoader: Dispatch<SetStateAction<LoaderProps>>;
 };
 
 const RootContext = createContext<RootContextType | undefined>(undefined);
 
 export const RootProvider = ({ children }: { children: ReactNode }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  
+
+  const [loader, setLoader] = useState<LoaderProps>({
+    show: false,
+  });
+
   const [name, setName] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
 
@@ -214,6 +224,10 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [email, name, registerUser]);
 
+  useEffect(() => {
+    setLoader((prev) => ({ ...prev, show: loading }));
+  }, [loading]);
+
   return (
     <RootContext.Provider
       value={{
@@ -235,6 +249,9 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         isUserRegistered,
 
         isMobile,
+
+        loader,
+        setLoader,
       }}
     >
       {children}

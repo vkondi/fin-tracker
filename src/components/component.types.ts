@@ -28,3 +28,8 @@ export type FinancePopupContextStateType = {
 };
 
 export type APIResponseType = { success: boolean; message?: string };
+
+export type LoaderProps = {
+  show: boolean;
+  loadingMessage?: string;
+};

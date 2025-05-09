@@ -9,7 +9,7 @@ export default function SignIn() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+      <div className="max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md w-[360px]">
         <div className="text-center">
           <h1 className="text-3xl font-bold">Sign In</h1>
           <p className="mt-2 text-gray-600">Sign in to access your account</p>

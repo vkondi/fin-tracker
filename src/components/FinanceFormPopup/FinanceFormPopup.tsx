@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
 import { useRootContext } from "@/context/RootContext";
+import { LiaWindowCloseSolid } from "react-icons/lia";
 
 const formDefaultState: FinanceFormDataType = {
   platform: "",
@@ -21,6 +22,7 @@ const FinanceFormPopup = () => {
     updateFinance,
     loading,
     isMobile,
+    setLoader,
   } = useRootContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode === "add" ? "Add New Finance" : "Edit Finance";
@@ -56,6 +58,8 @@ const FinanceFormPopup = () => {
     e.preventDefault();
 
     if (mode === "add") {
+      setLoader({ show: true, loadingMessage: "Adding finance record..." }); // Show loader
+
       addFinance(formData)
         .then((res) => {
           if (res.success) {
@@ -68,10 +72,15 @@ const FinanceFormPopup = () => {
         })
         .catch((error) => {
           console.error("Error adding finance record:", error);
+        })
+        .finally(() => {
+          setLoader({ show: false }); // Hide loader after operation
         });
     }
 
     if (mode === "edit") {
+      setLoader({ show: true, loadingMessage: "Updating finance record..." }); // Show loader
+
       updateFinance(formData)
         .then((res) => {
           if (res.success) {
@@ -84,6 +93,9 @@ const FinanceFormPopup = () => {
         })
         .catch((error) => {
           console.error("Error updating finance record:", error);
+        })
+        .finally(() => {
+          setLoader({ show: false }); // Hide loader after operation
         });
     }
   };
@@ -104,7 +116,11 @@ const FinanceFormPopup = () => {
       }`}
       onClick={handleClickOutside}
     >
-      <div className={`bg-white shadow-lg p-6 relative overflow-y-auto ${isMobile ? "w-full h-full" : "w-96 rounded-lg"}`}>
+      <div
+        className={`bg-white shadow-lg p-6 relative overflow-y-auto ${
+          isMobile ? "w-full h-full" : "w-96 rounded-lg"
+        }`}
+      >
         {/* Overlay Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">{title}</h2>
@@ -112,7 +128,7 @@ const FinanceFormPopup = () => {
             onClick={closePopup}
             className="text-gray-500 hover:text-gray-700"
           >
-            ✖
+            <LiaWindowCloseSolid size={35}/>
           </button>
         </div>
 

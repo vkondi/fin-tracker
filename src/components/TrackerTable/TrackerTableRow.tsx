@@ -78,7 +78,7 @@ const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
 
   if (isMobile) {
     return (
-      <tr className="shadow-emerald-200 p-2 flex flex-col gap-1 border-b-2 border-gray-300 even:bg-white odd:bg-gray-50">
+      <tr className="shadow-emerald-200 p-2 flex flex-col gap-1 border-b-2 border-gray-300 even:bg-white odd:bg-gray-50 w-[360px] mx-auto">
         <td className={rowCls}>
           <div className="text-2xl">{data.platform}</div>
           <div className="text-xs">{data.type}</div>
