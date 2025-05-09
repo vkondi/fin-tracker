@@ -17,31 +17,6 @@
     display: table-cell;
     padding: 0.5rem;
     border: 1px solid #ddd;
+    font-size: 0.8rem;
   }
   
-  /* Apply responsive styles for smaller screens */
-  @media (max-width: 768px) {
-    .hiddenThead {
-      display: none; /* Hide the header only on smaller screens */
-    }
-  
-    .responsiveRow {
-      display: block;
-      margin-bottom: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-  
-    .responsiveCell {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem;
-      border: none;
-      border-bottom: 1px solid #ddd;
-    }
-  
-    .responsiveCell:last-child {
-      border-bottom: none;
-    }
-  }

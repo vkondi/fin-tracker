@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 5vw;
+  padding: 1vh 3vw;
 }
 
 .titleLeft {
@@ -83,7 +83,6 @@
   font-size: 1.8rem;
   background: none;
   border: none;
-  color: white;
   cursor: pointer;
 }
 
@@ -104,7 +103,6 @@
 .closeButton {
   background: none;
   border: none;
-  color: white;
   font-size: 1.5rem;
   cursor: pointer;
   align-self: flex-end;
@@ -116,7 +114,6 @@
 
 .drawerLink {
   text-decoration: none;
-  color: white;
   font-size: 1rem;
   display: block;
   padding: 10px;

@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef, type FC } from "react";
 import Link from "next/link";
-import { useMediaQuery } from "react-responsive";
 import styles from "./Header.module.css";
 import { usePathname } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
 import ContentWrapper from "../ContentWrapper/ContentWrapper";
+import { useRootContext } from "@/context/RootContext";
 
 type MenuItem = {
   title: string;
@@ -18,8 +18,8 @@ type MenuItem = {
 const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { isMobile } = useRootContext();
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false); // State to manage hydration

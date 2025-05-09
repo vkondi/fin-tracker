@@ -15,14 +15,6 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     }
   }, [status, router, pathname]);
 
-  if (status === "loading") {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
-
   if (status === "authenticated") {
     return <>{children}</>;
   }

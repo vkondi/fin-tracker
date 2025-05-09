@@ -1,4 +1,5 @@
 export type FinanceFormDataType = {
+  updatedDate?: string;
   platform: string;
   type: string;
   owner: string;
@@ -27,3 +28,8 @@ export type FinancePopupContextStateType = {
 };
 
 export type APIResponseType = { success: boolean; message?: string };
+
+export type LoaderProps = {
+  show: boolean;
+  loadingMessage?: string;
+};
