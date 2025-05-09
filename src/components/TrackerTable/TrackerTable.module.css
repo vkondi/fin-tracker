@@ -1,0 +1,47 @@
+.tableContainer {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .hiddenThead {
+    display: table-header-group; /* Default table header styling */
+  }
+  
+  /* Default row and cell styling */
+  .responsiveRow {
+    display: table-row;
+  }
+  
+  .responsiveCell {
+    display: table-cell;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+  }
+  
+  /* Apply responsive styles for smaller screens */
+  @media (max-width: 768px) {
+    .hiddenThead {
+      display: none; /* Hide the header only on smaller screens */
+    }
+  
+    .responsiveRow {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  
+    .responsiveCell {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      border: none;
+      border-bottom: 1px solid #ddd;
+    }
+  
+    .responsiveCell:last-child {
+      border-bottom: none;
+    }
+  }

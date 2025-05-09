@@ -1,27 +1,28 @@
-import AuthProvider from "@/components/auth-provider";
-import Navbar from "@/components/navbar";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
+import Header from "@/components/Header/Header";
+import { RootProvider } from "@/context/RootContext";
+import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 
 export const metadata: Metadata = {
-  title: "Next.js Auth App",
-  description: "Next.js application with Google OAuth",
+  title: "FINTRAKR",
+  description: "Your personal finance tracker",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
         <AuthProvider>
-          <Suspense>
-            <Navbar />
-            <main>{children}</main>
-          </Suspense>
+          <RootProvider>
+            <Suspense>
+              <Header />
+              <main>{children}</main>
+              <FinanceFormPopup />
+            </Suspense>
+          </RootProvider>
         </AuthProvider>
       </body>
     </html>
