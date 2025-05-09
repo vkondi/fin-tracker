@@ -4,16 +4,23 @@ import styles from "./TrackerTable.module.css";
 import TrackerTableEmptyState from "./TrackerTableEmptyState";
 import TrackerTableRow from "./TrackerTableRow";
 import { FaPlus } from "react-icons/fa";
+import { TRACKER_TABLE_LABELS } from "@/utils/constants";
 
 const TrackerTable = () => {
-  const { showFinanceForm, financeData, isMobile } = useRootContext();
+  const { showFinanceForm, financeData, isMobile, loading } = useRootContext();
 
   const handleAddNew = () => {
     showFinanceForm("add");
   };
 
-  if (!financeData || financeData.length === 0) {
+  // Show empty state if no data and not loading
+  if ((!financeData || financeData.length === 0) && !loading) {
     return <TrackerTableEmptyState />;
+  }
+
+  // Show only loading state if data is not available
+  if (loading) {
+    return null;
   }
 
   return (
@@ -29,14 +36,14 @@ const TrackerTable = () => {
         {isMobile ? (
           <button
             onClick={handleAddNew}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-[var(--primary-btn)] text-white px-4 py-2 rounded hover:bg-[var(--primary-btn-hover)]"
           >
             <FaPlus />
           </button>
         ) : (
           <button
             onClick={handleAddNew}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+            className="bg-[var(--primary-btn)] text-white px-4 py-2 rounded hover:bg-[var(--primary-btn-hover)] flex items-center gap-2"
           >
             <FaPlus /> Add New
           </button>
@@ -47,23 +54,33 @@ const TrackerTable = () => {
           {!isMobile && (
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">Platform</th>
-                <th className="border border-gray-300 px-4 py-2">Type</th>
-                <th className="border border-gray-300 px-4 py-2">Owner</th>
                 <th className="border border-gray-300 px-4 py-2">
-                  Invested Amount
+                  {TRACKER_TABLE_LABELS.platform}
                 </th>
                 <th className="border border-gray-300 px-4 py-2">
-                  Current Amount
-                </th>
-                <th className="border border-gray-300 px-4 py-2">Abs Return</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Abs Return %
+                  {TRACKER_TABLE_LABELS.type}
                 </th>
                 <th className="border border-gray-300 px-4 py-2">
-                  Last updated
+                  {TRACKER_TABLE_LABELS.owner}
                 </th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {TRACKER_TABLE_LABELS.investedAmount}
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {TRACKER_TABLE_LABELS.currentAmount}
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {TRACKER_TABLE_LABELS.absReturn}
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {TRACKER_TABLE_LABELS.absReturnPercentage}
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {TRACKER_TABLE_LABELS.lastUpdated}
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {TRACKER_TABLE_LABELS.actions}
+                </th>
               </tr>
             </thead>
           )}

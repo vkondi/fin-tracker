@@ -4,6 +4,7 @@ import ContentWrapper from "@/components/ContentWrapper/ContentWrapper";
 import Loader from "@/components/Loader/Loader";
 import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
 import TrackerTable from "@/components/TrackerTable/TrackerTable";
+import WelcomeMessage from "@/components/WelcomeMessage/WelcomeMessage";
 import { useRootContext } from "@/context/RootContext";
 
 export default function Home() {
@@ -15,9 +16,10 @@ export default function Home() {
         <>
           <div
             className={`flex min-h-screen flex-col items-center bg-gray-200 min-w-[360px] ${
-              isMobile ? "py-24 px-2" : "p-24"
+              isMobile ? "py-16 px-2" : "p-16"
             }`}
           >
+            <WelcomeMessage />
             <TrackerTable />
           </div>
 

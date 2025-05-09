@@ -6,6 +6,8 @@
   --header-background: #ecec5d;
   --text-green: #118111;
   --text-red: #a91313;
+  --primary-btn: #3b3a3a;
+  --primary-btn-hover: #6d6a6a;
 }
 
 @theme inline {

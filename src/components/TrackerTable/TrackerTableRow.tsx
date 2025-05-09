@@ -2,6 +2,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { FinanceFormDataType } from "../component.types";
 import styles from "./TrackerTable.module.css";
 import { useRootContext } from "@/context/RootContext";
+import { TRACKER_TABLE_LABELS } from "@/utils/constants";
 
 function calculateAbsoluteReturn(
   investedAmount: number,
@@ -13,8 +14,7 @@ function calculateAbsoluteReturn(
 }
 
 const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
-  const { deleteFinance, loading, showFinanceForm, isMobile } =
-    useRootContext();
+  const { loading, showFinanceForm, isMobile } = useRootContext();
 
   const formattedAmount = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -62,23 +62,12 @@ const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
   };
 
   const handleDelete = () => {
-    deleteFinance(data.id!)
-      .then((res) => {
-        if (res.success) {
-          alert("Finance record deleted successfully!");
-        } else {
-          alert("Failed to delete finance record: " + res.message);
-          console.error("Failed to delete finance record:", res.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting finance record:", error);
-      });
+    showFinanceForm("delete", data);
   };
 
   if (isMobile) {
     return (
-      <tr className="shadow-emerald-200 p-2 flex flex-col gap-1 border-b-2 border-gray-300 even:bg-white odd:bg-gray-50 w-[360px] mx-auto">
+      <tr className="shadow-emerald-200 p-2 flex flex-col gap-1 border-b-2 border-gray-300 even:bg-blue-50 odd:bg-gray-50 w-[360px] mx-auto">
         <td className={rowCls}>
           <div className="text-2xl">{data.platform}</div>
           <div className="text-xs">{data.type}</div>
@@ -86,28 +75,30 @@ const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
 
         <td className={`${rowCls} font-thin mt-1 mb-2`}>{data.owner}</td>
         <td className={rowCls}>
-          <div className={labelCls}>Invested Amount</div>
+          <div className={labelCls}>{TRACKER_TABLE_LABELS.investedAmount}</div>
           <div className={valueCls}>{formattedInvestedAmount}</div>
         </td>
 
         <td className={rowCls}>
-          <div className={labelCls}>Current Amount</div>
+          <div className={labelCls}>{TRACKER_TABLE_LABELS.currentAmount}</div>
           <div className={valueCls}>{formattedCurrentAmount}</div>
         </td>
         <td className={rowCls}>
-          <div className={labelCls}>Abs Return</div>
+          <div className={labelCls}>{TRACKER_TABLE_LABELS.absReturn}</div>
           <div className={`${valueCls} ${absReturnTextCls}`}>
             {formattedAbsoluteReturnAmount}
           </div>
         </td>
         <td className={rowCls}>
-          <div className={labelCls}>Abs Return %</div>
+          <div className={labelCls}>
+            {TRACKER_TABLE_LABELS.absReturnPercentage}
+          </div>
           <div className={`${valueCls} ${absReturnTextCls}`}>
             {formattedAbsoluteReturnPercentage}
           </div>
         </td>
         <td className={rowCls}>
-          <div className={labelCls}>Last updated</div>
+          <div className={labelCls}>{TRACKER_TABLE_LABELS.lastUpdated}</div>
           <div
             className={valueCls}
             style={{
@@ -141,7 +132,7 @@ const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
   }
 
   return (
-    <tr className={`odd:bg-white even:bg-gray-50 ${styles.responsiveRow}`}>
+    <tr className={`even:bg-blue-50 odd:bg-gray-50 ${styles.responsiveRow}`}>
       <td className={styles.responsiveCell}>{data.platform}</td>
       <td className={styles.responsiveCell}>{data.type}</td>
       <td className={styles.responsiveCell}>{data.owner}</td>
