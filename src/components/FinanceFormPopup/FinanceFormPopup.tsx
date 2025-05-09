@@ -20,6 +20,7 @@ const FinanceFormPopup = () => {
     addFinance,
     updateFinance,
     loading,
+    isMobile,
   } = useRootContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode === "add" ? "Add New Finance" : "Edit Finance";
@@ -98,10 +99,12 @@ const FinanceFormPopup = () => {
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${
+        isMobile ? "z-1000" : "z-50"
+      }`}
       onClick={handleClickOutside}
     >
-      <div className="bg-white rounded-lg shadow-lg w-96 p-6 relative">
+      <div className={`bg-white shadow-lg p-6 relative overflow-y-auto ${isMobile ? "w-full h-full" : "w-96 rounded-lg"}`}>
         {/* Overlay Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">{title}</h2>

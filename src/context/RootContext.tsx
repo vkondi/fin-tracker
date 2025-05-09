@@ -16,6 +16,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useMediaQuery } from "react-responsive";
 
 type RootContextType = {
   showFinanceForm: (mode: FinanceFormMode, data?: FinanceFormDataType) => void;
@@ -33,11 +34,15 @@ type RootContextType = {
   email?: string;
 
   isUserRegistered?: boolean;
+
+  isMobile: boolean;
 };
 
 const RootContext = createContext<RootContextType | undefined>(undefined);
 
 export const RootProvider = ({ children }: { children: ReactNode }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  
   const [name, setName] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
 
@@ -78,6 +83,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         type: item?.platform_type,
         investedAmount: item?.amount_invested,
         currentAmount: item?.amount_current,
+        updatedDate: item?.updated_date,
       }));
       setFinanceData(massagedData);
     } catch (error) {
@@ -227,6 +233,8 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         userId,
         email: email ?? undefined,
         isUserRegistered,
+
+        isMobile,
       }}
     >
       {children}

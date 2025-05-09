@@ -1,4 +1,5 @@
 export type FinanceFormDataType = {
+  updatedDate?: string;
   platform: string;
   type: string;
   owner: string;
