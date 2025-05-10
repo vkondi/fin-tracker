@@ -1,6 +1,7 @@
 import { useRootContext } from "@/context/RootContext";
 import { formattedAmount } from "@/utils/utility";
 import { useMemo } from "react";
+import DashboardCard from "../DashboardCard/DashboardCard";
 
 const Summary = () => {
   const { isMobile, financeData } = useRootContext();
@@ -78,7 +79,14 @@ const Summary = () => {
         value: totalPlatforms,
       },
     ],
-    [totalInvested, totalCurrent, totalAbsReturn, totalAbsReturnPercentage, totalOwners, totalPlatforms]
+    [
+      totalInvested,
+      totalCurrent,
+      totalAbsReturn,
+      totalAbsReturnPercentage,
+      totalOwners,
+      totalPlatforms,
+    ]
   );
 
   const returnsState =
@@ -95,16 +103,12 @@ const Summary = () => {
       : "";
 
   return (
-    <div
-      className={`items-center flex flex-col gap-6 bg-white rounded-md ${
-        isMobile ? "w-[360px]" : "w-full"
-      } my-5 mx-auto overflow-hidden shadow-md`}
+    <DashboardCard
+      isMobile={isMobile}
+      title="Finance Summary"
+      flex={1}
     >
-      <div className="font-thin text-xl bg-[var(--primary-btn)] w-full text-center p-2 text-[var(--background)]">
-        Finance Summary
-      </div>
-
-      <div className={`grid grid-cols-2 ${isMobile ? "w-full" : "w-fit"}`}>
+      <div className="flex flex-row flex-wrap justify-center">
         {summary.map((item, index) => {
           const key = item.key;
 
@@ -127,7 +131,7 @@ const Summary = () => {
           );
         })}
       </div>
-    </div>
+    </DashboardCard>
   );
 };
 

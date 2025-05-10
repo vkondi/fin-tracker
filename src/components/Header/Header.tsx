@@ -29,6 +29,7 @@ const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
   // Configure menu items based on session
   const menuItems: MenuItem[] = [
     ...(session ? [{ title: "Home", href: "/" }] : []),
+    ...(session ? [{ title: "Finances", href: "/finances" }] : []),
     session
       ? { title: "Sign Out", onClick: () => signOut() }
       : { title: "Sign In", onClick: () => signIn() },
