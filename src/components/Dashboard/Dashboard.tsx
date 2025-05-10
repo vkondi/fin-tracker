@@ -2,6 +2,7 @@ import WelcomeMessage from "../WelcomeMessage/WelcomeMessage";
 import Summary from "../Summary/Summary";
 import { useRootContext } from "@/context/RootContext";
 import DashboardCard from "../DashboardCard/DashboardCard";
+import OwnerDistribution from "../OwnerDistribution/OwnerDistribution";
 
 const Dashboard = () => {
   const { isMobile } = useRootContext();
@@ -22,7 +23,7 @@ const Dashboard = () => {
         <div className={gridRowCls}>
           {/* Summary component */}
           <Summary />
-          <DashboardCard isMobile={isMobile} title="Owner Distribution" />
+          <OwnerDistribution />
           <DashboardCard isMobile={isMobile} title="Platform Type" />
         </div>
 
