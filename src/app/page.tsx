@@ -3,6 +3,7 @@
 import ContentWrapper from "@/components/ContentWrapper/ContentWrapper";
 import Loader from "@/components/Loader/Loader";
 import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
+import Summary from "@/components/Summary/Summary";
 import TrackerTable from "@/components/TrackerTable/TrackerTable";
 import WelcomeMessage from "@/components/WelcomeMessage/WelcomeMessage";
 import { useRootContext } from "@/context/RootContext";
@@ -19,7 +20,13 @@ export default function Home() {
               isMobile ? "py-16 px-2" : "p-16"
             }`}
           >
+            {/* Welcome message component */}
             <WelcomeMessage />
+
+            {/* Summary component */}
+            <Summary />
+
+            {/* Tracker table component */}
             <TrackerTable />
           </div>
 

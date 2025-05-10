@@ -3,6 +3,7 @@ import { FinanceFormDataType } from "../component.types";
 import styles from "./TrackerTable.module.css";
 import { useRootContext } from "@/context/RootContext";
 import { TRACKER_TABLE_LABELS } from "@/utils/constants";
+import { formattedAmount } from "@/utils/utility";
 
 function calculateAbsoluteReturn(
   investedAmount: number,
@@ -15,13 +16,6 @@ function calculateAbsoluteReturn(
 
 const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
   const { loading, showFinanceForm, isMobile } = useRootContext();
-
-  const formattedAmount = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(amount);
-  };
 
   const formattedInvestedAmount = formattedAmount(data.investedAmount);
   const formattedCurrentAmount = formattedAmount(data.currentAmount);
