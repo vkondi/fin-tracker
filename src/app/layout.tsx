@@ -1,14 +1,26 @@
+"use client";
+
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import "./globals.css";
-import type { Metadata } from "next";
 import { ReactNode, Suspense } from "react";
 import Header from "@/components/Header/Header";
-import { RootProvider } from "@/context/RootContext";
+import { RootProvider, useRootContext } from "@/context/RootContext";
 import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
+import Loader from "@/components/Loader/Loader";
 
-export const metadata: Metadata = {
-  title: "FINTRAKR",
-  description: "Your personal finance tracker",
+const RootComponent = ({ children }: { children: ReactNode }) => {
+  const { loader } = useRootContext();
+
+  return (
+    <Suspense>
+      <Header />
+      <main>{children}</main>
+      <FinanceFormPopup />
+
+      {/* Loading component */}
+      <Loader show={loader.show} loadingMessage={loader.loadingMessage} />
+    </Suspense>
+  );
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -17,11 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AuthProvider>
           <RootProvider>
-            <Suspense>
-              <Header />
-              <main>{children}</main>
-              <FinanceFormPopup />
-            </Suspense>
+            <RootComponent>{children}</RootComponent>
           </RootProvider>
         </AuthProvider>
       </body>

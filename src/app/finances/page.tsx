@@ -1,15 +1,17 @@
 "use client";
 
 import ContentWrapper from "@/components/ContentWrapper/ContentWrapper";
-import Dashboard from "@/components/Dashboard/Dashboard";
 import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
+import TrackerTable from "@/components/TrackerTable/TrackerTable";
 
-export default function Home() {
+const Finances = () => {
   return (
     <ProtectedRoute>
       <ContentWrapper>
-        <Dashboard />
+        <TrackerTable />
       </ContentWrapper>
     </ProtectedRoute>
   );
-}
+};
+
+export default Finances;
