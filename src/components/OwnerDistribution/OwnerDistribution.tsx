@@ -1,38 +1,15 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { useRootContext } from "@/context/RootContext";
-import { formattedAmount } from "@/utils/utility";
+import { shuffleArrayInPlace } from "@/utils/utility";
 
-/**
- * Shuffles the array in-place (modifies the original).
- * @param {Array} array - The array to shuffle.
- * @return {Array} - The same array (shuffled).
- */
-function shuffleArrayInPlace(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Swap in-place
-  }
-  return array;
-}
+import { CHART_COLORS } from "@/utils/constants";
+import CustomLabel from "./CustomLabel";
+import CustomTooltip from "./CustomTooltip";
+import { Payload } from "recharts/types/component/DefaultTooltipContent";
+import { useMemo, useState } from "react";
 
-const colors = shuffleArrayInPlace([
-  "#57B4BA",
-  "#015551",
-  "#222222",
-  "#328E6E",
-  "#60B5FF",
-  "#BF9264",
-  "#FFA955",
-  "#CF0F47",
-  "#8E1616",
-  "#222831",
-  "#D50B8B",
-  "#DDA853",
-  "#E78B48",
-  "#604652",
-  "#4F1C51",
-]);
+const colors = shuffleArrayInPlace(CHART_COLORS);
 
 type ChartData = {
   name: string;
@@ -41,17 +18,33 @@ type ChartData = {
 };
 
 const OwnerDistribution = () => {
-  const { financeData } = useRootContext();
+  const [activeTab, setActiveTab] = useState<"invested" | "current">(
+    "invested"
+  );
+  const { financeData, isMobile } = useRootContext();
 
-  const owners = financeData.reduce((prev, curr, index) => {
-    if (!prev[curr.owner]) {
-      prev[curr.owner] = 0;
-    }
+  const { owners, total } = useMemo(
+    () =>
+      financeData.reduce(
+        (prev, curr) => {
+          const amount =
+            activeTab === "invested"
+              ? parseFloat(curr.investedAmount.toString())
+              : parseFloat(curr.currentAmount.toString());
 
-    prev[curr.owner] += parseFloat(curr.investedAmount.toString());
+          if (!prev.owners[curr.owner]) {
+            prev.owners[curr.owner] = 0;
+          }
 
-    return prev;
-  }, {} as Record<string, number>);
+          prev.owners[curr.owner] += amount;
+          prev.total += amount;
+
+          return prev;
+        },
+        { owners: {} as Record<string, number>, total: 0 } // Initialize owners as an empty object
+      ),
+    [activeTab, financeData]
+  );
 
   const data = Object.entries(owners).map(([key, value], index) => {
     return {
@@ -61,26 +54,68 @@ const OwnerDistribution = () => {
     } as ChartData;
   });
 
+  const onInvestedTabClick = () => setActiveTab("invested");
+
+  const onCurrentTabClick = () => setActiveTab("current");
+
   return (
     <DashboardCard title="Owner Distribution" flex={1}>
-      <div className="flex flex-row items-center bg-amber-100 justify-center w-full h-full">
-        <ResponsiveContainer width={300} height={250}>
+      <div className="flex flex-col items-center justify-center pb-2">
+        {/* Tab Buttons */}
+        <div className="my-2 flex rounded-md overflow-hidden">
+          <button
+            className={`px-4 py-2 text-xs ${
+              activeTab === "invested"
+                ? "bg-[var(--primary-btn)] text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+            onClick={onInvestedTabClick}
+          >
+            Invested Amount
+          </button>
+          <button
+            className={`px-4 py-2 text-xs ${
+              activeTab === "current"
+                ? "bg-[var(--primary-btn)] text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+            onClick={onCurrentTabClick}
+          >
+            Current Amount
+          </button>
+        </div>
+
+        <ResponsiveContainer width="100%" height={250}>
           <PieChart>
-            <Tooltip />
+            <Tooltip
+              content={({ active, payload }) => (
+                <CustomTooltip
+                  total={total}
+                  active={active}
+                  payload={(payload ?? []) as Payload<number, string>[]}
+                />
+              )}
+            />
             <Pie
-            style={{ fontSize: "0.8rem" }}
               data={data}
               dataKey="value"
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={80}
-              fill="#82ca9d"
-              // label
-              label={({ name, value, percent }) =>
-                `${name} ${formattedAmount(value)}`
-              }
+              innerRadius={isMobile ? 35 : 50}
+              outerRadius={isMobile ? 60 : 80}
+              label={({ name, value, percent, x, y, midAngle, fill }) => (
+                <CustomLabel
+                  name={name}
+                  value={value}
+                  percent={percent}
+                  x={x}
+                  y={y}
+                  midAngle={midAngle}
+                  fill={fill}
+                />
+              )}
+              labelLine={false}
             />
           </PieChart>
         </ResponsiveContainer>

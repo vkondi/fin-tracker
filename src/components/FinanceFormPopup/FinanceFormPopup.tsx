@@ -12,10 +12,11 @@ import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
 import { useRootContext } from "@/context/RootContext";
 import { LiaWindowCloseSolid } from "react-icons/lia";
+import { PLATFORMS } from "@/utils/constants";
 
 const formDefaultState: FinanceFormDataType = {
   platform: "",
-  type: "None",
+  type: "",
   owner: "",
   investedAmount: 0,
   currentAmount: 0,
@@ -52,6 +53,7 @@ const FinanceFormPopup = () => {
   const buttonText = mode && modeDetails[mode].buttonText;
   const [formData, setFormData] =
     useState<FinanceFormDataType>(formDefaultState);
+  const [types, setTypes] = useState<string[]>([]);
 
   const closePopup = useCallback(() => {
     setFormData(formDefaultState); // Reset form data to default state
@@ -176,17 +178,28 @@ const FinanceFormPopup = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
+          {/* Platform */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Platform</label>
-            <input
-              type="text"
+            <select
               name="platform"
               value={formData.platform}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
               required
-            />
+            >
+              <option value="" disabled>
+                Select a platform
+              </option>
+              {PLATFORMS.map(({ name }, index) => (
+                <option value={name} key={index}>
+                  {name}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {/* Type/Instruments */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Type</label>
             <select
@@ -196,11 +209,16 @@ const FinanceFormPopup = () => {
               className="w-full border border-gray-300 rounded px-3 py-2"
               required
             >
-              <option value="Equity">Equity</option>
-              <option value="MF">MF</option>
-              <option value="None">None</option>
+              <option value="" disabled>
+                Select a type
+              </option>
+              {types.map((value, index) => (
+                <option value={value} key={index}>{value}</option>
+              ))}
             </select>
           </div>
+
+          {/* Owner */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Owner</label>
             <input
@@ -212,6 +230,8 @@ const FinanceFormPopup = () => {
               required
             />
           </div>
+
+          {/* Invested Amount */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Invested Amount
@@ -225,6 +245,8 @@ const FinanceFormPopup = () => {
               required
             />
           </div>
+
+          {/* Current Amount */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Current Amount
@@ -268,6 +290,7 @@ const FinanceFormPopup = () => {
     closePopup,
     handleSubmit,
     handleChange,
+    types,
   ]);
 
   const renderDeleteView = useCallback(() => {
@@ -330,6 +353,15 @@ const FinanceFormPopup = () => {
       setFormData(financeData);
     }
   }, [financeData]);
+
+  useEffect(() => {
+    if (formData.platform) {
+      const value = PLATFORMS.find((rec) => rec.name === formData.platform);
+      if (value) {
+        setTypes(value?.instruments ?? []);
+      }
+    }
+  }, [formData.platform]);
 
   // Don't render if not visible
   if (!isVisible) return null;

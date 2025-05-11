@@ -13,12 +13,12 @@ const DashboardCard: FC<PropsWithChildren<Props>> = ({
 }) => {
   return (
     <div
-      className={`items-center flex flex-col bg-white rounded-md w-full overflow-hidden shadow-md flex-${flex} min-h-[200px]`}
+      className={`flex flex-col flex-${flex} items-center bg-white shadow-md min-h-[200px] w-full overflow-hidden rounded-lg`}
     >
       <div className="font-semibold text-l bg-[var(--primary-btn)] w-full p-2 text-[var(--background)]">
         {title}
       </div>
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 w-full">{children}</div>
     </div>
   );
 };

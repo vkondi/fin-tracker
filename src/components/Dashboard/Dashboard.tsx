@@ -7,7 +7,7 @@ import OwnerDistribution from "../OwnerDistribution/OwnerDistribution";
 const Dashboard = () => {
   const { isMobile } = useRootContext();
 
-  const gridRowCls = `flex gap-6 w-full items-center ${isMobile ? "flex-col" : "flex-row"}`;
+  const gridRowCls = `flex ${isMobile ? "flex-col" : "flex-row"} gap-6 w-full items-center`;
 
   return (
     <div
