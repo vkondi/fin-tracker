@@ -88,16 +88,19 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       const data = await response.json();
-      const massagedData = data?.data?.map((item: FinanceRecordType) => ({
-        ...item,
-        type: item?.platform_type,
-        investedAmount: item?.amount_invested,
-        currentAmount: item?.amount_current,
-        updatedDate: item?.updated_date,
-      }));
+      const massagedData =
+        data?.data?.map((item: FinanceRecordType) => ({
+          ...item,
+          type: item?.platform_type,
+          category: item?.platform_category,
+          investedAmount: item?.amount_invested,
+          currentAmount: item?.amount_current,
+          updatedDate: item?.updated_date,
+        })) ?? [];
       setFinanceData(massagedData);
     } catch (error) {
       console.error("[RootContext][getAllFinances] >> Exception:", error);
+      debugger;
     } finally {
       setLoading(false);
     }

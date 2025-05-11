@@ -15,6 +15,7 @@ export async function GET(request: Request) {
         id,
         platform,
         platform_type,
+        platform_category,
         amount_invested,
         amount_current,
         updated_date,
@@ -59,18 +60,20 @@ export async function POST(request: Request) {
       INSERT INTO FINANCES (
         platform,
         platform_type,
+        platform_category,
         amount_invested,
         amount_current,
         updated_date,
         owner,
         user_id
-      ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5, $6)
+      ) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)
       RETURNING *;
     `;
 
     const values = [
       newRecord.platform,
       newRecord.type,
+      newRecord.category,
       newRecord.investedAmount,
       newRecord.currentAmount,
       newRecord.owner,
@@ -117,18 +120,20 @@ export async function PUT(request: Request) {
         SET 
           platform = $1,
           platform_type = $2,
-          amount_invested = $3,
-          amount_current = $4,
+          platform_category = $3,
+          amount_invested = $4,
+          amount_current = $5,
           updated_date = CURRENT_TIMESTAMP,
-          owner = $5
+          owner = $6
         WHERE 
-          id = $6
+          id = $7
         RETURNING *;
       `;
 
     const values = [
       updatedRecord.platform,
       updatedRecord.type,
+      updatedRecord.category,
       updatedRecord.investedAmount,
       updatedRecord.currentAmount,
       updatedRecord.owner,

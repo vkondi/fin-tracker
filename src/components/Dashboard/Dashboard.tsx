@@ -3,6 +3,7 @@ import Summary from "../Summary/Summary";
 import { useRootContext } from "@/context/RootContext";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import OwnerDistribution from "../OwnerDistribution/OwnerDistribution";
+import MembersCard from "../MembersCard/MembersCard";
 
 const Dashboard = () => {
   const { isMobile } = useRootContext();
@@ -24,12 +25,12 @@ const Dashboard = () => {
           {/* Summary component */}
           <Summary />
           <OwnerDistribution />
-          <DashboardCard isMobile={isMobile} title="Platform Type" />
+          <MembersCard />
         </div>
 
         {/* Second Row */}
         <div className={gridRowCls}>
-          <DashboardCard isMobile={isMobile} title="Members" />
+          <DashboardCard isMobile={isMobile} title="Platform Type" />
           <DashboardCard isMobile={isMobile} title="TBD" />
         </div>
       </div>

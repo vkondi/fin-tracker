@@ -2,6 +2,7 @@ export type FinanceFormDataType = {
   updatedDate?: string;
   platform: string;
   type: string;
+  category: string;
   owner: string;
   investedAmount: number;
   currentAmount: number;
@@ -13,6 +14,7 @@ export type FinanceFormDataType = {
 export type FinanceRecordType = {
   platform: string;
   platform_type: string;
+  platform_category: string;
   amount_invested: number;
   amount_current: number;
   updated_date: Date;

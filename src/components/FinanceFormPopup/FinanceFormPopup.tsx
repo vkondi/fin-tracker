@@ -5,6 +5,7 @@ import {
   FormEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -17,6 +18,7 @@ import { PLATFORMS } from "@/utils/constants";
 const formDefaultState: FinanceFormDataType = {
   platform: "",
   type: "",
+  category: "",
   owner: "",
   investedAmount: 0,
   currentAmount: 0,
@@ -53,7 +55,24 @@ const FinanceFormPopup = () => {
   const buttonText = mode && modeDetails[mode].buttonText;
   const [formData, setFormData] =
     useState<FinanceFormDataType>(formDefaultState);
-  const [types, setTypes] = useState<string[]>([]);
+  const [typeOptions, setTypeOptions] = useState<string[]>([]);
+
+  const category = useMemo(
+    () =>
+      formData?.platform
+        ? PLATFORMS.find((rec) => rec.name === formData.platform)?.category
+        : null,
+    [formData?.platform]
+  ); // Retrive "category" based on selected "platform"
+  const isValidForm = useMemo(
+    () =>
+      !!formData?.platform &&
+      !!category &&
+      !!formData?.type &&
+      !!formData?.owner &&
+      (formData?.investedAmount ?? 0) > 0,
+    [formData, category]
+  ); // Validates form before submit
 
   const closePopup = useCallback(() => {
     setFormData(formDefaultState); // Reset form data to default state
@@ -84,9 +103,9 @@ const FinanceFormPopup = () => {
     (e: FormEvent) => {
       e.preventDefault();
 
-      if (mode === "add") {
+      if (mode === "add" && category) {
         setLoader({ show: true, loadingMessage: "Adding finance record..." });
-        addFinance(formData)
+        addFinance({ ...formData, category })
           .then((res) => {
             if (res.success) {
               closePopup();
@@ -104,10 +123,10 @@ const FinanceFormPopup = () => {
           });
       }
 
-      if (mode === "edit") {
+      if (mode === "edit" && category) {
         setLoader({ show: true, loadingMessage: "Updating finance record..." });
 
-        updateFinance(formData)
+        updateFinance({ ...formData, category })
           .then((res) => {
             if (res.success) {
               closePopup();
@@ -153,6 +172,7 @@ const FinanceFormPopup = () => {
       financeData,
       mode,
       formData,
+      category,
       closePopup,
       setLoader,
     ]
@@ -212,8 +232,10 @@ const FinanceFormPopup = () => {
               <option value="" disabled>
                 Select a type
               </option>
-              {types.map((value, index) => (
-                <option value={value} key={index}>{value}</option>
+              {typeOptions.map((value, index) => (
+                <option value={value} key={index}>
+                  {value}
+                </option>
               ))}
             </select>
           </div>
@@ -271,9 +293,9 @@ const FinanceFormPopup = () => {
               Cancel
             </button>
             <button
-              disabled={loading}
+              disabled={loading || !isValidForm}
               type="submit"
-              className="bg-[var(--primary-btn)] text-white px-4 py-2 rounded hover:bg-[var(--primary-btn-hover)]"
+              className="bg-[var(--primary-btn)] text-white px-4 py-2 rounded hover:bg-[var(--primary-btn-hover)] disabled:bg-[var(--primary-btn-hover)]"
             >
               {buttonText}
             </button>
@@ -290,7 +312,7 @@ const FinanceFormPopup = () => {
     closePopup,
     handleSubmit,
     handleChange,
-    types,
+    typeOptions,
   ]);
 
   const renderDeleteView = useCallback(() => {
@@ -358,7 +380,7 @@ const FinanceFormPopup = () => {
     if (formData.platform) {
       const value = PLATFORMS.find((rec) => rec.name === formData.platform);
       if (value) {
-        setTypes(value?.instruments ?? []);
+        setTypeOptions(value?.instruments ?? []);
       }
     }
   }, [formData.platform]);
