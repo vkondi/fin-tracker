@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import DashboardCard from "../DashboardCard/DashboardCard";
 
 const Summary = () => {
-  const { isMobile, financeData } = useRootContext();
+  const { isMobile, financeData, loading } = useRootContext();
 
   const { totalInvested, totalCurrent, totalOwners, totalPlatforms } = useMemo(
     () =>
@@ -102,12 +102,13 @@ const Summary = () => {
       ? "text-[var(--text-red)]"
       : "";
 
+  // Scenarios to hide component
+  if (loading || (Array.isArray(financeData) && !financeData.length)) {
+    return null;
+  }
+
   return (
-    <DashboardCard
-      isMobile={isMobile}
-      title="Finance Summary"
-      flex={1}
-    >
+    <DashboardCard isMobile={isMobile} title="Finance Summary" flex={1}>
       <div className="flex flex-row flex-wrap justify-center">
         {summary.map((item, index) => {
           const key = item.key;

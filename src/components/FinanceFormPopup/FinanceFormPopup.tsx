@@ -313,6 +313,7 @@ const FinanceFormPopup = () => {
     handleSubmit,
     handleChange,
     typeOptions,
+    isValidForm,
   ]);
 
   const renderDeleteView = useCallback(() => {
