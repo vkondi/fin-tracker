@@ -4,47 +4,19 @@ import { useMemo } from "react";
 import DashboardCard from "../DashboardCard/DashboardCard";
 
 const Summary = () => {
-  const { isMobile, financeData, loading } = useRootContext();
-
-  const { totalInvested, totalCurrent, totalOwners, totalPlatforms } = useMemo(
-    () =>
-      financeData.reduce(
-        (prev, curr) => {
-          if (!prev.owners.includes(curr.owner)) {
-            prev.owners.push(curr.owner);
-          }
-          if (!prev.platforms.includes(curr.platform)) {
-            prev.platforms.push(curr.platform);
-          }
-
-          return {
-            totalInvested:
-              prev.totalInvested + parseFloat(curr.investedAmount.toString()),
-            totalCurrent:
-              prev.totalCurrent + parseFloat(curr.currentAmount.toString()),
-            totalOwners: prev.owners.length,
-            totalPlatforms: prev.platforms.length,
-            owners: prev.owners,
-            platforms: prev.platforms,
-          };
-        },
-        {
-          totalInvested: 0,
-          totalCurrent: 0,
-          totalOwners: 0,
-          totalPlatforms: 0,
-          owners: [] as string[],
-          platforms: [] as string[],
-        }
-      ),
-    [financeData]
-  );
-
-  const totalAbsReturn = totalCurrent - totalInvested;
-  const totalAbsReturnPercentage = (
-    (totalAbsReturn / totalInvested) *
-    100
-  ).toFixed(2);
+  const {
+    isMobile,
+    loading,
+    financeSummaryData: {
+      totalInvested,
+      totalCurrent,
+      totalAbsReturn,
+      totalAbsReturnPercentage,
+      totalOwners,
+      totalPlatforms,
+    },
+    hasNoFinanceData,
+  } = useRootContext();
 
   const summary = useMemo(
     () => [
@@ -103,7 +75,7 @@ const Summary = () => {
       : "";
 
   // Scenarios to hide component
-  if (loading || (Array.isArray(financeData) && !financeData.length)) {
+  if (loading || hasNoFinanceData) {
     return null;
   }
 

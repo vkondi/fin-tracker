@@ -164,9 +164,9 @@ const OwnerDistribution = () => {
                           }}
                         ></div>
                       </td>
-                      <td className="px-2 py-2">{rec.name}</td>
+                      <td className="px-2 py-2 font-normal">{rec.name}</td>
                       <td className="px-2 py-1">{rec.valueFormatted}</td>
-                      <td className="px-2 py-1">{rec.percent}</td>
+                      <td className="px-2 py-1 font-normal">{rec.percent}</td>
                     </tr>
                   );
                 })}

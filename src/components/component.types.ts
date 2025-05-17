@@ -35,3 +35,11 @@ export type LoaderProps = {
   show: boolean;
   loadingMessage?: string;
 };
+
+export type MemberWiseSummary = {
+  owner: string;
+  totalInvestedAmount: number;
+  totalCurrentAmount: number;
+  totalAbsReturn: number;
+  totalAbsReturnPercentage: number;
+};
