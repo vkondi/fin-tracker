@@ -55,7 +55,7 @@ const OwnerDistribution = () => {
   }
 
   return (
-    <DashboardCard title="Owner Distribution" flex={1}>
+    <DashboardCard title="Member Allocation" flex={1}>
       <div className="flex flex-col items-center justify-center pb-2">
         {/* Tab Buttons */}
         <div className="my-2 flex rounded-md overflow-hidden">

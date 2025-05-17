@@ -38,7 +38,11 @@ const MembersCard: FC = () => {
 
           return (
             <div
-              className="flex flex-col mb-1 px-2 py-1 last:mb-0 border-b-2 border-b-gray-100"
+              className="flex flex-col mb-1 px-2 py-1 last:mb-0"
+              style={{
+                borderLeftWidth: '4px',
+                borderColor: memberData.fill
+              }}
               key={index}
             >
               {/* Top row */}

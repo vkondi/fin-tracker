@@ -80,7 +80,7 @@ const Summary = () => {
   }
 
   return (
-    <DashboardCard isMobile={isMobile} title="Finance Summary" flex={1}>
+    <DashboardCard isMobile={isMobile} title="Financial Aggregate" flex={1}>
       <div className="flex flex-row flex-wrap justify-center">
         {summary.map((item, index) => {
           const key = item.key;
