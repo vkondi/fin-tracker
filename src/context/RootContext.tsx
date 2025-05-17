@@ -7,7 +7,9 @@ import {
   FinancePopupContextStateType,
   FinanceRecordType,
   LoaderProps,
+  MemberWiseSummary,
 } from "@/components/component.types";
+import { constructMemberWiseData } from "@/utils/utility";
 import { useSession } from "next-auth/react";
 import {
   createContext,
@@ -31,6 +33,7 @@ type RootContextType = {
   deleteFinance: (id: string) => Promise<APIResponseType>;
   updateFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
   financeData: FinanceFormDataType[];
+  memberWiseData: MemberWiseSummary[];
   financeSummaryData: {
     totalInvested: number;
     totalCurrent: number;
@@ -76,7 +79,10 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     useState<FinancePopupContextStateType>({ isVisible: false });
 
   const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
-
+  const memberWiseData = useMemo(
+      () => constructMemberWiseData(financeData),
+      [financeData]
+    );
   const { totalInvested, totalCurrent, totalOwners, totalPlatforms } = useMemo(
     () =>
       financeData.reduce(
@@ -297,6 +303,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         deleteFinance,
         updateFinance,
         financeData,
+        memberWiseData,
         financeSummaryData: {
           totalInvested,
           totalCurrent,

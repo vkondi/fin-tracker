@@ -6,12 +6,12 @@ import {
 export const formattedAmount = (amount: number) => {
   // Check if the amount has fractional paise (cents)
   const hasFractionalPart = amount % 1 !== 0;
-  
+
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     minimumFractionDigits: hasFractionalPart ? 2 : 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(amount);
 };
 
@@ -28,7 +28,9 @@ export function shuffleArrayInPlace<T>(array: T[]): T[] {
   return array;
 }
 
-export const constructMemberWiseData = (financeData: FinanceFormDataType[]) => {
+export const constructMemberWiseData = (
+  financeData: FinanceFormDataType[]
+): MemberWiseSummary[] => {
   const data = financeData.reduce(
     (prev: Record<string, MemberWiseSummary>, curr) => {
       const owner = curr?.owner;

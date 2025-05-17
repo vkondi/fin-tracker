@@ -1,15 +1,12 @@
 import { useRootContext } from "@/context/RootContext";
 import DashboardCard from "../DashboardCard/DashboardCard";
-import { FC, useMemo } from "react";
-import { constructMemberWiseData, formattedAmount } from "@/utils/utility";
+import { FC } from "react";
+import { formattedAmount } from "@/utils/utility";
 
 const MembersCard: FC = () => {
-  const { hasNoFinanceData, financeData, loading, isMobile } = useRootContext();
+  const { hasNoFinanceData, loading, isMobile, memberWiseData } =
+    useRootContext();
 
-  const memberWiseData = useMemo(
-    () => constructMemberWiseData(financeData),
-    [financeData]
-  );
   const sortedMemberWiseData = memberWiseData.sort(
     (a, b) => b.totalCurrentAmount - a.totalCurrentAmount
   );
@@ -22,7 +19,9 @@ const MembersCard: FC = () => {
   return (
     <DashboardCard flex={1}>
       <div
-        className={`p-2 ${isMobile ? "" : "max-h-[300px]  overflow-y-scroll"} bg-[var(--primary-btn)]`}
+        className={`p-2 ${
+          isMobile ? "" : "max-h-[300px]  overflow-y-scroll"
+        } bg-[var(--primary-btn)]`}
       >
         {sortedMemberWiseData.map((memberData, index) => {
           const totalAbsReturn = memberData?.totalAbsReturn;
@@ -40,11 +39,16 @@ const MembersCard: FC = () => {
               : "";
 
           return (
-            <div className="bg-gray-100 rounded-md flex flex-col mb-1 px-2 py-1 last:mb-0" key={index}>
+            <div
+              className="bg-gray-100 rounded-md flex flex-col mb-1 px-2 py-1 last:mb-0"
+              key={index}
+            >
               {/* Top row */}
               <div className="flex flex-row items-center justify-between p-1">
                 {/* Left */}
-                <div className="text-sm text-[var(--primary-btn)] font-semibold">{memberData.owner}</div>
+                <div className="text-sm text-[var(--primary-btn)] font-semibold">
+                  {memberData.owner}
+                </div>
 
                 {/* Right */}
                 <div className="text-l font-bold">
@@ -57,7 +61,9 @@ const MembersCard: FC = () => {
                 {/* Left */}
                 <div className="flex flex-col gap-1 items-start">
                   <div className="text-[10px]">Invested Amount</div>
-                  <div className="font-semibold">{formattedAmount(memberData.totalInvestedAmount)}</div>
+                  <div className="font-semibold">
+                    {formattedAmount(memberData.totalInvestedAmount)}
+                  </div>
                 </div>
 
                 {/* Right */}

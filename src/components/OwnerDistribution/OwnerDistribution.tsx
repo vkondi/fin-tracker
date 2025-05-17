@@ -10,66 +10,50 @@ import { useMemo, useState } from "react";
 
 const colors = shuffleArrayInPlace(CHART_COLORS);
 
-type ChartData = {
-  percent: number;
-  percentFormatted: string;
-  valueFormatted: string;
-  name: string;
-  value: number;
-  fill: string;
-};
-
 const OwnerDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
     "invested"
   );
-  const { financeData, isMobile, loading } = useRootContext();
-
-  const { owners, total } = useMemo(
-    () =>
-      financeData.reduce(
-        (prev, curr) => {
-          const amount =
-            activeTab === "invested"
-              ? parseFloat(curr.investedAmount.toString())
-              : parseFloat(curr.currentAmount.toString());
-
-          if (!prev.owners[curr.owner]) {
-            prev.owners[curr.owner] = 0;
-          }
-
-          prev.owners[curr.owner] += amount;
-          prev.total += amount;
-
-          return prev;
-        },
-        { owners: {} as Record<string, number>, total: 0 } // Initialize owners as an empty object
-      ),
-    [activeTab, financeData]
+  const {
+    isMobile,
+    loading,
+    hasNoFinanceData,
+    memberWiseData,
+    financeSummaryData: { totalCurrent, totalInvested },
+  } = useRootContext();
+  const total = useMemo(
+    () => (activeTab === "invested" ? totalInvested : totalCurrent),
+    [activeTab, totalCurrent, totalInvested]
   );
 
-  const data = Object.entries(owners)
-    .map(([key, value], index) => {
-      const percent = ((value / total) * 100).toFixed(2);
-      const percentFormatted = `${percent}%`;
+  const chartData = useMemo(
+    () =>
+      memberWiseData.map((rec, index) => {
+        const value =
+          activeTab === "invested"
+            ? rec?.totalInvestedAmount
+            : rec?.totalCurrentAmount;
+        const percent = Math.round((value / total) * 100 * 100) / 100; //   ((value / total) * 100).toFixed(2);
+        const percentFormatted = `${percent}%`;
 
-      return {
-        name: key,
-        value: value,
-        fill: colors[index],
-        valueFormatted: formattedAmount(value),
-        percent,
-        percentFormatted,
-      } as unknown as ChartData;
-    })
-    .sort((sortRec1, sortRec2) => sortRec2?.percent - sortRec1?.percent);
+        return {
+          name: rec?.owner,
+          value,
+          fill: colors[index],
+          valueFormatted: formattedAmount(value),
+          percent,
+          percentFormatted,
+        };
+      }),
+    [memberWiseData, activeTab]
+  );
 
   const onInvestedTabClick = () => setActiveTab("invested");
 
   const onCurrentTabClick = () => setActiveTab("current");
 
   // Scenarios to hide component
-  if (loading || (Array.isArray(financeData) && !financeData.length)) {
+  if (loading || hasNoFinanceData) {
     return null;
   }
 
@@ -113,7 +97,7 @@ const OwnerDistribution = () => {
                 )}
               />
               <Pie
-                data={data}
+                data={chartData}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
@@ -148,7 +132,7 @@ const OwnerDistribution = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.map((rec, index) => {
+                {chartData.map((rec, index) => {
                   return (
                     <tr className="border-b-1 border-gray-300" key={index}>
                       <td className="px-2 py-1">
@@ -166,7 +150,9 @@ const OwnerDistribution = () => {
                       </td>
                       <td className="px-2 py-2 font-normal">{rec.name}</td>
                       <td className="px-2 py-1">{rec.valueFormatted}</td>
-                      <td className="px-2 py-1 font-normal">{rec.percent}</td>
+                      <td className="px-2 py-1 font-normal">
+                        {rec.percentFormatted}
+                      </td>
                     </tr>
                   );
                 })}
