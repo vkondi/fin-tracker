@@ -23,6 +23,9 @@ import {
   useState,
 } from "react";
 import { useMediaQuery } from "react-responsive";
+import { toast, ToastContainer } from "react-toastify";
+
+type ToastType = typeof toast;
 
 type RootContextType = {
   showFinanceForm: (mode: FinanceFormMode, data?: FinanceFormDataType) => void;
@@ -55,6 +58,7 @@ type RootContextType = {
 
   loader: LoaderProps;
   setLoader: Dispatch<SetStateAction<LoaderProps>>;
+  toast: ToastType;
 };
 
 const RootContext = createContext<RootContextType | undefined>(undefined);
@@ -80,9 +84,9 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
 
   const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
   const memberWiseData = useMemo(
-      () => constructMemberWiseData(financeData),
-      [financeData]
-    );
+    () => constructMemberWiseData(financeData),
+    [financeData]
+  );
   const { totalInvested, totalCurrent, totalOwners, totalPlatforms } = useMemo(
     () =>
       financeData.reduce(
@@ -324,9 +328,11 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
 
         loader,
         setLoader,
+        toast,
       }}
     >
       {children}
+      <ToastContainer />
     </RootContext.Provider>
   );
 };

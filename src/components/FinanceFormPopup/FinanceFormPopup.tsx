@@ -49,6 +49,7 @@ const FinanceFormPopup = () => {
     loading,
     isMobile,
     setLoader,
+    toast,
   } = useRootContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode && modeDetails[mode].title;
@@ -109,9 +110,15 @@ const FinanceFormPopup = () => {
           .then((res) => {
             if (res.success) {
               closePopup();
-              alert("Finance record added successfully!");
+
+              toast.success("Finance record added successfully!", {
+                position: "bottom-center",
+              });
             } else {
-              alert("Failed to add finance record: " + res.message);
+              toast.error(`Failed to add finance record: ${res.message}`, {
+                position: "bottom-center",
+              });
+
               console.error("Failed to add finance record:", res.message);
             }
           })
@@ -130,9 +137,13 @@ const FinanceFormPopup = () => {
           .then((res) => {
             if (res.success) {
               closePopup();
-              alert("Finance record updated successfully!");
+              toast.success("Finance record updated successfully!", {
+                position: "bottom-center",
+              });
             } else {
-              alert("Failed to uupdate finance record: " + res.message);
+              toast.error(`Failed to update finance record: ${res.message}`, {
+                position: "bottom-center",
+              });
               console.error("Failed to update finance record:", res.message);
             }
           })
@@ -151,9 +162,14 @@ const FinanceFormPopup = () => {
           .then((res) => {
             if (res.success) {
               closePopup();
-              alert("Finance record deleted successfully!");
+
+              toast.success("Finance record deleted successfully!", {
+                position: "bottom-center",
+              });
             } else {
-              alert("Failed to delete finance record: " + res.message);
+              toast.error(`Failed to delete finance record: ${res.message}`, {
+                position: "bottom-center",
+              });
               console.error("Failed to delete finance record:", res.message);
             }
           })
@@ -175,6 +191,7 @@ const FinanceFormPopup = () => {
       category,
       closePopup,
       setLoader,
+      toast
     ]
   );
 
