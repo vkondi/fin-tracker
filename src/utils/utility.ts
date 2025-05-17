@@ -2,6 +2,9 @@ import {
   FinanceFormDataType,
   MemberWiseSummary,
 } from "@/components/component.types";
+import { CHART_COLORS } from "./constants";
+
+const colors = shuffleArrayInPlace(CHART_COLORS);
 
 export const formattedAmount = (amount: number) => {
   // Check if the amount has fractional paise (cents)
@@ -43,6 +46,7 @@ export const constructMemberWiseData = (
           totalCurrentAmount: 0,
           totalAbsReturn: 0,
           totalAbsReturnPercentage: 0,
+          fill: "",
         };
       }
 
@@ -64,9 +68,10 @@ export const constructMemberWiseData = (
     {} as Record<string, MemberWiseSummary>
   );
 
-  return Object.keys(data).map((name) => {
+  return Object.keys(data).map((name, index) => {
     return {
       ...data[name],
+      fill: colors[index],
     };
   });
 };

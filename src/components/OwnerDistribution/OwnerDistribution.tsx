@@ -1,14 +1,11 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { useRootContext } from "@/context/RootContext";
-import { formattedAmount, shuffleArrayInPlace } from "@/utils/utility";
+import { formattedAmount } from "@/utils/utility";
 
-import { CHART_COLORS } from "@/utils/constants";
 import CustomTooltip from "./CustomTooltip";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
-
-const colors = shuffleArrayInPlace(CHART_COLORS);
 
 const OwnerDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
@@ -28,18 +25,18 @@ const OwnerDistribution = () => {
 
   const chartData = useMemo(
     () =>
-      memberWiseData.map((rec, index) => {
+      memberWiseData.map((rec) => {
         const value =
           activeTab === "invested"
             ? rec?.totalInvestedAmount
             : rec?.totalCurrentAmount;
-        const percent = Math.round((value / total) * 100 * 100) / 100; //   ((value / total) * 100).toFixed(2);
+        const percent = Math.round((value / total) * 100 * 100) / 100;
         const percentFormatted = `${percent}%`;
 
         return {
           name: rec?.owner,
           value,
-          fill: colors[index],
+          fill: rec?.fill,
           valueFormatted: formattedAmount(value),
           percent,
           percentFormatted,

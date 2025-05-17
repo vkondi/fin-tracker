@@ -42,4 +42,5 @@ export type MemberWiseSummary = {
   totalCurrentAmount: number;
   totalAbsReturn: number;
   totalAbsReturnPercentage: number;
+  fill: string;
 };

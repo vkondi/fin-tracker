@@ -19,9 +19,7 @@ const MembersCard: FC = () => {
   return (
     <DashboardCard flex={1}>
       <div
-        className={`p-2 ${
-          isMobile ? "" : "max-h-[300px]  overflow-y-scroll"
-        } bg-[var(--primary-btn)]`}
+        className={`p-2 ${isMobile ? "" : "max-h-[300px]  overflow-y-scroll"}`}
       >
         {sortedMemberWiseData.map((memberData, index) => {
           const totalAbsReturn = memberData?.totalAbsReturn;
@@ -40,13 +38,16 @@ const MembersCard: FC = () => {
 
           return (
             <div
-              className="bg-gray-100 rounded-md flex flex-col mb-1 px-2 py-1 last:mb-0"
+              className="flex flex-col mb-1 px-2 py-1 last:mb-0 border-b-2 border-b-gray-100"
               key={index}
             >
               {/* Top row */}
               <div className="flex flex-row items-center justify-between p-1">
                 {/* Left */}
-                <div className="text-sm text-[var(--primary-btn)] font-semibold">
+                <div
+                  className="text-sm text-[var(--primary-btn)] font-semibold"
+                  style={{ color: memberData?.fill }}
+                >
                   {memberData.owner}
                 </div>
 
