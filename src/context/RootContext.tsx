@@ -7,7 +7,9 @@ import {
   FinancePopupContextStateType,
   FinanceRecordType,
   LoaderProps,
+  MemberWiseSummary,
 } from "@/components/component.types";
+import { constructMemberWiseData } from "@/utils/utility";
 import { useSession } from "next-auth/react";
 import {
   createContext,
@@ -17,6 +19,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -30,7 +33,17 @@ type RootContextType = {
   deleteFinance: (id: string) => Promise<APIResponseType>;
   updateFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
   financeData: FinanceFormDataType[];
+  memberWiseData: MemberWiseSummary[];
+  financeSummaryData: {
+    totalInvested: number;
+    totalCurrent: number;
+    totalOwners: number;
+    totalPlatforms: number;
+    totalAbsReturn: number;
+    totalAbsReturnPercentage: number;
+  };
   loading: boolean;
+  hasNoFinanceData: boolean;
 
   name?: string;
   userId?: string;
@@ -66,6 +79,52 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     useState<FinancePopupContextStateType>({ isVisible: false });
 
   const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
+  const memberWiseData = useMemo(
+      () => constructMemberWiseData(financeData),
+      [financeData]
+    );
+  const { totalInvested, totalCurrent, totalOwners, totalPlatforms } = useMemo(
+    () =>
+      financeData.reduce(
+        (prev, curr) => {
+          if (!prev.owners.includes(curr.owner)) {
+            prev.owners.push(curr.owner);
+          }
+          if (!prev.platforms.includes(curr.platform)) {
+            prev.platforms.push(curr.platform);
+          }
+
+          return {
+            totalInvested:
+              prev.totalInvested + parseFloat(curr.investedAmount.toString()),
+            totalCurrent:
+              prev.totalCurrent + parseFloat(curr.currentAmount.toString()),
+            totalOwners: prev.owners.length,
+            totalPlatforms: prev.platforms.length,
+            owners: prev.owners,
+            platforms: prev.platforms,
+          };
+        },
+        {
+          totalInvested: 0,
+          totalCurrent: 0,
+          totalOwners: 0,
+          totalPlatforms: 0,
+          owners: [] as string[],
+          platforms: [] as string[],
+        }
+      ),
+    [financeData]
+  );
+
+  const totalAbsReturn = useMemo(
+    () => totalCurrent - totalInvested,
+    [totalCurrent, totalInvested]
+  );
+  const totalAbsReturnPercentage = useMemo(
+    () => ((totalAbsReturn / totalInvested) * 100).toFixed(2),
+    [totalAbsReturn, totalInvested]
+  );
 
   const showFinanceForm = (
     mode: FinanceFormMode,
@@ -88,16 +147,19 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       const data = await response.json();
-      const massagedData = data?.data?.map((item: FinanceRecordType) => ({
-        ...item,
-        type: item?.platform_type,
-        investedAmount: item?.amount_invested,
-        currentAmount: item?.amount_current,
-        updatedDate: item?.updated_date,
-      }));
+      const massagedData =
+        data?.data?.map((item: FinanceRecordType) => ({
+          ...item,
+          type: item?.platform_type,
+          category: item?.platform_category,
+          investedAmount: item?.amount_invested,
+          currentAmount: item?.amount_current,
+          updatedDate: item?.updated_date,
+        })) ?? [];
       setFinanceData(massagedData);
     } catch (error) {
       console.error("[RootContext][getAllFinances] >> Exception:", error);
+      debugger;
     } finally {
       setLoading(false);
     }
@@ -241,7 +303,17 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         deleteFinance,
         updateFinance,
         financeData,
+        memberWiseData,
+        financeSummaryData: {
+          totalInvested,
+          totalCurrent,
+          totalOwners,
+          totalPlatforms,
+          totalAbsReturn,
+          totalAbsReturnPercentage: parseFloat(totalAbsReturnPercentage),
+        },
         loading,
+        hasNoFinanceData: Array.isArray(financeData) && !financeData.length,
 
         name,
         userId,

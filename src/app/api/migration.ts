@@ -34,6 +34,7 @@ export const migrate = async () => {
       id SERIAL PRIMARY KEY,
       platform VARCHAR(255) NOT NULL,
       platform_type VARCHAR(255) NOT NULL,
+      platform_category VARCHAR(255) NOT NULL,
       amount_invested NUMERIC NOT NULL,
       amount_current NUMERIC NOT NULL,
       updated_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,

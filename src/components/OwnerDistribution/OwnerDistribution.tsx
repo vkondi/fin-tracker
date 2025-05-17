@@ -1,62 +1,61 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { useRootContext } from "@/context/RootContext";
-import { shuffleArrayInPlace } from "@/utils/utility";
+import { formattedAmount, shuffleArrayInPlace } from "@/utils/utility";
 
 import { CHART_COLORS } from "@/utils/constants";
-import CustomLabel from "./CustomLabel";
 import CustomTooltip from "./CustomTooltip";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
 
 const colors = shuffleArrayInPlace(CHART_COLORS);
 
-type ChartData = {
-  name: string;
-  value: number;
-  fill: string;
-};
-
 const OwnerDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
     "invested"
   );
-  const { financeData, isMobile } = useRootContext();
-
-  const { owners, total } = useMemo(
-    () =>
-      financeData.reduce(
-        (prev, curr) => {
-          const amount =
-            activeTab === "invested"
-              ? parseFloat(curr.investedAmount.toString())
-              : parseFloat(curr.currentAmount.toString());
-
-          if (!prev.owners[curr.owner]) {
-            prev.owners[curr.owner] = 0;
-          }
-
-          prev.owners[curr.owner] += amount;
-          prev.total += amount;
-
-          return prev;
-        },
-        { owners: {} as Record<string, number>, total: 0 } // Initialize owners as an empty object
-      ),
-    [activeTab, financeData]
+  const {
+    isMobile,
+    loading,
+    hasNoFinanceData,
+    memberWiseData,
+    financeSummaryData: { totalCurrent, totalInvested },
+  } = useRootContext();
+  const total = useMemo(
+    () => (activeTab === "invested" ? totalInvested : totalCurrent),
+    [activeTab, totalCurrent, totalInvested]
   );
 
-  const data = Object.entries(owners).map(([key, value], index) => {
-    return {
-      name: key,
-      value: value,
-      fill: colors[index],
-    } as ChartData;
-  });
+  const chartData = useMemo(
+    () =>
+      memberWiseData.map((rec, index) => {
+        const value =
+          activeTab === "invested"
+            ? rec?.totalInvestedAmount
+            : rec?.totalCurrentAmount;
+        const percent = Math.round((value / total) * 100 * 100) / 100; //   ((value / total) * 100).toFixed(2);
+        const percentFormatted = `${percent}%`;
+
+        return {
+          name: rec?.owner,
+          value,
+          fill: colors[index],
+          valueFormatted: formattedAmount(value),
+          percent,
+          percentFormatted,
+        };
+      }),
+    [memberWiseData, activeTab, total]
+  );
 
   const onInvestedTabClick = () => setActiveTab("invested");
 
   const onCurrentTabClick = () => setActiveTab("current");
+
+  // Scenarios to hide component
+  if (loading || hasNoFinanceData) {
+    return null;
+  }
 
   return (
     <DashboardCard title="Owner Distribution" flex={1}>
@@ -85,40 +84,82 @@ const OwnerDistribution = () => {
           </button>
         </div>
 
-        <ResponsiveContainer width="100%" height={250}>
-          <PieChart>
-            <Tooltip
-              content={({ active, payload }) => (
-                <CustomTooltip
-                  total={total}
-                  active={active}
-                  payload={(payload ?? []) as Payload<number, string>[]}
-                />
-              )}
-            />
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={isMobile ? 35 : 50}
-              outerRadius={isMobile ? 60 : 80}
-              label={({ name, value, percent, x, y, midAngle, fill }) => (
-                <CustomLabel
-                  name={name}
-                  value={value}
-                  percent={percent}
-                  x={x}
-                  y={y}
-                  midAngle={midAngle}
-                  fill={fill}
-                />
-              )}
-              labelLine={false}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full`}>
+          <ResponsiveContainer width="100%" height={180} style={{ flex: 1 }}>
+            <PieChart>
+              <Tooltip
+                content={({ active, payload }) => (
+                  <CustomTooltip
+                    total={total}
+                    active={active}
+                    payload={(payload ?? []) as Payload<number, string>[]}
+                  />
+                )}
+              />
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={isMobile ? 35 : 50}
+                outerRadius={isMobile ? 60 : 80}
+                // TODO: Kept the code for future ref
+                // label={({ name, value, percent, x, y, midAngle, fill }) => (
+                //   <CustomLabel
+                //     name={name}
+                //     value={value}
+                //     percent={percent}
+                //     x={x}
+                //     y={y}
+                //     midAngle={midAngle}
+                //     fill={fill}
+                //   />
+                // )}
+                labelLine={false}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+
+          <div className="flex-1 flex items-center justify-center">
+            <table className="border-1 border-gray-300 text-xs font-semibold ">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-2 py-1"></th>
+                  <th className="px-2 py-1">Name</th>
+                  <th className="px-2 py-1">Amount</th>
+                  <th className="px-2 py-1">Percent</th>
+                </tr>
+              </thead>
+              <tbody>
+                {chartData.map((rec, index) => {
+                  return (
+                    <tr className="border-b-1 border-gray-300" key={index}>
+                      <td className="px-2 py-1">
+                        <div
+                          style={{
+                            backgroundColor: rec.fill,
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: "0.8rem",
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "3px",
+                          }}
+                        ></div>
+                      </td>
+                      <td className="px-2 py-2 font-normal">{rec.name}</td>
+                      <td className="px-2 py-1">{rec.valueFormatted}</td>
+                      <td className="px-2 py-1 font-normal">
+                        {rec.percentFormatted}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </DashboardCard>
   );

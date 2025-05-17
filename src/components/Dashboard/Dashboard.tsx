@@ -3,11 +3,14 @@ import Summary from "../Summary/Summary";
 import { useRootContext } from "@/context/RootContext";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import OwnerDistribution from "../OwnerDistribution/OwnerDistribution";
+import MembersCard from "../MembersCard/MembersCard";
 
 const Dashboard = () => {
   const { isMobile } = useRootContext();
 
-  const gridRowCls = `flex ${isMobile ? "flex-col" : "flex-row"} gap-6 w-full items-center`;
+  const gridRowCls = `flex ${
+    isMobile ? "flex-col" : "flex-row"
+  } gap-6 w-full items-center`;
 
   return (
     <div
@@ -23,13 +26,14 @@ const Dashboard = () => {
         <div className={gridRowCls}>
           {/* Summary component */}
           <Summary />
-          <OwnerDistribution />
           <DashboardCard isMobile={isMobile} title="Platform Type" />
+          <MembersCard />
         </div>
 
         {/* Second Row */}
         <div className={gridRowCls}>
-          <DashboardCard isMobile={isMobile} title="Members" />
+          <OwnerDistribution />
+
           <DashboardCard isMobile={isMobile} title="TBD" />
         </div>
       </div>
