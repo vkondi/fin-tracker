@@ -45,7 +45,7 @@ const OwnerDistribution = () => {
           percentFormatted,
         };
       }),
-    [memberWiseData, activeTab]
+    [memberWiseData, activeTab, total]
   );
 
   const onInvestedTabClick = () => setActiveTab("invested");
