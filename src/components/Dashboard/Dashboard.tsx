@@ -1,10 +1,10 @@
-import WelcomeMessage from "../WelcomeMessage/WelcomeMessage";
-import Summary from "../Summary/Summary";
+import WelcomeMessage from "./WelcomeMessage/WelcomeMessage";
+import Summary from "./Summary/Summary";
 import { useRootContext } from "@/context/RootContext";
-import OwnerDistribution from "../OwnerDistribution/OwnerDistribution";
-import MembersCard from "../MembersCard/MembersCard";
-import AddNewPromoCard from "../AddNewPromoCard/AddNewPromoCard";
-import CategoryDistribution from "../CategoryDistribution/CategoryDistribution";
+import OwnerDistribution from "./OwnerDistribution/OwnerDistribution";
+import MembersCard from "./MembersCard/MembersCard";
+import AddNewPromoCard from "./AddNewPromoCard/AddNewPromoCard";
+import CategoryDistribution from "./CategoryDistribution/CategoryDistribution";
 
 const Dashboard = () => {
   const { isMobile } = useRootContext();

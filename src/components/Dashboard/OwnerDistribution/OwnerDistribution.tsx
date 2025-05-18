@@ -5,7 +5,7 @@ import { formattedAmount } from "@/utils/utility";
 
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
-import CustomTooltip from "../Chart/CustomTooltip/CustomTooltip";
+import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
 
 const OwnerDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(

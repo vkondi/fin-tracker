@@ -3,7 +3,7 @@ import DashboardCard from "../DashboardCard/DashboardCard";
 import { useRootContext } from "@/context/RootContext";
 import { constructCategoryWiseData, formattedAmount } from "@/utils/utility";
 
-import CustomTooltip from "../Chart/CustomTooltip/CustomTooltip";
+import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
 
