@@ -7,7 +7,16 @@ import { FaPlus } from "react-icons/fa";
 import { TRACKER_TABLE_LABELS } from "@/utils/constants";
 
 const TrackerTable = () => {
-  const { showFinanceForm, financeData, isMobile, loading } = useRootContext();
+  const { showFinanceForm, financeData, isMobile, loading, memberWiseData } =
+    useRootContext();
+
+  const memberColorMap = memberWiseData.reduce((map, curr) => {
+    const ownerName = curr?.owner;
+    if (!map.has(ownerName)) {
+      map.set(ownerName, curr.fill);
+    }
+    return map;
+  }, new Map<string, string>());
 
   const handleAddNew = () => {
     showFinanceForm("add");
@@ -87,7 +96,11 @@ const TrackerTable = () => {
 
           <tbody>
             {financeData.map((row, index) => (
-              <TrackerTableRow data={row} key={index} />
+              <TrackerTableRow
+                data={row}
+                key={index}
+                memberColorMap={memberColorMap}
+              />
             ))}
           </tbody>
         </table>

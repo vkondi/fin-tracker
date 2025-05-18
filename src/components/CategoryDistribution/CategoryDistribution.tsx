@@ -1,13 +1,13 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { useRootContext } from "@/context/RootContext";
-import { formattedAmount } from "@/utils/utility";
+import { constructCategoryWiseData, formattedAmount } from "@/utils/utility";
 
+import CustomTooltip from "../Chart/CustomTooltip/CustomTooltip";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
-import CustomTooltip from "../Chart/CustomTooltip/CustomTooltip";
 
-const OwnerDistribution = () => {
+const CategoryDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
     "invested"
   );
@@ -15,7 +15,7 @@ const OwnerDistribution = () => {
     isMobile,
     loading,
     hasNoFinanceData,
-    memberWiseData,
+    financeData,
     financeSummaryData: { totalCurrent, totalInvested },
   } = useRootContext();
   const total = useMemo(
@@ -23,9 +23,14 @@ const OwnerDistribution = () => {
     [activeTab, totalCurrent, totalInvested]
   );
 
+  const categoryWiseData = useMemo(
+    () => constructCategoryWiseData(financeData),
+    [financeData]
+  );
+
   const chartData = useMemo(
     () =>
-      memberWiseData.map((rec) => {
+      categoryWiseData.map((rec) => {
         const value =
           activeTab === "invested"
             ? rec?.totalInvestedAmount
@@ -34,7 +39,7 @@ const OwnerDistribution = () => {
         const percentFormatted = `${percent}%`;
 
         return {
-          name: rec?.owner,
+          name: rec?.category,
           value,
           fill: rec?.fill,
           valueFormatted: formattedAmount(value),
@@ -42,7 +47,7 @@ const OwnerDistribution = () => {
           percentFormatted,
         };
       }),
-    [memberWiseData, activeTab, total]
+    [categoryWiseData, activeTab, total]
   );
 
   const onInvestedTabClick = () => setActiveTab("invested");
@@ -55,7 +60,7 @@ const OwnerDistribution = () => {
   }
 
   return (
-    <DashboardCard title="Member Allocation" flex={1}>
+    <DashboardCard title="Category Allocation" flex={1}>
       <div className="flex flex-col items-center justify-center pb-2 px-2">
         {/* Tab Buttons */}
         <div className="my-4 flex rounded-md overflow-hidden">
@@ -82,7 +87,7 @@ const OwnerDistribution = () => {
         </div>
 
         <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full`}>
-          <ResponsiveContainer width="100%" height={180} style={{ flex: 1, }}>
+          <ResponsiveContainer width="100%" height={180} style={{ flex: 1 }}>
             <PieChart>
               <Tooltip
                 content={({ active, payload }) => (
@@ -119,15 +124,18 @@ const OwnerDistribution = () => {
           </ResponsiveContainer>
 
           <div className="flex-2 flex items-center justify-center">
-            <table className="w-full border-1 border-gray-300 text-xs font-semibold">
+            <table className="w-full border border-gray-300 text-xs font-semibold">
+              {/* Header - Uses same grid layout as body rows */}
               <thead>
                 <tr className="grid grid-cols-[36px_2fr_1fr_1fr] gap-2 bg-gray-200">
                   <th className="p-2"></th>
-                  <th className="p-2 text-left">Name</th>
+                  <th className="p-2 text-left">Category</th>
                   <th className="p-2 text-left">Amount</th>
                   <th className="p-2 text-left">Percent</th>
                 </tr>
               </thead>
+
+              {/* Body - Maintains identical column structure */}
               <tbody>
                 {chartData.map((rec, index) => (
                   <tr
@@ -154,4 +162,4 @@ const OwnerDistribution = () => {
   );
 };
 
-export default OwnerDistribution;
+export default CategoryDistribution;

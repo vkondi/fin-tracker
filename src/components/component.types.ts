@@ -36,11 +36,18 @@ export type LoaderProps = {
   loadingMessage?: string;
 };
 
-export type MemberWiseSummary = {
-  owner: string;
+export type SectionWiseSummary = {
   totalInvestedAmount: number;
   totalCurrentAmount: number;
   totalAbsReturn: number;
   totalAbsReturnPercentage: number;
   fill: string;
+};
+
+export type MemberWiseSummary = SectionWiseSummary & {
+  owner: string;
+};
+
+export type CategoryWiseSummary = SectionWiseSummary & {
+  category: string;
 };

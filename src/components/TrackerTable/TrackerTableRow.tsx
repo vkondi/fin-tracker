@@ -14,9 +14,16 @@ function calculateAbsoluteReturn(
   return absoluteReturn.toFixed(2); // Returns with 2 decimal places
 }
 
-const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
+const TrackerTableRow = ({
+  data,
+  memberColorMap,
+}: {
+  data: FinanceFormDataType;
+  memberColorMap: Map<string, string>;
+}) => {
   const { loading, showFinanceForm, isMobile } = useRootContext();
 
+  const owner = data.owner;
   const formattedInvestedAmount = formattedAmount(data.investedAmount);
   const formattedCurrentAmount = formattedAmount(data.currentAmount);
   const absoluteReturnPercentage = calculateAbsoluteReturn(
@@ -126,10 +133,15 @@ const TrackerTableRow = ({ data }: { data: FinanceFormDataType }) => {
   }
 
   return (
-    <tr className={`even:bg-blue-50 odd:bg-gray-50 ${styles.responsiveRow}`}>
+    <tr className={styles.responsiveRow}>
       <td className={styles.responsiveCell}>{data.platform}</td>
       <td className={styles.responsiveCell}>{data.type}</td>
-      <td className={styles.responsiveCell}>{data.owner}</td>
+      <td
+        className={styles.responsiveCell}
+        style={{ color: memberColorMap.get(owner) }}
+      >
+        {owner}
+      </td>
       <td className={styles.responsiveCell}>{formattedInvestedAmount}</td>
       <td className={styles.responsiveCell}>{formattedCurrentAmount}</td>
       <td className={`${styles.responsiveCell} ${absReturnTextCls}`}>
