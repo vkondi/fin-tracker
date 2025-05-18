@@ -3,9 +3,9 @@ import DashboardCard from "../DashboardCard/DashboardCard";
 import { useRootContext } from "@/context/RootContext";
 import { formattedAmount } from "@/utils/utility";
 
-import CustomTooltip from "./CustomTooltip";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
+import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
 
 const OwnerDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
@@ -56,15 +56,15 @@ const OwnerDistribution = () => {
 
   return (
     <DashboardCard title="Member Allocation" flex={1}>
-      <div className="flex flex-col items-center justify-center pb-2">
+      <div className="flex flex-col items-center justify-center pb-2 px-2">
         {/* Tab Buttons */}
-        <div className="my-2 flex rounded-md overflow-hidden">
+        <div className="my-4 flex rounded-md overflow-hidden">
           <button
             className={`px-4 py-2 text-xs ${
               activeTab === "invested"
                 ? "bg-[var(--primary-btn)] text-white"
                 : "bg-gray-200 text-gray-700"
-            }`}
+            } cursor-pointer`}
             onClick={onInvestedTabClick}
           >
             Invested Amount
@@ -74,7 +74,7 @@ const OwnerDistribution = () => {
               activeTab === "current"
                 ? "bg-[var(--primary-btn)] text-white"
                 : "bg-gray-200 text-gray-700"
-            }`}
+            } cursor-pointer`}
             onClick={onCurrentTabClick}
           >
             Current Amount
@@ -82,7 +82,7 @@ const OwnerDistribution = () => {
         </div>
 
         <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full`}>
-          <ResponsiveContainer width="100%" height={180} style={{ flex: 1 }}>
+          <ResponsiveContainer width="100%" height={180} style={{ flex: 1, }}>
             <PieChart>
               <Tooltip
                 content={({ active, payload }) => (
@@ -118,41 +118,33 @@ const OwnerDistribution = () => {
             </PieChart>
           </ResponsiveContainer>
 
-          <div className="flex-1 flex items-center justify-center">
-            <table className="border-1 border-gray-300 text-xs font-semibold ">
+          <div className="flex-2 flex items-center justify-center">
+            <table className="w-full border-1 border-gray-300 text-xs font-semibold">
               <thead>
-                <tr className="bg-gray-200">
-                  <th className="px-2 py-1"></th>
-                  <th className="px-2 py-1">Name</th>
-                  <th className="px-2 py-1">Amount</th>
-                  <th className="px-2 py-1">Percent</th>
+                <tr className="grid grid-cols-[36px_2fr_1fr_1fr] gap-2 bg-gray-200">
+                  <th className="p-2"></th>
+                  <th className="p-2 text-left">Name</th>
+                  <th className="p-2 text-left">Amount</th>
+                  <th className="p-2 text-left">Percent</th>
                 </tr>
               </thead>
               <tbody>
-                {chartData.map((rec, index) => {
-                  return (
-                    <tr className="border-b-1 border-gray-300" key={index}>
-                      <td className="px-2 py-1">
-                        <div
-                          style={{
-                            backgroundColor: rec.fill,
-                            color: "white",
-                            fontWeight: "bold",
-                            fontSize: "0.8rem",
-                            width: "20px",
-                            height: "20px",
-                            borderRadius: "3px",
-                          }}
-                        ></div>
-                      </td>
-                      <td className="px-2 py-2 font-normal">{rec.name}</td>
-                      <td className="px-2 py-1">{rec.valueFormatted}</td>
-                      <td className="px-2 py-1 font-normal">
-                        {rec.percentFormatted}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {chartData.map((rec, index) => (
+                  <tr
+                    className="grid grid-cols-[36px_2fr_1fr_1fr] gap-2 border-b border-gray-300"
+                    key={index}
+                  >
+                    <td className="p-2">
+                      <div
+                        style={{ backgroundColor: rec.fill }}
+                        className="w-5 h-5 rounded-sm"
+                      />
+                    </td>
+                    <td className="p-2 font-normal truncate">{rec.name}</td>
+                    <td className="p-2">{rec.valueFormatted}</td>
+                    <td className="p-2 font-normal">{rec.percentFormatted}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

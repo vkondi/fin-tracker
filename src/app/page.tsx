@@ -1,8 +1,8 @@
 "use client";
 
-import ContentWrapper from "@/components/ContentWrapper/ContentWrapper";
+import ContentWrapper from "@/components/wrappers/ContentWrapper/ContentWrapper";
 import Dashboard from "@/components/Dashboard/Dashboard";
-import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "@/components/wrappers/ProtectedRoute/ProtectedRoute";
 
 export default function Home() {
   return (

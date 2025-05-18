@@ -5,7 +5,7 @@ import Link from "next/link";
 import styles from "./Header.module.css";
 import { usePathname } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
-import ContentWrapper from "../ContentWrapper/ContentWrapper";
+import ContentWrapper from "../wrappers/ContentWrapper/ContentWrapper";
 import { useRootContext } from "@/context/RootContext";
 
 type MenuItem = {

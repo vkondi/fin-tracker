@@ -4,7 +4,7 @@ import { FC } from "react";
 import { ImCheckmark } from "react-icons/im";
 import { IoPieChartSharp } from "react-icons/io5";
 import { AiFillThunderbolt } from "react-icons/ai";
-import { IoMdAdd } from "react-icons/io";
+import { FaPlus } from "react-icons/fa";
 
 const data = [
   {
@@ -22,16 +22,11 @@ const data = [
 ];
 
 const AddNewPromoCard: FC = () => {
-  const { showFinanceForm, loading, hasNoFinanceData } = useRootContext();
+  const { showFinanceForm } = useRootContext();
 
   const handleAddNew = () => {
     showFinanceForm("add");
   };
-
-   // Scenarios to hide component
-   if (loading || hasNoFinanceData) {
-    return null;
-  }
 
   return (
     <DashboardCard flex={1}>
@@ -53,9 +48,9 @@ const AddNewPromoCard: FC = () => {
         {/* Action button */}
         <div
           onClick={handleAddNew}
-          className="border-1 border-gray-500 bg-[var(--primary-btn)] text-[var(--background)] flex flex-row items-center p-3 gap-2 rounded-md w-full justify-center"
+          className="border-1 border-gray-500 bg-[var(--primary-btn)] text-[var(--background)] flex flex-row items-center p-3 gap-2 rounded-md w-full justify-center cursor-pointer"
         >
-          <IoMdAdd size={30} />
+          <FaPlus size={30} />
           <span>Log Now, Grow Smarter</span>
         </div>
       </div>

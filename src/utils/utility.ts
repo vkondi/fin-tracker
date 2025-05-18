@@ -1,10 +1,9 @@
 import {
+  CategoryWiseSummary,
   FinanceFormDataType,
   MemberWiseSummary,
 } from "@/components/component.types";
 import { CHART_COLORS } from "./constants";
-
-const colors = shuffleArrayInPlace(CHART_COLORS);
 
 export const formattedAmount = (amount: number) => {
   // Check if the amount has fractional paise (cents)
@@ -68,10 +67,75 @@ export const constructMemberWiseData = (
     {} as Record<string, MemberWiseSummary>
   );
 
-  return Object.keys(data).map((name, index) => {
+  return Object.keys(data).map((name) => {
     return {
       ...data[name],
-      fill: colors[index],
+      fill: getUniqueColor(),
     };
   });
+};
+
+export const constructCategoryWiseData = (
+  financeData: FinanceFormDataType[]
+): CategoryWiseSummary[] => {
+  const data = financeData.reduce(
+    (prev: Record<string, CategoryWiseSummary>, curr) => {
+      const category = curr?.category;
+      if (!category) return prev;
+
+      if (!prev[category]) {
+        prev[category] = {
+          category,
+          totalInvestedAmount: 0,
+          totalCurrentAmount: 0,
+          totalAbsReturn: 0,
+          totalAbsReturnPercentage: 0,
+          fill: "",
+        };
+      }
+
+      prev[category].totalInvestedAmount +=
+        parseFloat(curr?.investedAmount.toString()) ?? 0;
+      prev[category].totalCurrentAmount +=
+        parseFloat(curr?.currentAmount.toString()) ?? 0;
+      prev[category].totalAbsReturn =
+        prev[category].totalCurrentAmount - prev[category].totalInvestedAmount;
+      prev[category].totalAbsReturnPercentage =
+        Math.round(
+          (prev[category].totalAbsReturn / prev[category].totalInvestedAmount) *
+            100 *
+            100
+        ) / 100;
+
+      return prev;
+    },
+    {} as Record<string, CategoryWiseSummary>
+  );
+
+  return Object.keys(data).map((name) => {
+    return {
+      ...data[name],
+      fill: getUniqueColor(),
+    };
+  });
+};
+
+const usedColors = new Set<string>();
+export const getUniqueColor = (): string => {
+  // Find first unused color
+  for (const color of CHART_COLORS) {
+    if (!usedColors.has(color)) {
+      usedColors.add(color);
+      return color;
+    }
+  }
+
+  // Fallback: Reset or cycle (optional)
+  usedColors.clear();
+  return getUniqueColor();
+};
+
+// Release a color when no longer needed
+export const releaseColor = (color: string) => {
+  usedColors.delete(color);
 };

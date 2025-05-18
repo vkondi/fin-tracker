@@ -1,17 +1,17 @@
-import WelcomeMessage from "../WelcomeMessage/WelcomeMessage";
-import Summary from "../Summary/Summary";
+import WelcomeMessage from "./WelcomeMessage/WelcomeMessage";
+import Summary from "./Summary/Summary";
 import { useRootContext } from "@/context/RootContext";
-import DashboardCard from "../DashboardCard/DashboardCard";
-import OwnerDistribution from "../OwnerDistribution/OwnerDistribution";
-import MembersCard from "../MembersCard/MembersCard";
-import AddNewPromoCard from "../AddNewPromoCard/AddNewPromoCard";
+import OwnerDistribution from "./OwnerDistribution/OwnerDistribution";
+import MembersCard from "./MembersCard/MembersCard";
+import AddNewPromoCard from "./AddNewPromoCard/AddNewPromoCard";
+import CategoryDistribution from "./CategoryDistribution/CategoryDistribution";
 
 const Dashboard = () => {
   const { isMobile } = useRootContext();
 
   const gridRowCls = `flex ${
     isMobile ? "flex-col" : "flex-row"
-  } gap-6 w-full items-center`;
+  } gap-6 w-full items-center justify-center`;
 
   return (
     <div
@@ -35,7 +35,7 @@ const Dashboard = () => {
         <div className={gridRowCls}>
           <OwnerDistribution />
 
-          <DashboardCard isMobile={isMobile} title="TBD" />
+          <CategoryDistribution />
         </div>
       </div>
     </div>

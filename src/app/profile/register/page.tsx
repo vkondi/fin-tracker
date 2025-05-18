@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "@/components/wrappers/ProtectedRoute/ProtectedRoute";
 
 export default function ProfileRegister() {
   const defaultEmail = "vishdevwork@gmail.com";

@@ -1,6 +1,6 @@
 "use client";
 
-import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import AuthProvider from "@/components/wrappers/AuthProvider/AuthProvider";
 import "./globals.css";
 import { ReactNode, Suspense } from "react";
 import Header from "@/components/Header/Header";
