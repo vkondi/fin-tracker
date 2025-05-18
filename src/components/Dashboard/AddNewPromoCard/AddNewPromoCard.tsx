@@ -22,16 +22,11 @@ const data = [
 ];
 
 const AddNewPromoCard: FC = () => {
-  const { showFinanceForm, loading, hasNoFinanceData } = useRootContext();
+  const { showFinanceForm } = useRootContext();
 
   const handleAddNew = () => {
     showFinanceForm("add");
   };
-
-  // Scenarios to hide component
-  if (loading || hasNoFinanceData) {
-    return null;
-  }
 
   return (
     <DashboardCard flex={1}>

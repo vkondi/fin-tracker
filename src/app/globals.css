@@ -27,7 +27,7 @@
 */
 
 body {
-  padding-top: 60px; /* Adjust this value to the height of your header */
+  padding-top: 55px; /* Adjust this value to the height of your header */
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;

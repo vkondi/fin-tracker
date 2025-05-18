@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   const gridRowCls = `flex ${
     isMobile ? "flex-col" : "flex-row"
-  } gap-6 w-full items-center`;
+  } gap-6 w-full items-center justify-center`;
 
   return (
     <div

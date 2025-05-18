@@ -34,7 +34,7 @@ const TrackerTable = () => {
 
   return (
     <div
-      className={`p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white ${
+      className={`p-4 bg-white ${
         isMobile ? "" : "w-full"
       }`}
     >

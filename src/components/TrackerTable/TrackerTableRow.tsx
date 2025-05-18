@@ -24,6 +24,7 @@ const TrackerTableRow = ({
   const { loading, showFinanceForm, isMobile } = useRootContext();
 
   const owner = data.owner;
+  const memberColor = memberColorMap.get(owner);
   const formattedInvestedAmount = formattedAmount(data.investedAmount);
   const formattedCurrentAmount = formattedAmount(data.currentAmount);
   const absoluteReturnPercentage = calculateAbsoluteReturn(
@@ -68,13 +69,24 @@ const TrackerTableRow = ({
 
   if (isMobile) {
     return (
-      <tr className="shadow-emerald-200 p-2 flex flex-col gap-1 border-b-2 border-gray-300 even:bg-blue-50 odd:bg-gray-50 w-[360px] mx-auto">
+      <tr
+        className="p-2 flex flex-col gap-1 border-r-1 border-l-2 border-b-2 border-gray-300 first:border-t-2 w-[360px] mx-auto mb-1 rounded-lg shadow-md"
+        style={{
+          borderLeftColor: memberColor,
+          background: `linear-gradient(to top right, white, white 85%, ${memberColor})`,
+        }}
+      >
         <td className={rowCls}>
           <div className="text-2xl truncate">{data.platform}</div>
           <div className="text-xs">{data.type}</div>
         </td>
 
-        <td className={`${rowCls} font-thin mt-1 mb-2`}>{data.owner}</td>
+        <td
+          className={`${rowCls} font-thin mt-1 mb-2`}
+          style={{ color: memberColor }}
+        >
+          {data.owner}
+        </td>
         <td className={rowCls}>
           <div className={labelCls}>{TRACKER_TABLE_LABELS.investedAmount}</div>
           <div className={valueCls}>{formattedInvestedAmount}</div>
@@ -138,7 +150,7 @@ const TrackerTableRow = ({
       <td className={styles.responsiveCell}>{data.type}</td>
       <td
         className={styles.responsiveCell}
-        style={{ color: memberColorMap.get(owner) }}
+        style={{ color: memberColor }}
       >
         {owner}
       </td>
