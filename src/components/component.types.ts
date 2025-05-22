@@ -1,3 +1,9 @@
+export type Platform = {
+  name: string;
+  category: string;
+  instruments: string[];
+};
+
 export type FinanceFormDataType = {
   updatedDate?: string;
   platform: string;

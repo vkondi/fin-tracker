@@ -8,6 +8,7 @@ import {
   FinanceRecordType,
   LoaderProps,
   MemberWiseSummary,
+  Platform,
 } from "@/components/component.types";
 import { constructMemberWiseData } from "@/utils/utility";
 import { useSession } from "next-auth/react";
@@ -59,6 +60,8 @@ type RootContextType = {
   loader: LoaderProps;
   setLoader: Dispatch<SetStateAction<LoaderProps>>;
   toast: ToastType;
+
+  platforms?: Platform[];
 };
 
 const RootContext = createContext<RootContextType | undefined>(undefined);
@@ -72,6 +75,8 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
 
   const [name, setName] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
+
+  const [platforms, setPlatforms] = useState<Platform[] | undefined>([]);
 
   const { data: session } = useSession();
   const email = session?.user?.email;
@@ -163,7 +168,6 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
       setFinanceData(massagedData);
     } catch (error) {
       console.error("[RootContext][getAllFinances] >> Exception:", error);
-      debugger;
     } finally {
       setLoading(false);
     }
@@ -276,12 +280,35 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [email, session?.user?.name]);
 
+  const getConfigurations = useCallback(async (cache = true) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/finance/config`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        ...(cache
+          ? { cache: "force-cache", next: { revalidate: 3600 * 24 } } // 24hrs cache
+          : {}),
+      });
+      const jsonResponse = await response.json();
+
+      setPlatforms(jsonResponse?.data?.platforms ?? []);
+    } catch (error) {
+      console.error("[RootContext][getConfigurations] >> Exception:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Fetch data only when registered user is logged in
   useEffect(() => {
     if (isUserRegistered) {
       getAllFinances();
+      getConfigurations();
     }
-  }, [isUserRegistered, getAllFinances]);
+  }, [isUserRegistered, getAllFinances, getConfigurations]);
 
   // Register user once email is available from session
   useEffect(() => {
@@ -329,6 +356,8 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
         loader,
         setLoader,
         toast,
+
+        platforms,
       }}
     >
       {children}
