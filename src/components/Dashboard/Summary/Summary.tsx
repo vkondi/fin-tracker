@@ -2,10 +2,10 @@ import { useRootContext } from "@/context/RootContext";
 import { formattedAmount } from "@/utils/utility";
 import { useMemo } from "react";
 import DashboardCard from "../DashboardCard/DashboardCard";
+import { useFinContext } from "@/context/FinContext";
 
 const Summary = () => {
   const {
-    loading,
     financeSummaryData: {
       totalInvested,
       totalCurrent,
@@ -15,6 +15,9 @@ const Summary = () => {
       totalPlatforms,
     },
     hasNoFinanceData,
+  } = useFinContext();
+  const {
+    loader: { show: loading },
   } = useRootContext();
 
   const summary = useMemo(

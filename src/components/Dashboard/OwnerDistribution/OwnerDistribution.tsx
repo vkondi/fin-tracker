@@ -6,6 +6,7 @@ import { formattedAmount } from "@/utils/utility";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
 import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
+import { useFinContext } from "@/context/FinContext";
 
 const OwnerDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
@@ -13,11 +14,14 @@ const OwnerDistribution = () => {
   );
   const {
     isMobile,
-    loading,
-    hasNoFinanceData,
-    memberWiseData,
-    financeSummaryData: { totalCurrent, totalInvested },
+    loader: { show: loading },
   } = useRootContext();
+  const {
+    financeSummaryData: { totalCurrent, totalInvested },
+    memberWiseData,
+    hasNoFinanceData,
+  } = useFinContext();
+
   const total = useMemo(
     () => (activeTab === "invested" ? totalInvested : totalCurrent),
     [activeTab, totalCurrent, totalInvested]
@@ -82,7 +86,7 @@ const OwnerDistribution = () => {
         </div>
 
         <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full`}>
-          <ResponsiveContainer width="100%" height={180} style={{ flex: 1, }}>
+          <ResponsiveContainer width="100%" height={180} style={{ flex: 1 }}>
             <PieChart>
               <Tooltip
                 content={({ active, payload }) => (

@@ -5,10 +5,15 @@ import TrackerTableEmptyState from "./TrackerTableEmptyState";
 import TrackerTableRow from "./TrackerTableRow";
 import { FaPlus } from "react-icons/fa";
 import { TRACKER_TABLE_LABELS } from "@/utils/constants";
+import { useFinContext } from "@/context/FinContext";
 
 const TrackerTable = () => {
-  const { showFinanceForm, financeData, isMobile, loading, memberWiseData } =
-    useRootContext();
+  const {
+    showFinanceForm,
+    isMobile,
+    loader: { show: loading },
+  } = useRootContext();
+  const { financeData, memberWiseData } = useFinContext();
 
   const memberColorMap = memberWiseData.reduce((map, curr) => {
     const ownerName = curr?.owner;
@@ -33,11 +38,7 @@ const TrackerTable = () => {
   }
 
   return (
-    <div
-      className={`p-4 bg-white ${
-        isMobile ? "" : "w-full"
-      }`}
-    >
+    <div className={`p-4 bg-white ${isMobile ? "" : "w-full"}`}>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Finance Tracker</h2>
 

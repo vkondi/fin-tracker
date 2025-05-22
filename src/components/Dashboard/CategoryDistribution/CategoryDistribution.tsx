@@ -6,6 +6,7 @@ import { constructCategoryWiseData, formattedAmount } from "@/utils/utility";
 import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
 import { Payload } from "recharts/types/component/DefaultTooltipContent";
 import { useMemo, useState } from "react";
+import { useFinContext } from "@/context/FinContext";
 
 const CategoryDistribution = () => {
   const [activeTab, setActiveTab] = useState<"invested" | "current">(
@@ -13,11 +14,13 @@ const CategoryDistribution = () => {
   );
   const {
     isMobile,
-    loading,
+    loader: { show: loading },
+  } = useRootContext();
+  const {
     hasNoFinanceData,
     financeData,
     financeSummaryData: { totalCurrent, totalInvested },
-  } = useRootContext();
+  } = useFinContext();
   const total = useMemo(
     () => (activeTab === "invested" ? totalInvested : totalCurrent),
     [activeTab, totalCurrent, totalInvested]

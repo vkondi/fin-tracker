@@ -7,6 +7,7 @@ import Header from "@/components/Header/Header";
 import { RootProvider, useRootContext } from "@/context/RootContext";
 import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 import Loader from "@/components/Loader/Loader";
+import { FinProvider } from "@/context/FinContext";
 
 const RootComponent = ({ children }: { children: ReactNode }) => {
   const { loader } = useRootContext();
@@ -29,7 +30,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AuthProvider>
           <RootProvider>
-            <RootComponent>{children}</RootComponent>
+            <FinProvider>
+              <RootComponent>{children}</RootComponent>
+            </FinProvider>
           </RootProvider>
         </AuthProvider>
       </body>

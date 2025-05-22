@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
 import { useRootContext } from "@/context/RootContext";
 import { LiaWindowCloseSolid } from "react-icons/lia";
+import { useFinContext } from "@/context/FinContext";
 
 const formDefaultState: FinanceFormDataType = {
   platform: "",
@@ -42,15 +43,13 @@ const FinanceFormPopup = () => {
   const {
     financePopupState: { isVisible, mode, data: financeData },
     hideFinanceForm,
-    addFinance,
-    updateFinance,
-    deleteFinance,
-    loading,
+    loader: { show: loading },
     isMobile,
     setLoader,
     toast,
     platforms,
   } = useRootContext();
+  const { updateFinance, deleteFinance, addFinance } = useFinContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode && modeDetails[mode].title;
   const buttonText = mode && modeDetails[mode].buttonText;

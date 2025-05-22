@@ -21,7 +21,11 @@ const TrackerTableRow = ({
   data: FinanceFormDataType;
   memberColorMap: Map<string, string>;
 }) => {
-  const { loading, showFinanceForm, isMobile } = useRootContext();
+  const {
+    loader: { show: loading },
+    showFinanceForm,
+    isMobile,
+  } = useRootContext();
 
   const owner = data.owner;
   const memberColor = memberColorMap.get(owner);
@@ -148,10 +152,7 @@ const TrackerTableRow = ({
     <tr className={styles.responsiveRow}>
       <td className={styles.responsiveCell}>{data.platform}</td>
       <td className={styles.responsiveCell}>{data.type}</td>
-      <td
-        className={styles.responsiveCell}
-        style={{ color: memberColor }}
-      >
+      <td className={styles.responsiveCell} style={{ color: memberColor }}>
         {owner}
       </td>
       <td className={styles.responsiveCell}>{formattedInvestedAmount}</td>
