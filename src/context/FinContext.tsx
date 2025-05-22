@@ -137,13 +137,10 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         success: false,
         message: "Failed to add finance data. Please try again.",
       };
-    } finally {
-      setLoader({ show: false });
     }
   };
 
   const updateFinance = async (data: FinanceFormDataType) => {
-    setLoader({ show: true });
     try {
       await fetch("/api/finance", {
         method: "PUT",
@@ -164,13 +161,10 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         success: false,
         message: "Failed to update finance data. Please try again.",
       };
-    } finally {
-      setLoader({ show: false });
     }
   };
 
   const deleteFinance = async (id: string) => {
-    setLoader({ show: true });
     try {
       await fetch("/api/finance", {
         method: "DELETE",
@@ -191,8 +185,6 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         success: false,
         message: "Failed to delete finance data. Please try again.",
       };
-    } finally {
-      setLoader({ show: false });
     }
   };
 

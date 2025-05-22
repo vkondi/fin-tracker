@@ -31,11 +31,9 @@ type RootContextType = {
   name?: string;
   userId?: string;
   email?: string;
-
   isUserRegistered?: boolean;
 
   isMobile: boolean;
-
   loader: LoaderProps;
   setLoader: Dispatch<SetStateAction<LoaderProps>>;
   toast: ToastType;
@@ -140,7 +138,7 @@ export const RootProvider = ({ children }: { children: ReactNode }) => {
   return (
     <RootContext.Provider
       value={{
-        // popup
+        // Popup mgmt
         showFinanceForm,
         hideFinanceForm,
         financePopupState,
