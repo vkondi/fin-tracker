@@ -13,7 +13,7 @@ import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
 import { useRootContext } from "@/context/RootContext";
 import { LiaWindowCloseSolid } from "react-icons/lia";
-import { PLATFORMS } from "@/utils/constants";
+import { useFinContext } from "@/context/FinContext";
 
 const formDefaultState: FinanceFormDataType = {
   platform: "",
@@ -43,14 +43,13 @@ const FinanceFormPopup = () => {
   const {
     financePopupState: { isVisible, mode, data: financeData },
     hideFinanceForm,
-    addFinance,
-    updateFinance,
-    deleteFinance,
-    loading,
+    loader: { show: loading },
     isMobile,
     setLoader,
     toast,
+    platforms,
   } = useRootContext();
+  const { updateFinance, deleteFinance, addFinance } = useFinContext();
   const overlayRef = useRef<HTMLDivElement>(null);
   const title = mode && modeDetails[mode].title;
   const buttonText = mode && modeDetails[mode].buttonText;
@@ -61,9 +60,10 @@ const FinanceFormPopup = () => {
   const category = useMemo(
     () =>
       formData?.platform
-        ? PLATFORMS.find((rec) => rec.name === formData.platform)?.category
+        ? (platforms ?? []).find((rec) => rec.name === formData.platform)
+            ?.category
         : null,
-    [formData?.platform]
+    [formData?.platform, platforms]
   ); // Retrive "category" based on selected "platform"
   const isValidForm = useMemo(
     () =>
@@ -191,7 +191,7 @@ const FinanceFormPopup = () => {
       category,
       closePopup,
       setLoader,
-      toast
+      toast,
     ]
   );
 
@@ -228,7 +228,7 @@ const FinanceFormPopup = () => {
               <option value="" disabled>
                 Select a platform
               </option>
-              {PLATFORMS.map(({ name }, index) => (
+              {(platforms ?? []).map(({ name }, index) => (
                 <option value={name} key={index}>
                   {name}
                 </option>
@@ -331,6 +331,7 @@ const FinanceFormPopup = () => {
     handleChange,
     typeOptions,
     isValidForm,
+    platforms,
   ]);
 
   const renderDeleteView = useCallback(() => {
@@ -396,12 +397,14 @@ const FinanceFormPopup = () => {
 
   useEffect(() => {
     if (formData.platform) {
-      const value = PLATFORMS.find((rec) => rec.name === formData.platform);
+      const value = (platforms ?? []).find(
+        (rec) => rec.name === formData.platform
+      );
       if (value) {
         setTypeOptions(value?.instruments ?? []);
       }
     }
-  }, [formData.platform]);
+  }, [formData.platform, platforms]);
 
   // Don't render if not visible
   if (!isVisible) return null;

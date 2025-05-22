@@ -2,10 +2,14 @@ import { useRootContext } from "@/context/RootContext";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { FC } from "react";
 import { formattedAmount } from "@/utils/utility";
+import { useFinContext } from "@/context/FinContext";
 
 const MembersCard: FC = () => {
-  const { hasNoFinanceData, loading, isMobile, memberWiseData } =
-    useRootContext();
+  const {
+    loader: { show: loading },
+    isMobile,
+  } = useRootContext();
+  const { memberWiseData, hasNoFinanceData } = useFinContext();
 
   const sortedMemberWiseData = memberWiseData.sort(
     (a, b) => b.totalCurrentAmount - a.totalCurrentAmount
@@ -40,8 +44,8 @@ const MembersCard: FC = () => {
             <div
               className="flex flex-col mb-1 px-2 py-1 last:mb-0"
               style={{
-                borderLeftWidth: '4px',
-                borderColor: memberData.fill
+                borderLeftWidth: "4px",
+                borderColor: memberData.fill,
               }}
               key={index}
             >

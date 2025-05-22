@@ -12,12 +12,4 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  //   callbacks: {
-  //     async session({ session, token }: any) {
-  //       return session;
-  //     },
-  //     async jwt({ token, user }: any) {
-  //       return token;
-  //     },
-  //   },
 };
