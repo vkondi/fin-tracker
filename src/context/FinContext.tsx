@@ -6,6 +6,7 @@ import {
   FinanceRecordType,
   MemberWiseSummary,
 } from "@/components/component.types";
+import { CHART_COLORS } from "@/utils/constants";
 import { constructMemberWiseData } from "@/utils/utility";
 import {
   createContext,
@@ -14,6 +15,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useRootContext } from "./RootContext";
@@ -41,10 +43,59 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
   const { isUserRegistered, userId, setLoader } = useRootContext();
 
   const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
-  const memberWiseData = useMemo(
-    () => constructMemberWiseData(financeData),
-    [financeData]
-  );
+  const ownerColorMapRef = useRef<Map<string, string>>(new Map());
+
+  // Get or assign a color for an owner
+  const getOwnerColor = useCallback((owner: string) => {
+    if (ownerColorMapRef.current.has(owner)) {
+      return ownerColorMapRef.current.get(owner)!;
+    }
+
+    // Find first unused color
+    const usedColors = new Set(ownerColorMapRef.current.values());
+    const availableColor = CHART_COLORS.find(color => !usedColors.has(color)) || CHART_COLORS[0];
+    ownerColorMapRef.current.set(owner, availableColor);
+    return availableColor;
+  }, []);
+
+  const memberWiseData = useMemo(() => {
+    const data = financeData.reduce(
+      (prev: Record<string, MemberWiseSummary>, curr) => {
+        const owner = curr?.owner;
+        if (!owner) return prev;
+
+        if (!prev[owner]) {
+          prev[owner] = {
+            owner,
+            totalInvestedAmount: 0,
+            totalCurrentAmount: 0,
+            totalAbsReturn: 0,
+            totalAbsReturnPercentage: 0,
+            fill: getOwnerColor(owner),
+          };
+        }
+
+        prev[owner].totalInvestedAmount +=
+          parseFloat(curr?.investedAmount.toString()) ?? 0;
+        prev[owner].totalCurrentAmount +=
+          parseFloat(curr?.currentAmount.toString()) ?? 0;
+        prev[owner].totalAbsReturn =
+          prev[owner].totalCurrentAmount - prev[owner].totalInvestedAmount;
+        prev[owner].totalAbsReturnPercentage =
+          Math.round(
+            (prev[owner].totalAbsReturn / prev[owner].totalInvestedAmount) *
+              100 *
+              100
+          ) / 100;
+
+        return prev;
+      },
+      {} as Record<string, MemberWiseSummary>
+    );
+
+    return Object.values(data);
+  }, [financeData, getOwnerColor]);
+
   const { totalInvested, totalCurrent, totalOwners, totalPlatforms } = useMemo(
     () =>
       financeData.reduce(
