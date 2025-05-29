@@ -1,6 +1,6 @@
 # Finance Tracker
 
-Finance Tracker is a web application built with [Next.js](https://nextjs.org) that helps users manage track their finances across various platforms. It provides features such as user registration, financial platform configurations, and responsive design for mobile and desktop users.
+FINTRAKR is a comprehensive multi-user financial portfolio management application built with [Next.js](https://nextjs.org). It enables users to track and analyze their investments across various platforms, from stock trading apps to private banking services. The application features real-time portfolio analytics, member-wise investment tracking, and detailed performance metrics with visual representations. With secure user authentication, responsive design, and intuitive dashboards, it provides a complete solution for families or groups to monitor their collective financial investments.
 
 ## Table of Contents
 
@@ -45,6 +45,43 @@ To get started with the project, follow these steps:
 - Financial Platform Management: Fetch and display financial platforms from the backend.
 - Responsive Design: Optimized for both mobile and desktop devices using react-responsive.
 - Toast Notifications: User-friendly notifications powered by react-toastify.
+- Dashboard Features:
+  - Financial Aggregate Overview:
+    - Total Amount Invested with current value comparison
+    - Total Absolute Return in currency value
+    - Return Percentage (e.g., 5.31%)
+    - Total Number of Owners and Platforms
+  - Member Allocation:
+    - Donut chart visualization of member investments
+    - Detailed breakdown with invested amounts and percentages
+    - Individual member performance tracking
+  - Category Allocation:
+    - Donut chart visualization by investment category
+    - Breakdown between Investment Apps and Banking Services
+    - Category-wise amount and percentage distribution
+  - Real-Time Portfolio Insights:
+    - Per-member investment amounts and returns
+    - Absolute returns in both percentage and currency
+    - Quick-view performance metrics
+- Finance Tracker Features:
+  - Comprehensive Investment Table:
+    - Platform details with investment type
+    - Owner assignment and tracking
+    - Initial investment amount tracking
+    - Current value monitoring
+    - Absolute return in both ₹ and percentage
+    - Precise last updated timestamp (date and time)
+  - Investment Management:
+    - "Add New" investment functionality
+    - Edit investments (via action buttons)
+    - Delete investments (via action buttons)
+    - Automatic return calculations
+  - Data Organization:
+    - Clean tabular interface with column headers
+    - Support for diverse platform types:
+      - Investment Apps (e.g., Paytm Money)
+      - Banking Services (e.g., Axis Bank – Burgundy Private & Wealth Services)
+    - Time-stamped updates for data freshness
 
 ---
 
@@ -109,7 +146,7 @@ Vercel Postgres Templates
 ## Scripts
 The following scripts are available in the package.json file:
 
-- `yarn dev`: Starts the development server.
+- `yarn dev`: Starts the development server with Turbopack for faster builds.
 - `yarn build`: Builds the application for production.
 - `yarn start`: Starts the production server.
 - `yarn lint`: Runs ESLint to check for code quality issues.
@@ -118,13 +155,17 @@ The following scripts are available in the package.json file:
 
 ## Technologies Used
 
-- Framework: [Next.js](https://nextjs.org)
-- Authentication: [next-auth](https://next-auth.js.org)
+- Framework: [Next.js](https://nextjs.org) (v15.3.1)
+- Authentication: [next-auth](https://next-auth.js.org) (v4.24)
 - Database: [PostgreSQL](https://www.postgresql.org)
 - Styling: [Tailwind CSS](https://tailwindcss.com)
 - State Management: React Context API
-- Notifications: [react-toastify](https://fkhadra.github.io/react-toastify)
-- Charts: [Recharts](https://recharts.org)
+- Notifications: [react-toastify](https://fkhadra.github.io/react-toastify) (v11.0)
+- Charts: [Recharts](https://recharts.org) (v2.15)
+- UI Utilities: 
+  - [clsx](https://github.com/lukeed/clsx) for conditional class names
+  - [react-icons](https://react-icons.github.io/react-icons/) for icons
+  - [react-responsive](https://github.com/yocontra/react-responsive) for responsive design
 
 ---
 

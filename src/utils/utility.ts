@@ -90,7 +90,7 @@ export const constructCategoryWiseData = (
           totalCurrentAmount: 0,
           totalAbsReturn: 0,
           totalAbsReturnPercentage: 0,
-          fill: "",
+          fill: CHART_COLORS[Object.keys(prev).length % CHART_COLORS.length],
         };
       }
 
@@ -112,12 +112,7 @@ export const constructCategoryWiseData = (
     {} as Record<string, CategoryWiseSummary>
   );
 
-  return Object.keys(data).map((name) => {
-    return {
-      ...data[name],
-      fill: getUniqueColor(),
-    };
-  });
+  return Object.values(data);
 };
 
 const usedColors = new Set<string>();
