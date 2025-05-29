@@ -6,6 +6,7 @@ export const FINANCES_TABLE = "FINANCES";
 export const TRACKER_TABLE_LABELS = {
   platform: "Platform",
   type: "Type",
+  category: "Category",
   owner: "Owner",
   investedAmount: "Invested Amount",
   currentAmount: "Current Amount",

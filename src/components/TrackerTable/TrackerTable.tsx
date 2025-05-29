@@ -38,11 +38,9 @@ const TrackerTable = () => {
   }
 
   return (
-    <div className={`p-4 bg-white ${isMobile ? "" : "w-full"}`}>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Finance Tracker</h2>
-
-        {/* Add New */}
+    <div className="p-4 w-full max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-gray-800">Finance Tracker</h2>
         {isMobile ? (
           <button
             onClick={handleAddNew}
@@ -59,53 +57,68 @@ const TrackerTable = () => {
           </button>
         )}
       </div>
-      <div className={styles.tableContainer}>
-        <table className="min-w-full">
-          {!isMobile && (
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.platform}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.type}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.owner}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.investedAmount}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.currentAmount}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.absReturn}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.absReturnPercentage}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.lastUpdated}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  {TRACKER_TABLE_LABELS.actions}
-                </th>
-              </tr>
-            </thead>
-          )}
 
-          <tbody>
-            {financeData.map((row, index) => (
-              <TrackerTableRow
-                data={row}
-                key={index}
-                memberColorMap={memberColorMap}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isMobile ? (
+        <div className="space-y-2">
+          {financeData.map((row, index) => (
+            <TrackerTableRow
+              data={row}
+              key={index}
+              memberColorMap={memberColorMap}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className={styles.tableContainer}>
+            <table className="min-w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.platform}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.category}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.type}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.owner}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.investedAmount}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.currentAmount}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.absReturn}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.absReturnPercentage}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.lastUpdated}
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    {TRACKER_TABLE_LABELS.actions}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {financeData.map((row, index) => (
+                  <TrackerTableRow
+                    data={row}
+                    key={index}
+                    memberColorMap={memberColorMap}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

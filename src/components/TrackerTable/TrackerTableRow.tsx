@@ -1,9 +1,10 @@
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FinanceFormDataType } from "../component.types";
 import styles from "./TrackerTable.module.css";
 import { useRootContext } from "@/context/RootContext";
 import { TRACKER_TABLE_LABELS } from "@/utils/constants";
 import { formattedAmount } from "@/utils/utility";
+import { useState } from "react";
 
 function calculateAbsoluteReturn(
   investedAmount: number,
@@ -21,6 +22,7 @@ const TrackerTableRow = ({
   data: FinanceFormDataType;
   memberColorMap: Map<string, string>;
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const {
     loader: { show: loading },
     showFinanceForm,
@@ -71,86 +73,111 @@ const TrackerTableRow = ({
     showFinanceForm("delete", data);
   };
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   if (isMobile) {
     return (
-      <tr
-        className="p-2 flex flex-col gap-1 border-r-1 border-l-2 border-b-2 border-gray-300 first:border-t-2 w-[360px] mx-auto mb-1 rounded-lg shadow-md"
+      <div 
+        className="bg-white rounded-xl shadow-sm mb-4 overflow-hidden transition-all duration-200 ease-in-out"
         style={{
-          borderLeftColor: memberColor,
-          background: `linear-gradient(to top right, white, white 85%, ${memberColor})`,
+          borderLeft: `4px solid ${memberColor}`,
         }}
       >
-        <td className={rowCls}>
-          <div className="text-2xl truncate">{data.platform}</div>
-          <div className="text-xs">{data.type}</div>
-        </td>
+        {/* Main Card Content - Always Visible */}
+        <div className="p-4">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1">
+              <h3 className="text-base font-semibold text-gray-800">{data.platform}</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleEdit}
+                disabled={loading}
+                className="p-1.5 text-blue-500 hover:text-blue-700 transition-colors"
+              >
+                <FaEdit size={13} />
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={loading}
+                className="p-1.5 text-red-500 hover:text-red-700 transition-colors"
+              >
+                <FaTrash size={13} />
+              </button>
+              <button
+                onClick={toggleExpand}
+                className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {isExpanded ? <FaChevronUp size={13} /> : <FaChevronDown size={13} />}
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-gray-500">Owner</p>
+              <p className="text-sm font-medium" style={{ color: memberColor }}>{owner}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-500">Current Amount</p>
+              <p className="text-sm font-semibold text-gray-800">{formattedCurrentAmount}</p>
+            </div>
+          </div>
+        </div>
 
-        <td
-          className={`${rowCls} font-thin mt-1 mb-2`}
-          style={{ color: memberColor }}
+        {/* Expandable Content */}
+        <div 
+          className={`bg-gray-50 transition-all duration-200 ease-in-out overflow-hidden ${
+            isExpanded ? 'max-h-[500px] border-t' : 'max-h-0'
+          }`}
         >
-          {data.owner}
-        </td>
-        <td className={rowCls}>
-          <div className={labelCls}>{TRACKER_TABLE_LABELS.investedAmount}</div>
-          <div className={valueCls}>{formattedInvestedAmount}</div>
-        </td>
+          <div className="p-4 space-y-3">
+            {/* Financial Details */}
+            <div className="pb-3 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-gray-500">{TRACKER_TABLE_LABELS.investedAmount}</p>
+                  <p className="text-sm font-medium text-gray-800">{formattedInvestedAmount}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">{TRACKER_TABLE_LABELS.absReturn}</p>
+                  <p className={`text-sm font-medium ${absReturnTextCls}`}>
+                    {formattedAbsoluteReturnAmount}
+                    <span className="text-[11px] ml-1">({formattedAbsoluteReturnPercentage})</span>
+                  </p>
+                </div>
+              </div>
+            </div>
 
-        <td className={rowCls}>
-          <div className={labelCls}>{TRACKER_TABLE_LABELS.currentAmount}</div>
-          <div className={valueCls}>{formattedCurrentAmount}</div>
-        </td>
-        <td className={rowCls}>
-          <div className={labelCls}>{TRACKER_TABLE_LABELS.absReturn}</div>
-          <div className={`${valueCls} ${absReturnTextCls}`}>
-            {formattedAbsoluteReturnAmount}
-          </div>
-        </td>
-        <td className={rowCls}>
-          <div className={labelCls}>
-            {TRACKER_TABLE_LABELS.absReturnPercentage}
-          </div>
-          <div className={`${valueCls} ${absReturnTextCls}`}>
-            {formattedAbsoluteReturnPercentage}
-          </div>
-        </td>
-        <td className={rowCls}>
-          <div className={labelCls}>{TRACKER_TABLE_LABELS.lastUpdated}</div>
-          <div
-            className={valueCls}
-            style={{
-              fontWeight: "normal",
-              fontSize: "0.8rem",
-              fontStyle: "italic",
-            }}
-          >
-            {updatedDate}
-          </div>
-        </td>
+            {/* Platform Details */}
+            <div className="space-y-2">
+              <div>
+                <p className="text-xs text-gray-500">Category</p>
+                <p className="text-sm text-gray-800">{data.category}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Type</p>
+                <p className="text-sm text-gray-800">{data.type}</p>
+              </div>
+            </div>
 
-        <td className="flex justify-between items-center py-2">
-          <button
-            onClick={handleDelete}
-            disabled={loading}
-            className="text-red-500 hover:text-red-700"
-          >
-            <FaTrash />
-          </button>
-          <button
-            onClick={handleEdit}
-            disabled={loading}
-            className="text-blue-500 hover:text-blue-700"
-          >
-            <FaEdit />
-          </button>
-        </td>
-      </tr>
+            {/* Last Updated */}
+            <div className="pt-2 border-t border-gray-200">
+              <p className="text-xs text-gray-500">{TRACKER_TABLE_LABELS.lastUpdated}</p>
+              <p className="text-xs text-gray-600 italic">{updatedDate}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
     <tr className={styles.responsiveRow}>
       <td className={styles.responsiveCell}>{data.platform}</td>
+      <td className={styles.responsiveCell}>{data.category}</td>
       <td className={styles.responsiveCell}>{data.type}</td>
       <td className={styles.responsiveCell} style={{ color: memberColor }}>
         {owner}
