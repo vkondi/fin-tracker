@@ -61,9 +61,6 @@ const TrackerTableRow = ({
       ? "text-red-700"
       : "";
 
-  const rowCls = "flex justify-between items-center";
-  const labelCls = "text-gray-500 text-xs";
-  const valueCls = "text-gray-800 font-semibold text-sm";
 
   const handleEdit = () => {
     showFinanceForm("edit", data);

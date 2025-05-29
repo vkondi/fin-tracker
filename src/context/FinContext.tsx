@@ -7,7 +7,6 @@ import {
   MemberWiseSummary,
 } from "@/components/component.types";
 import { CHART_COLORS } from "@/utils/constants";
-import { constructMemberWiseData } from "@/utils/utility";
 import {
   createContext,
   ReactNode,
