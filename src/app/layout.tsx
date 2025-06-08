@@ -8,11 +8,12 @@ import { RootProvider, useRootContext } from "@/context/RootContext";
 import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 import Loader from "@/components/Loader/Loader";
 import { FinProvider } from "@/context/FinContext";
-import { Inter } from 'next/font/google';
+import { Inter } from "next/font/google";
+import Script from "next/script";
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const RootComponent = ({ children }: { children: ReactNode }) => {
@@ -41,6 +42,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </FinProvider>
           </RootProvider>
         </AuthProvider>
+
+        {/* Cloudfare Web Analytics */}
+        <Script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={`{"token": ${process.env.CLOUDFARE_WEB_ANALYTICS_TOKEN}}`}
+        />
       </body>
     </html>
   );
