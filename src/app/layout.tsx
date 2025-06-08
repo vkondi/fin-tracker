@@ -9,6 +9,7 @@ import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 import Loader from "@/components/Loader/Loader";
 import { FinProvider } from "@/context/FinContext";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,13 +44,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </AuthProvider>
 
         {/* Cloudfare Web Analytics */}
-        <>
-          <script
-            defer
-            src="https://static.cloudflareinsights.com/beacon.min.js"
-            data-cf-beacon='{"token": "b16f9e7eba8e4eb9a7a97a30b3a8951b"}'
-          ></script>
-        </>
+        <Script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={`{"token": ${process.env.CLOUDFARE_WEB_ANALYTICS_TOKEN}}`}
+        />
       </body>
     </html>
   );
