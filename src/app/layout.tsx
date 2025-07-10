@@ -4,6 +4,7 @@ import AuthProvider from "@/components/wrappers/AuthProvider/AuthProvider";
 import "./globals.css";
 import { ReactNode, Suspense } from "react";
 import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
 import { RootProvider, useRootContext } from "@/context/RootContext";
 import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 import Loader from "@/components/Loader/Loader";
@@ -21,8 +22,11 @@ const RootComponent = ({ children }: { children: ReactNode }) => {
 
   return (
     <Suspense>
-      <Header />
-      <main>{children}</main>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </div>
       <FinanceFormPopup />
 
       {/* Loading component */}
