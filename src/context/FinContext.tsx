@@ -6,7 +6,7 @@ import {
   FinanceRecordType,
   MemberWiseSummary,
 } from "@/components/component.types";
-import { CHART_COLORS } from "@/utils/constants";
+import { getRandomColor } from "@/utils/utility";
 import {
   createContext,
   ReactNode,
@@ -50,11 +50,10 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
       return ownerColorMapRef.current.get(owner)!;
     }
 
-    // Find first unused color
-    const usedColors = new Set(ownerColorMapRef.current.values());
-    const availableColor = CHART_COLORS.find(color => !usedColors.has(color)) || CHART_COLORS[0];
-    ownerColorMapRef.current.set(owner, availableColor);
-    return availableColor;
+    // Assign a random color
+    const randomColor = getRandomColor();
+    ownerColorMapRef.current.set(owner, randomColor);
+    return randomColor;
   }, []);
 
   const memberWiseData = useMemo(() => {
