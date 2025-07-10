@@ -33,23 +33,25 @@ const CategoryDistribution = () => {
 
   const chartData = useMemo(
     () =>
-      categoryWiseData.map((rec) => {
-        const value =
-          activeTab === "invested"
-            ? rec?.totalInvestedAmount
-            : rec?.totalCurrentAmount;
-        const percent = Math.round((value / total) * 100 * 100) / 100;
-        const percentFormatted = `${percent}%`;
+      categoryWiseData
+        .map((rec) => {
+          const value =
+            activeTab === "invested"
+              ? rec?.totalInvestedAmount
+              : rec?.totalCurrentAmount;
+          const percent = Math.round((value / total) * 100 * 100) / 100;
+          const percentFormatted = `${percent}%`;
 
-        return {
-          name: rec?.category,
-          value,
-          fill: rec?.fill,
-          valueFormatted: formattedAmount(value),
-          percent,
-          percentFormatted,
-        };
-      }),
+          return {
+            name: rec?.category,
+            value,
+            fill: rec?.fill,
+            valueFormatted: formattedAmount(value),
+            percent,
+            percentFormatted,
+          };
+        })
+        .sort((a, b) => b.percent - a.percent), // Sort by percentage descending
     [categoryWiseData, activeTab, total]
   );
 

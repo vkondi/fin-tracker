@@ -134,7 +134,7 @@ const TrackerTable = () => {
   }
 
   return (
-    <div className="p-4 w-full max-w-7xl mx-auto">
+    <div className={`w-full ${isMobile ? "p-4" : ""}`}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-800">Finance Tracker</h2>
         <div className="flex items-center gap-2">

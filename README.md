@@ -1,4 +1,4 @@
-# Finance Tracker
+# FINTRAKR
 
 FINTRAKR is a comprehensive multi-user financial portfolio management application built with [Next.js](https://nextjs.org). It enables users to track and analyze their investments across various platforms, from stock trading apps to private banking services. The application features real-time portfolio analytics, member-wise investment tracking, and detailed performance metrics with visual representations. With secure user authentication, responsive design, and intuitive dashboards, it provides a complete solution for families or groups to monitor their collective financial investments.
 
@@ -140,6 +140,10 @@ Vercel Postgres Templates
 - `POSTGRES_DATABASE`: Name of the PostgreSQL database.
 - `POSTGRES_URL_NO_SSL`: Connection string for the PostgreSQL database without SSL.
 - `POSTGRES_PRISMA_URL`: Connection string for the PostgreSQL database with Prisma-specific parameters (e.g., `connect_timeout`).
+
+Analytics
+
+- `CLOUDFARE_WEB_ANALYTICS_TOKEN`: Token for Cloudflare Web Analytics integration.
 
 ---
 

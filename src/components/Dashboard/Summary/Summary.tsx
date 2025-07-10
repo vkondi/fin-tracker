@@ -23,14 +23,14 @@ const Summary = () => {
   const summary = useMemo(
     () => [
       {
-        label: "Total Amount Invested",
-        key: "totalInvested",
-        value: formattedAmount(totalInvested),
-      },
-      {
         label: "Total Current Amount",
         key: "totalCurrent",
         value: formattedAmount(totalCurrent),
+      },
+      {
+        label: "Total Amount Invested",
+        key: "totalInvested",
+        value: formattedAmount(totalInvested),
       },
       {
         label: "Total Absolute Return",

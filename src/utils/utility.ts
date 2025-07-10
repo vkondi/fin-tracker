@@ -75,6 +75,9 @@ export const constructMemberWiseData = (
   });
 };
 
+// Persistent category color mapping for session
+const categoryColorMap = new Map<string, string>();
+
 export const constructCategoryWiseData = (
   financeData: FinanceFormDataType[]
 ): CategoryWiseSummary[] => {
@@ -84,13 +87,20 @@ export const constructCategoryWiseData = (
       if (!category) return prev;
 
       if (!prev[category]) {
+        // Get or assign persistent color for category
+        let categoryColor = categoryColorMap.get(category);
+        if (!categoryColor) {
+          categoryColor = getRandomColor();
+          categoryColorMap.set(category, categoryColor);
+        }
+
         prev[category] = {
           category,
           totalInvestedAmount: 0,
           totalCurrentAmount: 0,
           totalAbsReturn: 0,
           totalAbsReturnPercentage: 0,
-          fill: CHART_COLORS[Object.keys(prev).length % CHART_COLORS.length],
+          fill: categoryColor,
         };
       }
 
@@ -115,22 +125,37 @@ export const constructCategoryWiseData = (
   return Object.values(data);
 };
 
+// Session-based color management
+let shuffledColors: string[] = [];
 const usedColors = new Set<string>();
-export const getUniqueColor = (): string => {
-  // Find first unused color
-  for (const color of CHART_COLORS) {
+
+export const getRandomColor = (): string => {
+  // Initialize shuffled colors if empty
+  if (shuffledColors.length === 0) {
+    shuffledColors = [...CHART_COLORS];
+    shuffleArrayInPlace(shuffledColors);
+  }
+  
+  // Find first unused color from shuffled array
+  for (let i = 0; i < shuffledColors.length; i++) {
+    const color = shuffledColors[i];
     if (!usedColors.has(color)) {
       usedColors.add(color);
       return color;
     }
   }
-
-  // Fallback: Reset or cycle (optional)
+  
+  // If all colors are used, reshuffle and start over
   usedColors.clear();
-  return getUniqueColor();
+  shuffledColors = [...CHART_COLORS];
+  shuffleArrayInPlace(shuffledColors);
+  const color = shuffledColors[0];
+  usedColors.add(color);
+  return color;
 };
 
-// Release a color when no longer needed
-export const releaseColor = (color: string) => {
-  usedColors.delete(color);
+export const getUniqueColor = (): string => {
+  return getRandomColor();
 };
+
+

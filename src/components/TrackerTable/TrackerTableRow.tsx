@@ -87,6 +87,9 @@ const TrackerTableRow = ({
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1">
               <h3 className="text-base font-semibold text-gray-800">{data.platform}</h3>
+              {!isExpanded && (
+                <p className="text-xs text-gray-600 mt-1">{data.type}</p>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <button
