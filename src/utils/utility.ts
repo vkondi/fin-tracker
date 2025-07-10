@@ -76,7 +76,7 @@ export const constructMemberWiseData = (
 };
 
 // Persistent category color mapping for session
-let categoryColorMap = new Map<string, string>();
+const categoryColorMap = new Map<string, string>();
 
 export const constructCategoryWiseData = (
   financeData: FinanceFormDataType[]
@@ -127,7 +127,7 @@ export const constructCategoryWiseData = (
 
 // Session-based color management
 let shuffledColors: string[] = [];
-let usedColors = new Set<string>();
+const usedColors = new Set<string>();
 
 export const getRandomColor = (): string => {
   // Initialize shuffled colors if empty
@@ -158,14 +158,4 @@ export const getUniqueColor = (): string => {
   return getRandomColor();
 };
 
-// Release a color when no longer needed
-export const releaseColor = (color: string) => {
-  usedColors.delete(color);
-};
 
-// Reset all color mappings (call this when session ends or app reloads)
-export const resetColorMappings = () => {
-  usedColors.clear();
-  shuffledColors = [];
-  categoryColorMap.clear();
-};
