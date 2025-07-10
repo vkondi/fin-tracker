@@ -16,7 +16,7 @@ const Dashboard = () => {
   return (
     <div
       className={`flex min-h-screen flex-col items-center bg-gray-200 min-w-[360px] ${
-        isMobile ? "px-2" : "p-16"
+        isMobile ? "px-2 pb-8" : "p-16"
       }`}
     >
       {/* Welcome message component */}
