@@ -10,7 +10,6 @@ import FinanceFormPopup from "@/components/FinanceFormPopup/FinanceFormPopup";
 import Loader from "@/components/Loader/Loader";
 import { FinProvider } from "@/context/FinContext";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +35,8 @@ const RootComponent = ({ children }: { children: ReactNode }) => {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const token = process.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN;
+
   return (
     <html lang="en" className={inter.className}>
       <body className="font-sans antialiased">
@@ -47,12 +48,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </RootProvider>
         </AuthProvider>
 
-        {/* Cloudfare Web Analytics */}
-        <Script
+        {/* Cloudflare Web Analytics */}
+        <script
           defer
           src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon={`{"token": ${process.env.CLOUDFARE_WEB_ANALYTICS_TOKEN}}`}
-        />
+          data-cf-beacon={`{"token": ${token}}`}
+        ></script>
+        {/* End Cloudflare Web Analytics */}
       </body>
     </html>
   );
