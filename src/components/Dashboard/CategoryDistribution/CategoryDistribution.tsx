@@ -66,7 +66,7 @@ const CategoryDistribution = () => {
         },
         {
           header: "Category",
-          render: (rec) => <span className="font-normal truncate">{rec.name}</span>,
+          render: (rec) => <span className="font-normal">{rec.name}</span>,
         },
         {
           header: "Amount",
