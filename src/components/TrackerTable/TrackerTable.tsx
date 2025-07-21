@@ -148,6 +148,7 @@ const TrackerTable = () => {
             <button
               onClick={handleAddNew}
               className="bg-[var(--primary-btn)] text-white p-2 rounded hover:bg-[var(--primary-btn-hover)]"
+              aria-label="Add new entry"
             >
               <FaPlus size={16} />
             </button>
@@ -155,6 +156,7 @@ const TrackerTable = () => {
             <button
               onClick={handleAddNew}
               className="bg-[var(--primary-btn)] text-white px-4 py-2 rounded hover:bg-[var(--primary-btn-hover)] flex items-center gap-2"
+              aria-label="Add new entry"
             >
               <FaPlus /> Add New
             </button>

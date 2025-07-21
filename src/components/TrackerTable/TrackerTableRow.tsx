@@ -96,6 +96,7 @@ const TrackerTableRow = ({
                 onClick={handleEdit}
                 disabled={loading}
                 className="p-1.5 text-blue-500 hover:text-blue-700 transition-colors"
+                aria-label="Edit entry"
               >
                 <FaEdit size={13} />
               </button>
@@ -103,12 +104,14 @@ const TrackerTableRow = ({
                 onClick={handleDelete}
                 disabled={loading}
                 className="p-1.5 text-red-500 hover:text-red-700 transition-colors"
+                aria-label="Delete entry"
               >
                 <FaTrash size={13} />
               </button>
               <button
                 onClick={toggleExpand}
                 className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label={isExpanded ? "Collapse details" : "Expand details"}
               >
                 {isExpanded ? <FaChevronUp size={13} /> : <FaChevronDown size={13} />}
               </button>

@@ -48,7 +48,7 @@ const WelcomeMessage = () => {
   return (
     <div className={`relative overflow-hidden ${isMobile ? "mt-4" : "mt-8"} mb-6`}>
       {/* Main content */}
-      <div className="relative bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl p-6 text-center shadow-sm">
+      <div className="relative bg-white border border-gray-200 rounded-xl p-6 text-center shadow-sm max-w-xl mx-auto">
         <div className="mb-3">
           <span className="text-3xl">👋</span>
         </div>

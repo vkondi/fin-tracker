@@ -1,29 +1,31 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
 import DashboardCard from "../DashboardCard/DashboardCard";
-import React from "react";
+import React, { ReactNode } from "react";
 
 export type DistributionTab = "invested" | "current";
 
-export interface DistributionChartTableProps {
+export interface DistributionChartTableColumn<T> {
+  header: string;
+  render: (rec: T) => ReactNode;
+  className?: string;
+  thClassName?: string;
+}
+
+export interface DistributionChartTableProps<T = Record<string, unknown>> {
   title: string;
   isMobile: boolean;
-  chartData: any[];
+  chartData: T[];
   total: number;
   tabLabels: [string, string];
   activeTab: DistributionTab;
   setActiveTab: (tab: DistributionTab) => void;
-  tableColumns: Array<{
-    header: string;
-    render: (rec: any) => React.ReactNode;
-    className?: string;
-    thClassName?: string;
-  }>;
+  tableColumns: Array<DistributionChartTableColumn<T>>;
   loading?: boolean;
   hideIfNoData?: boolean;
 }
 
-const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
+const DistributionChartTable = <T extends Record<string, unknown>>({
   title,
   isMobile,
   chartData,
@@ -34,7 +36,7 @@ const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
   tableColumns,
   loading = false,
   hideIfNoData = false,
-}) => {
+}: DistributionChartTableProps<T>) => {
   if (loading || (hideIfNoData && chartData.length === 0)) {
     return null;
   }
@@ -45,6 +47,7 @@ const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
         {/* Tab Buttons */}
         <div className="my-4 flex rounded-md overflow-hidden">
           <button
+            aria-label={tabLabels[0]}
             className={`px-4 py-2 text-xs ${
               activeTab === "invested"
                 ? "bg-[var(--primary-btn)] text-white"
@@ -55,6 +58,7 @@ const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
             {tabLabels[0]}
           </button>
           <button
+            aria-label={tabLabels[1]}
             className={`px-4 py-2 text-xs ${
               activeTab === "current"
                 ? "bg-[var(--primary-btn)] text-white"
@@ -83,7 +87,7 @@ const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
                     <CustomTooltip
                       total={total}
                       active={active}
-                      payload={payload as any}
+                      payload={payload as unknown as any}
                     />
                   )}
                 />
@@ -103,21 +107,19 @@ const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
 
           <div className="flex-2 flex items-center justify-center">
             <table className="w-full border border-gray-300 text-xs font-semibold">
+              <caption className="sr-only">{title} data table</caption>
               <thead>
-                <tr className="grid grid-cols-[36px_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 bg-gray-200">
+                <tr role="row">
                   {tableColumns.map((col, idx) => (
-                    <th key={idx} className={`p-2 text-left min-w-0 break-all whitespace-pre-line ${col.thClassName || ""}`}>{col.header}</th>
+                    <th key={idx} scope="col" className={`p-2 text-left min-w-0 break-all whitespace-pre-line ${col.thClassName || ""}`}>{col.header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {chartData.map((rec, index) => (
-                  <tr
-                    className="grid grid-cols-[36px_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b border-gray-300"
-                    key={index}
-                  >
+                  <tr className="border-b border-gray-300" key={index}>
                     {tableColumns.map((col, idx) => (
-                      <td key={idx} className={`p-2 min-w-0 break-all whitespace-pre-line ${col.className || ""}`}>{col.render(rec)}</td>
+                      <td key={idx} className={`p-2 min-w-0 break-all whitespace-pre-line ${col.className || ""}`}>{col.render(rec as T)}</td>
                     ))}
                   </tr>
                 ))}

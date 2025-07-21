@@ -6,7 +6,7 @@ const Footer: FC = () => {
   const { isMobile } = useRootContext();
 
   return (
-    <footer className="bg-[var(--primary-btn)] shadow-md py-6 mt-auto">
+    <footer className="bg-[var(--primary-btn)] shadow-md py-6 mt-auto" role="contentinfo">
       <div className="max-w-[2200px] mx-auto px-4 text-center">
         {isMobile ? (
           <>
