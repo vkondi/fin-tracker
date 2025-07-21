@@ -85,42 +85,52 @@ const OwnerDistribution = () => {
           </button>
         </div>
 
-        <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full`}>
-          <ResponsiveContainer width="100%" height={180} style={{ flex: 1 }}>
-            <PieChart>
-              <Tooltip
-                content={({ active, payload }) => (
-                  <CustomTooltip
-                    total={total}
-                    active={active}
-                    payload={(payload ?? []) as Payload<number, string>[]}
-                  />
-                )}
-              />
-              <Pie
-                data={chartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={isMobile ? 35 : 50}
-                outerRadius={isMobile ? 60 : 80}
-                // TODO: Kept the code for future ref
-                // label={({ name, value, percent, x, y, midAngle, fill }) => (
-                //   <CustomLabel
-                //     name={name}
-                //     value={value}
-                //     percent={percent}
-                //     x={x}
-                //     y={y}
-                //     midAngle={midAngle}
-                //     fill={fill}
-                //   />
-                // )}
-                labelLine={false}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full overflow-scroll`}>
+          <div
+            style={{
+              flex: 1,
+              minWidth: isMobile ? undefined : 180,
+              width: "100%",
+              height: 180,
+              display: "flex",
+            }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Tooltip
+                  content={({ active, payload }) => (
+                    <CustomTooltip
+                      total={total}
+                      active={active}
+                      payload={(payload ?? []) as Payload<number, string>[]}
+                    />
+                  )}
+                />
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={isMobile ? 35 : 50}
+                  outerRadius={isMobile ? 60 : 80}
+                  // TODO: Kept the code for future ref
+                  // label={({ name, value, percent, x, y, midAngle, fill }) => (
+                  //   <CustomLabel
+                  //     name={name}
+                  //     value={value}
+                  //     percent={percent}
+                  //     x={x}
+                  //     y={y}
+                  //     midAngle={midAngle}
+                  //     fill={fill}
+                  //   />
+                  // )}
+                  labelLine={false}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
 
           <div className="flex-2 flex items-center justify-center">
             <table className="w-full border-1 border-gray-300 text-xs font-semibold">
