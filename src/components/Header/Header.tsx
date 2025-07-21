@@ -69,7 +69,7 @@ const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
   if (pathname === "/login") return null;
 
   return (
-    <header className={styles.container}>
+    <header className={styles.container} role="banner">
       <ContentWrapper className={styles.wrapperCls}>
         <Link href="/">
           <div className={isMobile ? styles.titleCenter : styles.titleLeft}>
@@ -81,11 +81,12 @@ const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
           <button
             className={styles.menuButton}
             onClick={() => setIsDrawerOpen(!isDrawerOpen)} // Toggle drawer visibility
+            aria-label="Open navigation menu"
           >
             ☰
           </button>
         ) : (
-          <nav className={styles.nav}>
+          <nav className={styles.nav} aria-label="Main navigation">
             {menuItems.map((item) => (
               <div key={item.title} className={styles.menuItem}>
                 {item.items ? (
@@ -96,7 +97,19 @@ const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
                         openDropdown === item.title ? null : item.title
                       )
                     }
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setOpenDropdown(
+                          openDropdown === item.title ? null : item.title
+                        );
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     ref={dropdownRef}
+                    aria-haspopup="true"
+                    aria-expanded={openDropdown === item.title}
+                    aria-label={openDropdown === item.title ? `Close ${item.title} menu` : `Open ${item.title} menu`}
                   >
                     {item.title} ▾
                     {openDropdown === item.title && (

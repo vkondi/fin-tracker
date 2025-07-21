@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  MouseEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
@@ -80,7 +81,7 @@ const FinanceFormPopup = () => {
     hideFinanceForm(); // Call the hideFinanceForm function to close the popup
   }, [hideFinanceForm]);
 
-  const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClickOutside = (e: MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
     if (overlayRef.current && e.target === overlayRef.current) {
       closePopup();
     }
@@ -208,6 +209,7 @@ const FinanceFormPopup = () => {
           <button
             onClick={closePopup}
             className="text-gray-500 hover:text-gray-700"
+            aria-label="Close form"
           >
             <LiaWindowCloseSolid size={35} />
           </button>
@@ -217,9 +219,10 @@ const FinanceFormPopup = () => {
         <form onSubmit={handleSubmit}>
           {/* Platform */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Platform</label>
+            <label className="block text-sm font-medium mb-1" htmlFor="platform">Platform</label>
             <select
               name="platform"
+              id="platform"
               value={formData.platform}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
@@ -238,9 +241,10 @@ const FinanceFormPopup = () => {
 
           {/* Type/Instruments */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Type</label>
+            <label className="block text-sm font-medium mb-1" htmlFor="type">Type/Instruments</label>
             <select
               name="type"
+              id="type"
               value={formData.type}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
@@ -259,10 +263,11 @@ const FinanceFormPopup = () => {
 
           {/* Owner */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Owner</label>
+            <label className="block text-sm font-medium mb-1" htmlFor="owner">Owner</label>
             <input
               type="text"
               name="owner"
+              id="owner"
               value={formData.owner}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
@@ -272,12 +277,11 @@ const FinanceFormPopup = () => {
 
           {/* Invested Amount */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">
-              Invested Amount
-            </label>
+            <label className="block text-sm font-medium mb-1" htmlFor="investedAmount">Invested Amount</label>
             <input
               type="number"
               name="investedAmount"
+              id="investedAmount"
               value={formData.investedAmount}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
@@ -287,12 +291,11 @@ const FinanceFormPopup = () => {
 
           {/* Current Amount */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">
-              Current Amount
-            </label>
+            <label className="block text-sm font-medium mb-1" htmlFor="currentAmount">Current Amount</label>
             <input
               type="number"
               name="currentAmount"
+              id="currentAmount"
               value={formData.currentAmount}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-2"
@@ -306,6 +309,7 @@ const FinanceFormPopup = () => {
               type="button"
               onClick={closePopup}
               className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              aria-label="Cancel"
             >
               Cancel
             </button>
@@ -313,6 +317,7 @@ const FinanceFormPopup = () => {
               disabled={loading || !isValidForm}
               type="submit"
               className="bg-[var(--primary-btn)] text-white px-4 py-2 rounded hover:bg-[var(--primary-btn-hover)] disabled:bg-[var(--primary-btn-hover)]"
+              aria-label={buttonText}
             >
               {buttonText}
             </button>
@@ -345,6 +350,7 @@ const FinanceFormPopup = () => {
           <button
             onClick={closePopup}
             className="text-gray-500 hover:text-gray-700"
+            aria-label="Close form"
           >
             <LiaWindowCloseSolid size={35} />
           </button>
@@ -364,6 +370,7 @@ const FinanceFormPopup = () => {
               type="button"
               onClick={closePopup}
               className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              aria-label="Cancel"
             >
               Cancel
             </button>
@@ -371,6 +378,7 @@ const FinanceFormPopup = () => {
               disabled={loading}
               type="submit"
               className="bg-red-900 text-white px-4 py-2 rounded hover:bg-red-800"
+              aria-label={buttonText}
             >
               {buttonText}
             </button>
@@ -415,9 +423,20 @@ const FinanceFormPopup = () => {
       className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${
         isMobile ? "z-1000" : "z-50"
       }`}
-      onClick={handleClickOutside}
+      role="dialog"
+      tabIndex={-1}
+      aria-modal="true"
     >
-      {mode === "delete" ? renderDeleteView() : renderAddEditView()}
+      <button
+        type="button"
+        aria-label="Close overlay"
+        className="absolute inset-0 w-full h-full bg-transparent cursor-default"
+        style={{ zIndex: 1 }}
+        onClick={handleClickOutside}
+      />
+      <div style={{ zIndex: 2, position: 'relative' }}>
+        {mode === "delete" ? renderDeleteView() : renderAddEditView()}
+      </div>
     </div>,
     document.body
   );

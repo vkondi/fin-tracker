@@ -9,15 +9,15 @@ import { FaPlus } from "react-icons/fa";
 const data = [
   {
     text: "Stay on Top of Your Finances",
-    icon: <ImCheckmark color="green" size={30} />,
+    icon: <ImCheckmark color="green" size={30} aria-label="Checkmark icon" />,
   },
   {
     text: "See Real-Time Insights",
-    icon: <IoPieChartSharp color="#45ade7" size={30} />,
+    icon: <IoPieChartSharp color="#45ade7" size={30} aria-label="Pie chart icon" />,
   },
   {
     text: "Takes Just 10 Seconds!",
-    icon: <AiFillThunderbolt color="orange" size={30} />,
+    icon: <AiFillThunderbolt color="orange" size={30} aria-label="Thunderbolt icon" />,
   },
 ];
 
@@ -49,8 +49,12 @@ const AddNewPromoCard: FC = () => {
         <div
           onClick={handleAddNew}
           className="border-1 border-gray-500 bg-[var(--primary-btn)] text-[var(--background)] flex flex-row items-center p-3 gap-2 rounded-md w-full justify-center cursor-pointer"
+          role="button"
+          tabIndex={0}
+          aria-label="Log Now, Grow Smarter"
+          onKeyPress={e => { if (e.key === 'Enter' || e.key === ' ') handleAddNew(); }}
         >
-          <FaPlus size={30} />
+          <FaPlus size={30} aria-label="Add icon" />
           <span>Log Now, Grow Smarter</span>
         </div>
       </div>
