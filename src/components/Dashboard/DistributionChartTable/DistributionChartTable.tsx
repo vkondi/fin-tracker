@@ -1,0 +1,133 @@
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
+import DashboardCard from "../DashboardCard/DashboardCard";
+import React from "react";
+
+export type DistributionTab = "invested" | "current";
+
+export interface DistributionChartTableProps {
+  title: string;
+  isMobile: boolean;
+  chartData: any[];
+  total: number;
+  tabLabels: [string, string];
+  activeTab: DistributionTab;
+  setActiveTab: (tab: DistributionTab) => void;
+  tableColumns: Array<{
+    header: string;
+    render: (rec: any) => React.ReactNode;
+    className?: string;
+    thClassName?: string;
+  }>;
+  loading?: boolean;
+  hideIfNoData?: boolean;
+}
+
+const DistributionChartTable: React.FC<DistributionChartTableProps> = ({
+  title,
+  isMobile,
+  chartData,
+  total,
+  tabLabels,
+  activeTab,
+  setActiveTab,
+  tableColumns,
+  loading = false,
+  hideIfNoData = false,
+}) => {
+  if (loading || (hideIfNoData && chartData.length === 0)) {
+    return null;
+  }
+
+  return (
+    <DashboardCard title={title} flex={1}>
+      <div className="flex flex-col items-center justify-center pb-2 px-2">
+        {/* Tab Buttons */}
+        <div className="my-4 flex rounded-md overflow-hidden">
+          <button
+            className={`px-4 py-2 text-xs ${
+              activeTab === "invested"
+                ? "bg-[var(--primary-btn)] text-white"
+                : "bg-gray-200 text-gray-700"
+            } cursor-pointer`}
+            onClick={() => setActiveTab("invested")}
+          >
+            {tabLabels[0]}
+          </button>
+          <button
+            className={`px-4 py-2 text-xs ${
+              activeTab === "current"
+                ? "bg-[var(--primary-btn)] text-white"
+                : "bg-gray-200 text-gray-700"
+            } cursor-pointer`}
+            onClick={() => setActiveTab("current")}
+          >
+            {tabLabels[1]}
+          </button>
+        </div>
+
+        <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full overflow-scroll`}>
+          <div
+            style={{
+              flex: 1,
+              minWidth: isMobile ? undefined : 180,
+              width: "100%",
+              height: 180,
+              display: "flex",
+            }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Tooltip
+                  content={({ active, payload }) => (
+                    <CustomTooltip
+                      total={total}
+                      active={active}
+                      payload={payload as any}
+                    />
+                  )}
+                />
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={isMobile ? 35 : 50}
+                  outerRadius={isMobile ? 60 : 80}
+                  labelLine={false}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="flex-2 flex items-center justify-center">
+            <table className="w-full border border-gray-300 text-xs font-semibold">
+              <thead>
+                <tr className="grid grid-cols-[36px_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 bg-gray-200">
+                  {tableColumns.map((col, idx) => (
+                    <th key={idx} className={`p-2 text-left min-w-0 break-all whitespace-pre-line ${col.thClassName || ""}`}>{col.header}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {chartData.map((rec, index) => (
+                  <tr
+                    className="grid grid-cols-[36px_minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b border-gray-300"
+                    key={index}
+                  >
+                    {tableColumns.map((col, idx) => (
+                      <td key={idx} className={`p-2 min-w-0 break-all whitespace-pre-line ${col.className || ""}`}>{col.render(rec)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </DashboardCard>
+  );
+};
+
+export default DistributionChartTable; 
