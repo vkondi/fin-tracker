@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  MouseEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
@@ -80,7 +81,7 @@ const FinanceFormPopup = () => {
     hideFinanceForm(); // Call the hideFinanceForm function to close the popup
   }, [hideFinanceForm]);
 
-  const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClickOutside = (e: MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
     if (overlayRef.current && e.target === overlayRef.current) {
       closePopup();
     }
@@ -422,13 +423,20 @@ const FinanceFormPopup = () => {
       className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${
         isMobile ? "z-1000" : "z-50"
       }`}
-      onClick={handleClickOutside}
       role="dialog"
       tabIndex={-1}
       aria-modal="true"
-      onKeyDown={e => { if (e.key === 'Escape') closePopup(); }}
     >
-      {mode === "delete" ? renderDeleteView() : renderAddEditView()}
+      <button
+        type="button"
+        aria-label="Close overlay"
+        className="absolute inset-0 w-full h-full bg-transparent cursor-default"
+        style={{ zIndex: 1 }}
+        onClick={handleClickOutside}
+      />
+      <div style={{ zIndex: 2, position: 'relative' }}>
+        {mode === "delete" ? renderDeleteView() : renderAddEditView()}
+      </div>
     </div>,
     document.body
   );
