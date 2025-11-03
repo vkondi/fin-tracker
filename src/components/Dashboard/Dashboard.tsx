@@ -26,6 +26,7 @@ const Dashboard = () => {
         <ContentWrapper>
           <WelcomeMessage />
         </ContentWrapper>
+        
         <div className="flex flex-col items-center w-full gap-6">
           {/* Top Row */}
           <div className={gridRowCls}>
