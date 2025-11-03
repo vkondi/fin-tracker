@@ -74,7 +74,7 @@ const DistributionChartTable = <T extends Record<string, unknown>>({
         <div className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full overflow-scroll`}>
           <div
             style={{
-              flex: 1,
+              flex: isMobile ? undefined : 1,
               minWidth: isMobile ? undefined : 180,
               width: "100%",
               height: 180,

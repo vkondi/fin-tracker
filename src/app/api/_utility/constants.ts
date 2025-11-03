@@ -329,6 +329,154 @@ export const PLATFORMS = [
     ],
   },
   {
+    name: "Kotak Mahindra Bank – Private Banking & Wealth Management",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.PMS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.NPS,
+    ],
+  },
+  {
+    name: "Yes Bank – Wealth Management",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.PMS,
+    ],
+  },
+  {
+    name: "IndusInd Bank – Private Banking & Wealth Management",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.ETFS,
+    ],
+  },
+  {
+    name: "IDFC First Bank – Wealth & Retail Investments",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+    ],
+  },
+  {
+    name: "Standard Chartered – Private Banking (India)",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.ETFS,
+      INSTRUMENTS.BONDS,
+    ],
+  },
+  {
+    name: "HSBC India – Wealth Management",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.GOLD,
+    ],
+  },
+  {
+    name: "DBS Bank India – Wealth Management",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.ETFS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+    ],
+  },
+  {
+    name: "RBL Bank – Retail & Wealth",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.WEALTH_ADVISORY,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+    ],
+  },
+  {
+    name: "Bandhan Bank – Retail Banking",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+    ],
+  },
+  {
+    name: "Punjab National Bank (PNB) – Wealth Services",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+      INSTRUMENTS.BONDS,
+    ],
+  },
+  {
+    name: "Bank of Baroda – Retail & Wealth",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+    ],
+  },
+  {
+    name: "Canara Bank – Retail & Wealth",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+    ],
+  },
+  {
+    name: "Union Bank of India – Retail & Wealth",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+    ],
+  },
+  {
+    name: "Central Bank of India – Retail & Wealth",
+    category: PLATFORM_CATEGORIES.BANK_WM,
+    instruments: [
+      INSTRUMENTS.PRIVATE_BANKING,
+      INSTRUMENTS.FIXED_DEPOSITS,
+      INSTRUMENTS.RECURRING_DEPOSITS,
+      INSTRUMENTS.MUTUAL_FUNDS,
+    ],
+  },
+  {
     name: "IIFL Wealth",
     category: PLATFORM_CATEGORIES.WM_FIRM,
     instruments: [
