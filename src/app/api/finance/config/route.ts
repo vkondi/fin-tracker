@@ -12,12 +12,12 @@ export async function GET() {
   try {
     // Sort by category/name
     const sortedPlatforms = [...PLATFORMS].sort((a, b) => {
-      // First, compare by category
-      if (a.category < b.category) return -1;
-      if (a.category > b.category) return 1;
+      // First, compare by name
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
 
-      // If categories are equal, compare by name
-      return a.name.localeCompare(b.name);
+      // If names are equal, compare by category
+      return a.category.localeCompare(b.category);
     });
 
     return NextResponse.json(
