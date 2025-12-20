@@ -4,75 +4,28 @@ on:
   pull_request:
     branches:
       - main
-      - master
+      - develop
 
 jobs:
-  install:
-    name: Install dependencies
-    runs-on: ubuntu-latest
-
-    outputs:
-      cache-hit: ${{ steps.cache.outputs.cache-hit }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
   check-types:
     name: Type check
-    needs: install
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup-node-yarn
       - run: yarn check-types
 
   lint:
     name: Lint
-    needs: install
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup-node-yarn
       - run: yarn lint
 
   test:
     name: Unit tests (Vitest)
-    needs: install
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup-node-yarn
       - run: yarn test:run
 
   build:
@@ -82,14 +35,6 @@ jobs:
       - lint
       - test
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup-node-yarn
       - run: yarn build
