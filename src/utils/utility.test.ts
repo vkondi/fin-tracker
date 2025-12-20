@@ -102,7 +102,7 @@ describe('Data Construction Helpers', () => {
     });
 
     it('should handle single empty or missing owner entries properly', () => {
-        const data = [{ ...mockFinanceData[0], owner: undefined as any }];
+        const data = [{ ...mockFinanceData[0], owner: undefined as unknown as string }];
         const result = constructMemberWiseData(data);
         expect(result).toHaveLength(0);
     });

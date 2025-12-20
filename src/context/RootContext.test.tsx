@@ -1,8 +1,9 @@
-import { render, screen, act, waitFor, renderHook } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, waitFor, renderHook } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RootProvider, useRootContext } from './RootContext';
 import { useSession } from "next-auth/react";
 import { useMediaQuery } from "react-responsive";
+import { FinanceFormDataType } from '@/components/component.types';
 
 // Mock dependencies
 vi.mock("next-auth/react", () => ({
@@ -29,13 +30,13 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('RootContext', () => {
-    const mockUseSession = useSession as any;
-    const mockUseMediaQuery = useMediaQuery as any;
+    const mockUseSession = vi.mocked(useSession);
+    const mockUseMediaQuery = vi.mocked(useMediaQuery);
 
     beforeEach(() => {
         vi.clearAllMocks();
         // Default session: not logged in
-        mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" });
+        mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" } as unknown as ReturnType<typeof useSession>);
         // Default media query: desktop
         mockUseMediaQuery.mockReturnValue(false);
         // Default fetch mismatch
@@ -58,7 +59,7 @@ describe('RootContext', () => {
         // Suppress console.error for this specific test as React will log validation error
         const originalConsoleError = console.error;
         console.error = vi.fn();
-        
+
         expect(() => {
             renderHook(() => useRootContext());
         }).toThrow("useRootContext must be used within a RootProvider");
@@ -76,7 +77,7 @@ describe('RootContext', () => {
         const { result } = renderHook(() => useRootContext(), { wrapper });
 
         act(() => {
-            result.current.showFinanceForm('add', { id: '1' } as any);
+            result.current.showFinanceForm('add', { id: '1' } as unknown as FinanceFormDataType);
         });
 
         expect(result.current.financePopupState).toEqual({
@@ -96,7 +97,7 @@ describe('RootContext', () => {
         mockUseSession.mockReturnValue({
             data: { user: { email: 'test@example.com', name: 'Test User' } },
             status: "authenticated",
-        });
+        } as unknown as ReturnType<typeof useSession>);
 
         globalFetch.mockResolvedValueOnce({
             json: async () => ({
@@ -125,7 +126,7 @@ describe('RootContext', () => {
         mockUseSession.mockReturnValue({
             data: { user: { email: 'test@example.com', name: 'Test User' } },
             status: "authenticated",
-        });
+        } as unknown as ReturnType<typeof useSession>);
 
         // Mock Register response
         globalFetch.mockResolvedValueOnce({
@@ -136,7 +137,7 @@ describe('RootContext', () => {
 
         // Mock Config response
         globalFetch.mockResolvedValueOnce({
-             json: async () => ({
+            json: async () => ({
                 data: { platforms: [{ name: 'Zerodha', id: 'p1' }] }
             }),
         });
@@ -155,7 +156,7 @@ describe('RootContext', () => {
         });
 
         expect(globalFetch).toHaveBeenCalledWith(
-            expect.stringContaining("/api/finance/config"), 
+            expect.stringContaining("/api/finance/config"),
             expect.objectContaining({ method: "GET" })
         );
     });

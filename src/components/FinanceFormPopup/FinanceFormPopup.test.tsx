@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import FinanceFormPopup from './FinanceFormPopup';
 import * as RootContext from '@/context/RootContext';
 import * as FinContext from '@/context/FinContext';
+import { RootContextType } from '@/context/RootContext';
+import { FinContextType } from '@/context/FinContext';
 
 // Mock contexts
 vi.mock('@/context/RootContext', () => ({
@@ -19,8 +21,8 @@ vi.mock('react-icons/lia', () => ({
 }));
 
 describe('FinanceFormPopup', () => {
-    const mockUseRootContext = RootContext.useRootContext as any;
-    const mockUseFinContext = FinContext.useFinContext as any;
+    const mockUseRootContext = vi.mocked(RootContext.useRootContext);
+    const mockUseFinContext = vi.mocked(FinContext.useFinContext);
 
     const mockHideFinanceForm = vi.fn();
     const mockSetLoader = vi.fn();
@@ -35,7 +37,8 @@ describe('FinanceFormPopup', () => {
     ];
 
     const defaultRootContext = {
-        financePopupState: { isVisible: false, mode: '', data: null },
+        financePopupState: { isVisible: false, mode: undefined, data: undefined },
+        showFinanceForm: vi.fn(),
         hideFinanceForm: mockHideFinanceForm,
         loader: { show: false },
         isMobile: false,
@@ -52,9 +55,9 @@ describe('FinanceFormPopup', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUseRootContext.mockReturnValue(defaultRootContext);
-        mockUseFinContext.mockReturnValue(defaultFinContext);
-        
+        mockUseRootContext.mockReturnValue(defaultRootContext as unknown as RootContextType);
+        mockUseFinContext.mockReturnValue(defaultFinContext as unknown as FinContextType);
+
         // Mock promises for fin actions
         mockAddFinance.mockResolvedValue({ success: true });
         mockUpdateFinance.mockResolvedValue({ success: true });
@@ -62,7 +65,7 @@ describe('FinanceFormPopup', () => {
     });
 
     it('should not render anything when isVisible is false', () => {
-        const { container } = render(<FinanceFormPopup />);
+        render(<FinanceFormPopup />);
         // Since it uses portal, container might be empty, but we check document body or query
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
@@ -70,11 +73,11 @@ describe('FinanceFormPopup', () => {
     it('should render Add New Finance form', () => {
         mockUseRootContext.mockReturnValue({
             ...defaultRootContext,
-            financePopupState: { isVisible: true, mode: 'add', data: null },
-        });
+            financePopupState: { isVisible: true, mode: 'add' as const, data: undefined },
+        } as unknown as RootContextType);
 
         render(<FinanceFormPopup />);
-        
+
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByText('Add New Finance')).toBeInTheDocument();
         expect(screen.getByLabelText('Add')).toBeInTheDocument(); // Button text
@@ -83,8 +86,8 @@ describe('FinanceFormPopup', () => {
     it('should handle form submission in Add mode', async () => {
         mockUseRootContext.mockReturnValue({
             ...defaultRootContext,
-            financePopupState: { isVisible: true, mode: 'add', data: null },
-        });
+            financePopupState: { isVisible: true, mode: 'add' as const, data: undefined },
+        } as unknown as RootContextType);
 
         render(<FinanceFormPopup />);
 
@@ -126,11 +129,11 @@ describe('FinanceFormPopup', () => {
 
         mockUseRootContext.mockReturnValue({
             ...defaultRootContext,
-            financePopupState: { isVisible: true, mode: 'edit', data: testData },
-        });
+            financePopupState: { isVisible: true, mode: 'edit' as const, data: testData },
+        } as unknown as RootContextType);
 
         render(<FinanceFormPopup />);
-        
+
         expect(screen.getByText('Edit Finance')).toBeInTheDocument();
         expect(screen.getByLabelText('Platform')).toHaveValue('Zerodha');
         expect(screen.getByLabelText('Owner')).toHaveValue('John');
@@ -138,7 +141,7 @@ describe('FinanceFormPopup', () => {
     });
 
     it('should render Delete Finance confirmation', () => {
-         const testData = {
+        const testData = {
             id: '123',
             platform: 'Zerodha',
             category: 'Stocks',
@@ -150,11 +153,11 @@ describe('FinanceFormPopup', () => {
 
         mockUseRootContext.mockReturnValue({
             ...defaultRootContext,
-            financePopupState: { isVisible: true, mode: 'delete', data: testData },
-        });
+            financePopupState: { isVisible: true, mode: 'delete' as const, data: testData },
+        } as unknown as RootContextType);
 
         render(<FinanceFormPopup />);
-        
+
         expect(screen.getByText('Delete Finance')).toBeInTheDocument();
         expect(screen.getByText('Are you sure you want to delete "Zerodha" of "John"?')).toBeInTheDocument();
         expect(screen.getByLabelText('Delete')).toHaveClass('bg-red-900');
@@ -163,14 +166,14 @@ describe('FinanceFormPopup', () => {
     it('should close popup on outside click', () => {
         mockUseRootContext.mockReturnValue({
             ...defaultRootContext,
-            financePopupState: { isVisible: true, mode: 'add', data: null },
-        });
+            financePopupState: { isVisible: true, mode: 'add' as const, data: undefined },
+        } as unknown as RootContextType);
 
         render(<FinanceFormPopup />);
-        
+
         const overlay = screen.getAllByRole('button', { name: 'Close overlay' })[0];
         fireEvent.click(overlay);
-        
+
         expect(mockHideFinanceForm).toHaveBeenCalled(); // via closePopup which calls reset then hide
     });
 });

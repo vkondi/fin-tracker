@@ -20,6 +20,7 @@ const eslintConfig = [
     },
     rules: {
       ...jsxA11yPlugin.configs.recommended.rules,
+      "@typescript-eslint/no-explicit-any": "error",
     },
   },
 ];

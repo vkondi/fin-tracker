@@ -1,17 +1,18 @@
+import React, { ReactNode } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import DistributionChartTable from './DistributionChartTable';
 
 // Mock Recharts
 vi.mock("recharts", () => ({
-    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    PieChart: ({ children }: any) => <div>{children}</div>,
+    ResponsiveContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    PieChart: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Pie: () => <div>Pie Chart</div>,
     Tooltip: () => <div>Tooltip</div>,
 }));
 
 vi.mock("../DashboardCard/DashboardCard", () => ({
-    default: ({ children, title }: any) => <div><h1>{title}</h1>{children}</div>
+    default: ({ children, title }: { children: ReactNode, title: string }) => <div><h1>{title}</h1>{children}</div>
 }));
 
 // Mock CustomTooltip
@@ -31,8 +32,8 @@ describe('DistributionChartTable', () => {
         activeTab: "invested" as const,
         setActiveTab: mockSetActiveTab,
         tableColumns: [
-            { header: "Name", render: (rec: any) => rec.name },
-            { header: "Value", render: (rec: any) => rec.value },
+            { header: "Name", render: (rec: { name: string; value: number }) => rec.name },
+            { header: "Value", render: (rec: { name: string; value: number }) => rec.value.toString() },
         ],
         loading: false,
         hideIfNoData: false
@@ -40,7 +41,7 @@ describe('DistributionChartTable', () => {
 
     it('should render title and tabs', () => {
         render(<DistributionChartTable {...defaultProps} />);
-        
+
         expect(screen.getByText("Test Chart")).toBeInTheDocument();
         expect(screen.getByText("Tab 1")).toBeInTheDocument();
         expect(screen.getByText("Tab 2")).toBeInTheDocument();
@@ -48,7 +49,7 @@ describe('DistributionChartTable', () => {
 
     it('should switch tabs', () => {
         render(<DistributionChartTable {...defaultProps} />);
-        
+
         fireEvent.click(screen.getByText("Tab 2"));
         expect(mockSetActiveTab).toHaveBeenCalledWith("current");
 
@@ -58,10 +59,10 @@ describe('DistributionChartTable', () => {
 
     it('should render table data', () => {
         render(<DistributionChartTable {...defaultProps} />);
-        
+
         expect(screen.getByText("Name")).toBeInTheDocument(); // Header
         expect(screen.getByText("Value")).toBeInTheDocument(); // Header
-        
+
         expect(screen.getByText("A")).toBeInTheDocument(); // Data
         expect(screen.getByText("10")).toBeInTheDocument(); // Data
     });
@@ -73,10 +74,10 @@ describe('DistributionChartTable', () => {
 
     it('should not render if no data and hidden flag is on', () => {
         const { container } = render(
-            <DistributionChartTable 
-                {...defaultProps} 
-                chartData={[]} 
-                hideIfNoData={true} 
+            <DistributionChartTable
+                {...defaultProps}
+                chartData={[]}
+                hideIfNoData={true}
             />
         );
         expect(container).toBeEmptyDOMElement();

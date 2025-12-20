@@ -23,7 +23,7 @@ import { toast, ToastContainer } from "react-toastify";
 
 type ToastType = typeof toast;
 
-type RootContextType = {
+export type RootContextType = {
   showFinanceForm: (mode: FinanceFormMode, data?: FinanceFormDataType) => void;
   hideFinanceForm: () => void;
   financePopupState: FinancePopupContextStateType;

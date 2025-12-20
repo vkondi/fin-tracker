@@ -19,7 +19,7 @@ import {
 } from "react";
 import { useRootContext } from "./RootContext";
 
-type FinContextType = {
+export type FinContextType = {
   addFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
   deleteFinance: (id: string) => Promise<APIResponseType>;
   updateFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
@@ -82,8 +82,8 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         prev[owner].totalAbsReturnPercentage =
           Math.round(
             (prev[owner].totalAbsReturn / prev[owner].totalInvestedAmount) *
-              100 *
-              100
+            100 *
+            100
           ) / 100;
 
         return prev;

@@ -8,7 +8,6 @@ import {
   useMemo,
   useRef,
   useState,
-  MouseEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { FinanceFormDataType } from "../component.types";
@@ -62,7 +61,7 @@ const FinanceFormPopup = () => {
     () =>
       formData?.platform
         ? (platforms ?? []).find((rec) => rec.name === formData.platform)
-            ?.category
+          ?.category
         : null,
     [formData?.platform, platforms]
   ); // Retrive "category" based on selected "platform"
@@ -81,7 +80,7 @@ const FinanceFormPopup = () => {
     hideFinanceForm(); // Call the hideFinanceForm function to close the popup
   }, [hideFinanceForm]);
 
-  const handleClickOutside = (e: MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
+  const handleClickOutside = () => {
     closePopup();
   };
 
@@ -197,9 +196,8 @@ const FinanceFormPopup = () => {
   const renderAddEditView = useCallback(() => {
     return (
       <div
-        className={`bg-white shadow-lg p-6 relative overflow-y-auto ${
-          isMobile ? "w-full h-full" : "w-96 rounded-lg"
-        }`}
+        className={`bg-white shadow-lg p-6 relative overflow-y-auto ${isMobile ? "w-full h-full" : "w-96 rounded-lg"
+          }`}
       >
         {/* Overlay Header */}
         <div className="flex justify-between items-center mb-4">
@@ -418,9 +416,8 @@ const FinanceFormPopup = () => {
   return createPortal(
     <div
       ref={overlayRef}
-      className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${
-        isMobile ? "z-1000" : "z-50"
-      }`}
+      className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${isMobile ? "z-1000" : "z-50"
+        }`}
       role="dialog"
       tabIndex={-1}
       aria-modal="true"

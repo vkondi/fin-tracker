@@ -1,8 +1,10 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TrackerTable from './TrackerTable';
 import * as RootContext from '@/context/RootContext';
 import * as FinContext from '@/context/FinContext';
+import { RootContextType } from '@/context/RootContext';
+import { FinContextType } from '@/context/FinContext';
 
 // Mock contexts
 vi.mock('@/context/RootContext', () => ({
@@ -18,9 +20,9 @@ vi.mock('@/context/FinContext', () => ({
 // We will test if TrackerTable handles the sorting/filtering callbacks correctly.
 
 describe('TrackerTable Component', () => {
-    const mockUseRootContext = RootContext.useRootContext as any;
-    const mockUseFinContext = FinContext.useFinContext as any;
-    
+    const mockUseRootContext = vi.mocked(RootContext.useRootContext);
+    const mockUseFinContext = vi.mocked(FinContext.useFinContext);
+
     const mockShowFinanceForm = vi.fn();
     const mockFinanceData = [
         {
@@ -44,7 +46,7 @@ describe('TrackerTable Component', () => {
             updatedDate: '2023-01-02',
         },
     ];
-    
+
     // memberWiseData is used for colors
     const mockMemberWiseData = [
         { owner: 'John', fill: 'red' },
@@ -57,15 +59,15 @@ describe('TrackerTable Component', () => {
             showFinanceForm: mockShowFinanceForm,
             isMobile: false,
             loader: { show: false },
-        });
+        } as unknown as RootContextType);
         mockUseFinContext.mockReturnValue({
             financeData: mockFinanceData,
             memberWiseData: mockMemberWiseData,
-        });
+        } as unknown as FinContextType);
     });
 
     it('should render empty state when no data', () => {
-        mockUseFinContext.mockReturnValue({ financeData: [], memberWiseData: [] });
+        mockUseFinContext.mockReturnValue({ financeData: [], memberWiseData: [] } as unknown as FinContextType);
         render(<TrackerTable />);
         // Assuming TrackerTableEmptyState renders some text like "No data found" or "Get started"
         // Let's check for something generic if we don't know exact text, or we can check what TrackerTableEmptyState renders.
@@ -78,10 +80,10 @@ describe('TrackerTable Component', () => {
 
     it('should render table with data on desktop', () => {
         render(<TrackerTable />);
-        
+
         expect(screen.getByRole('table')).toBeInTheDocument();
         expect(screen.getAllByRole('row')).toHaveLength(3); // Header + 2 data rows
-        
+
         // Check content
         expect(screen.getByText('Zerodha')).toBeInTheDocument();
         expect(screen.getByText('Groww')).toBeInTheDocument();
@@ -89,7 +91,7 @@ describe('TrackerTable Component', () => {
 
     it('should show Add New button and call showFinanceForm on click', () => {
         render(<TrackerTable />);
-        
+
         const addButton = screen.getByText('Add New');
         fireEvent.click(addButton);
         expect(mockShowFinanceForm).toHaveBeenCalledWith('add');
@@ -100,14 +102,14 @@ describe('TrackerTable Component', () => {
             showFinanceForm: mockShowFinanceForm,
             isMobile: true,
             loader: { show: false },
-        });
-        
+        } as unknown as RootContextType);
+
         render(<TrackerTable />);
-        
+
         // Mobile view doesn't use <table> usually in this implementation:
         // {isMobile ? (<div className="space-y-2">...</div>) : (<table>...</table>)}
         expect(screen.queryByRole('table')).not.toBeInTheDocument();
-        
+
         // Check content existence
         expect(screen.getByText('Zerodha')).toBeInTheDocument();
     });

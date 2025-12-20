@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import CustomTooltip from './CustomTooltip';
 import { formattedAmount } from '@/utils/utility';
+import { Payload } from 'recharts/types/component/DefaultTooltipContent';
 
 // Use real utility or mock it. Since it relies on Intl, real is fine, but we can mock for consistency.
 // But since previous tests mocked it, maybe stick to pattern.
@@ -11,13 +12,12 @@ import { formattedAmount } from '@/utils/utility';
 
 describe('CustomTooltip', () => {
     it('should render tooltip content when active', () => {
-        const payload = [{
+        const payload: Payload<number, string>[] = [{
             payload: { name: 'Stocks', value: 50 },
             value: 50,
             name: 'Stocks',
-            dataKey: 'value' // Adding dataKey to satisfy Payload type if strict, but let's see. 
-            // Recharts Payload type is complex, generally casting or partial match works.
-        }] as any;
+            dataKey: 'value' 
+        }];
 
         render(<CustomTooltip total={100} active={true} payload={payload} />);
         
@@ -31,11 +31,12 @@ describe('CustomTooltip', () => {
     });
 
     it('should not render anything if not active', () => {
-        const payload = [{
+        const payload: Payload<number, string>[] = [{
             payload: { name: 'Stocks', value: 50 },
             value: 50,
-            name: 'Stocks'
-        }] as any;
+            name: 'Stocks',
+            dataKey: 'value'
+        }];
 
         const { container } = render(<CustomTooltip total={100} active={false} payload={payload} />);
         expect(container).toBeEmptyDOMElement();

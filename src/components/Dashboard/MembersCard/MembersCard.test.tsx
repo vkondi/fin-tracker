@@ -4,6 +4,9 @@ import MembersCard from './MembersCard';
 import * as ROOT_CONTEXT from "@/context/RootContext";
 import * as FIN_CONTEXT from "@/context/FinContext";
 
+import { RootContextType } from "@/context/RootContext";
+import { FinContextType } from "@/context/FinContext";
+
 vi.mock("@/context/RootContext", () => ({
     useRootContext: vi.fn(),
 }));
@@ -13,7 +16,7 @@ vi.mock("@/context/FinContext", () => ({
 }));
 
 vi.mock("../DashboardCard/DashboardCard", () => ({
-    default: ({ children }: any) => <div data-testid="dashboard-card">{children}</div>
+    default: ({ children }: { children: React.ReactNode }) => <div data-testid="dashboard-card">{children}</div>
 }));
 
 // Mock utility
@@ -22,35 +25,35 @@ vi.mock("@/utils/utility", () => ({
 }));
 
 describe('MembersCard', () => {
-    const mockUseRootContext = ROOT_CONTEXT.useRootContext as any;
-    const mockUseFinContext = FIN_CONTEXT.useFinContext as any;
+    const mockUseRootContext = vi.mocked(ROOT_CONTEXT.useRootContext);
+    const mockUseFinContext = vi.mocked(FIN_CONTEXT.useFinContext);
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUseRootContext.mockReturnValue({ 
+        mockUseRootContext.mockReturnValue({
             loader: { show: false },
-            isMobile: false 
-        });
+            isMobile: false
+        } as unknown as RootContextType);
     });
 
     it('should render nothing if loading', () => {
-         mockUseRootContext.mockReturnValue({ 
+        mockUseRootContext.mockReturnValue({
             loader: { show: true },
-            isMobile: false 
-        });
-        mockUseFinContext.mockReturnValue({ memberWiseData: [], hasNoFinanceData: false });
-        
+            isMobile: false
+        } as unknown as RootContextType);
+        mockUseFinContext.mockReturnValue({ memberWiseData: [], hasNoFinanceData: false } as unknown as FinContextType);
+
         const { container } = render(<MembersCard />);
         expect(container).toBeEmptyDOMElement();
     });
 
     it('should render nothing if no data', () => {
-         mockUseRootContext.mockReturnValue({ 
+        mockUseRootContext.mockReturnValue({
             loader: { show: false },
-            isMobile: false 
-        });
-        mockUseFinContext.mockReturnValue({ memberWiseData: [], hasNoFinanceData: true });
-        
+            isMobile: false
+        } as unknown as RootContextType);
+        mockUseFinContext.mockReturnValue({ memberWiseData: [], hasNoFinanceData: true } as unknown as FinContextType);
+
         const { container } = render(<MembersCard />);
         expect(container).toBeEmptyDOMElement();
     });
@@ -75,13 +78,13 @@ describe('MembersCard', () => {
             }
         ];
 
-        mockUseFinContext.mockReturnValue({ 
-            memberWiseData: mockData, 
-            hasNoFinanceData: false 
-        });
+        mockUseFinContext.mockReturnValue({
+            memberWiseData: mockData,
+            hasNoFinanceData: false
+        } as unknown as FinContextType);
 
         render(<MembersCard />);
-        
+
         // Bob should be first (2000 > 1000)
         const names = screen.getAllByText(/Alice|Bob/);
         expect(names[0]).toHaveTextContent('Bob');

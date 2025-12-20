@@ -2,16 +2,17 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import DashboardCard from './DashboardCard';
 import * as ROOT_CONTEXT from "@/context/RootContext";
+import { RootContextType } from "@/context/RootContext";
 
 vi.mock("@/context/RootContext", () => ({
     useRootContext: vi.fn(),
 }));
 
 describe('DashboardCard', () => {
-    const mockUseRootContext = ROOT_CONTEXT.useRootContext as any;
+    const mockUseRootContext = vi.mocked(ROOT_CONTEXT.useRootContext);
 
     it('should render children', () => {
-        mockUseRootContext.mockReturnValue({ isMobile: false });
+        mockUseRootContext.mockReturnValue({ isMobile: false } as unknown as RootContextType);
         render(
             <DashboardCard>
                 <div>Child Content</div>
@@ -21,7 +22,7 @@ describe('DashboardCard', () => {
     });
 
     it('should render title if provided', () => {
-        mockUseRootContext.mockReturnValue({ isMobile: false });
+        mockUseRootContext.mockReturnValue({ isMobile: false } as unknown as RootContextType);
         render(
             <DashboardCard title="My Card">
                 <div>Content</div>
@@ -31,7 +32,7 @@ describe('DashboardCard', () => {
     });
 
     it('should apply mobile specific classes', () => {
-        mockUseRootContext.mockReturnValue({ isMobile: true });
+        mockUseRootContext.mockReturnValue({ isMobile: true } as unknown as RootContextType);
         const { container } = render(
             <DashboardCard>
                 <div>Content</div>
@@ -42,7 +43,7 @@ describe('DashboardCard', () => {
     });
 
     it('should apply desktop specific classes', () => {
-        mockUseRootContext.mockReturnValue({ isMobile: false });
+        mockUseRootContext.mockReturnValue({ isMobile: false } as unknown as RootContextType);
         const { container } = render(
             <DashboardCard>
                 <div>Content</div>

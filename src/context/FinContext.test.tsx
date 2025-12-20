@@ -2,6 +2,8 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FinProvider, useFinContext } from './FinContext';
 import * as RootContext from './RootContext';
+import { RootContextType } from './RootContext';
+import { FinanceFormDataType } from '@/components/component.types';
 
 // Mock dependencies
 vi.mock('./RootContext', () => ({
@@ -26,7 +28,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('FinContext', () => {
     const mockSetLoader = vi.fn();
-    const mockUseRootContext = RootContext.useRootContext as any;
+    const mockUseRootContext = vi.mocked(RootContext.useRootContext);
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -35,7 +37,7 @@ describe('FinContext', () => {
             isUserRegistered: true,
             userId: 'user-123',
             setLoader: mockSetLoader,
-        });
+        } as unknown as RootContextType);
 
         // Default empty fetch
         globalFetch.mockResolvedValue({
@@ -44,14 +46,14 @@ describe('FinContext', () => {
     });
 
     it('should throw error if used outside provider', () => {
-         const originalConsoleError = console.error;
-         console.error = vi.fn();
-         
-         expect(() => {
-             renderHook(() => useFinContext());
-         }).toThrow("useFinContext must be used within a FinProvider");
-         
-         console.error = originalConsoleError;
+        const originalConsoleError = console.error;
+        console.error = vi.fn();
+
+        expect(() => {
+            renderHook(() => useFinContext());
+        }).toThrow("useFinContext must be used within a FinProvider");
+
+        console.error = originalConsoleError;
     });
 
     it('should fetch and process finance data on mount if registered', async () => {
@@ -90,7 +92,7 @@ describe('FinContext', () => {
     });
 
     it('should compute summaries correctly', async () => {
-         const mockApiData = [
+        const mockApiData = [
             {
                 id: "1",
                 platform_type: "Equity",
@@ -101,13 +103,13 @@ describe('FinContext', () => {
                 platform: "Zerodha"
             },
             {
-                 id: "2",
-                 platform_type: "SIP",
-                 platform_category: "Mutual Fund",
-                 amount_invested: 1000,
-                 amount_current: 1000,
-                 owner: "Bob",
-                 platform: "Groww"
+                id: "2",
+                platform_type: "SIP",
+                platform_category: "Mutual Fund",
+                amount_invested: 1000,
+                amount_current: 1000,
+                owner: "Bob",
+                platform: "Groww"
             }
         ];
 
@@ -138,18 +140,18 @@ describe('FinContext', () => {
         });
 
         const newRecord = {
-             id: "1",
-             owner: "Alice",
-             category: "Stocks",
-             platform: "Zerodha",
-             type: "Equity",
-             investedAmount: 100,
-             currentAmount: 110,
+            id: "1",
+            owner: "Alice",
+            category: "Stocks",
+            platform: "Zerodha",
+            type: "Equity",
+            investedAmount: 100,
+            currentAmount: 110,
         };
 
         let response;
         await act(async () => {
-            response = await result.current.addFinance(newRecord as any);
+            response = await result.current.addFinance(newRecord as FinanceFormDataType);
         });
 
         expect(response).toEqual({ success: true, message: "Finance data added successfully!" });
@@ -162,26 +164,26 @@ describe('FinContext', () => {
         expect(globalFetch).toHaveBeenCalledTimes(3);
     });
 
-     it('should update finance record', async () => {
+    it('should update finance record', async () => {
         const { result } = renderHook(() => useFinContext(), { wrapper });
 
         globalFetch.mockResolvedValue({
             json: async () => ({ data: [] }),
         });
 
-         const record = {
-             id: "1",
-             owner: "Alice",
-             category: "Stocks",
-             platform: "Zerodha",
-             type: "Equity",
-             investedAmount: 100,
-             currentAmount: 110,
+        const record = {
+            id: "1",
+            owner: "Alice",
+            category: "Stocks",
+            platform: "Zerodha",
+            type: "Equity",
+            investedAmount: 100,
+            currentAmount: 110,
         };
 
         let response;
         await act(async () => {
-            response = await result.current.updateFinance(record as any);
+            response = await result.current.updateFinance(record as FinanceFormDataType);
         });
 
         expect(response).toEqual({ success: true, message: "Finance data updated successfully!" });
@@ -190,7 +192,7 @@ describe('FinContext', () => {
         }));
     });
 
-     it('should delete finance record', async () => {
+    it('should delete finance record', async () => {
         const { result } = renderHook(() => useFinContext(), { wrapper });
 
         globalFetch.mockResolvedValue({
