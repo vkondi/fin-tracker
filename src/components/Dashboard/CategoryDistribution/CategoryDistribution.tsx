@@ -5,7 +5,7 @@ import { constructCategoryWiseData, formattedAmount } from "@/utils/utility";
 import DistributionChartTable, { DistributionTab } from "../DistributionChartTable/DistributionChartTable";
 
 const CategoryDistribution = () => {
-  const [activeTab, setActiveTab] = useState<DistributionTab>("invested");
+  const [activeTab, setActiveTab] = useState<DistributionTab>("current");
   const {
     isMobile,
     loader: { show: loading },
@@ -54,7 +54,7 @@ const CategoryDistribution = () => {
       isMobile={isMobile}
       chartData={chartData}
       total={total}
-      tabLabels={["Invested Amount", "Current Amount"]}
+      tabLabels={["Invested", "Current"]}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       tableColumns={[

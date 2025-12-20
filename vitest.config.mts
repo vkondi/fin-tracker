@@ -11,6 +11,19 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/**',
+        '.next/**',
+        'dist/**',
+        '**/*.d.ts',
+        '**/*.test.{ts,tsx}',
+        '**/*.module.css',
+        '**/*.css',
+        'next.config.ts',
+        'postcss.config.mjs',
+        'tailwind.config.ts',
+        'eslint.config.mjs',
+      ],
     },
   },
 })
