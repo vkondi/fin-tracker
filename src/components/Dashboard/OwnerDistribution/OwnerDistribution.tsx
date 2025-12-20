@@ -5,7 +5,7 @@ import { formattedAmount } from "@/utils/utility";
 import DistributionChartTable, { DistributionTab } from "../DistributionChartTable/DistributionChartTable";
 
 const OwnerDistribution = () => {
-  const [activeTab, setActiveTab] = useState<DistributionTab>("invested");
+  const [activeTab, setActiveTab] = useState<DistributionTab>("current");
   const {
     isMobile,
     loader: { show: loading },
@@ -48,7 +48,7 @@ const OwnerDistribution = () => {
       isMobile={isMobile}
       chartData={chartData}
       total={total}
-      tabLabels={["Invested Amount", "Current Amount"]}
+      tabLabels={["Invested", "Current"]}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       tableColumns={[

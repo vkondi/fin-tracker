@@ -57,7 +57,7 @@ describe('CategoryDistribution', () => {
         render(<CategoryDistribution />);
 
         expect(screen.getByText('Category Allocation')).toBeInTheDocument();
-        expect(screen.getByText('Stocks - ₹500 (50%)')).toBeInTheDocument();
-        expect(screen.getByText('MF - ₹500 (50%)')).toBeInTheDocument();
+        expect(screen.getByText('Stocks - ₹600 (52.17%)')).toBeInTheDocument();
+        expect(screen.getByText('MF - ₹550 (47.83%)')).toBeInTheDocument();
     });
 });

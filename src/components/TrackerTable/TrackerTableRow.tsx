@@ -46,20 +46,20 @@ const TrackerTableRow = ({
   );
   const updatedDate = data?.updatedDate
     ? new Date(data.updatedDate).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
     : "N/A";
 
   const absReturnTextCls =
     parseInt(abosulteReturnAmount) > 0
       ? "text-green-700"
       : parseInt(abosulteReturnAmount) < 0
-      ? "text-red-700"
-      : "";
+        ? "text-red-700"
+        : "";
 
 
   const handleEdit = () => {
@@ -76,7 +76,7 @@ const TrackerTableRow = ({
 
   if (isMobile) {
     return (
-      <div 
+      <div
         className="bg-white rounded-xl shadow-sm mb-4 overflow-hidden transition-all duration-200 ease-in-out"
         style={{
           borderLeft: `4px solid ${memberColor}`,
@@ -117,7 +117,7 @@ const TrackerTableRow = ({
               </button>
             </div>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xs text-gray-500">Owner</p>
@@ -131,10 +131,9 @@ const TrackerTableRow = ({
         </div>
 
         {/* Expandable Content */}
-        <div 
-          className={`bg-gray-50 transition-all duration-200 ease-in-out overflow-hidden ${
-            isExpanded ? 'max-h-[500px] border-t' : 'max-h-0'
-          }`}
+        <div
+          className={`bg-gray-50 transition-all duration-200 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[500px] border-t' : 'max-h-0'
+            }`}
         >
           <div className="p-4 space-y-3">
             {/* Financial Details */}

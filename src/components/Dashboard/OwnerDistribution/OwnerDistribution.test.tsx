@@ -48,6 +48,6 @@ describe('OwnerDistribution', () => {
         render(<OwnerDistribution />);
 
         expect(screen.getByText('Member Allocation')).toBeInTheDocument();
-        expect(screen.getByText('Alice - ₹500')).toBeInTheDocument();
+        expect(screen.getByText('Alice - ₹600')).toBeInTheDocument();
     });
 });
