@@ -12,6 +12,9 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: ["**/node_modules/", ".next/", "dist/", "build/"],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   // Add the plugin and recommended config
   {
@@ -20,6 +23,7 @@ const eslintConfig = [
     },
     rules: {
       ...jsxA11yPlugin.configs.recommended.rules,
+      "@typescript-eslint/no-explicit-any": "error",
     },
   },
 ];

@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Header Component > should match the snapshot 1`] = `
+<DocumentFragment>
+  <header
+    class="_container_a5b977"
+    role="banner"
+  >
+    <div
+      class="w-full"
+    >
+      <div
+        class="max-w-[2200px] mx-auto _wrapperCls_a5b977"
+      >
+        <a
+          href="/"
+        >
+          <div
+            class="_titleLeft_a5b977"
+          >
+            Test App
+          </div>
+        </a>
+        <nav
+          aria-label="Main navigation"
+          class="_nav_a5b977"
+        >
+          <div
+            class="_menuItem_a5b977"
+          >
+            <button
+              class="_navLink_a5b977"
+            >
+              Sign In
+            </button>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
