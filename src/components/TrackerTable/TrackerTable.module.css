@@ -1,7 +1,7 @@
 .tableContainer {
     display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+    overflow-x: none;
+    white-space: wrap;
   }
   
   .hiddenThead {
