@@ -1,12 +1,9 @@
 name: Setup Node.js and Yarn
-description: Checkout repo, setup Node 22, restore Yarn cache, and install dependencies
+description: Setup Node 22, restore Yarn cache, and install dependencies
 
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
