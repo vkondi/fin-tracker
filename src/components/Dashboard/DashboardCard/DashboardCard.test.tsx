@@ -38,7 +38,6 @@ describe('DashboardCard', () => {
                 <div>Content</div>
             </DashboardCard>
         );
-        // On mobile, max-w-[50%] is NOT applied
         expect(container.firstChild).not.toHaveClass("max-w-[50%]");
     });
 
@@ -49,7 +48,6 @@ describe('DashboardCard', () => {
                 <div>Content</div>
             </DashboardCard>
         );
-        // On desktop, max-w-[50%] IS applied
         expect(container.firstChild).toHaveClass("max-w-[50%]");
     });
 });

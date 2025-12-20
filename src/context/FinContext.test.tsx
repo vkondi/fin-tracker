@@ -5,23 +5,19 @@ import * as RootContext from './RootContext';
 import { RootContextType } from './RootContext';
 import { FinanceFormDataType } from '@/components/component.types';
 
-// Mock dependencies
 vi.mock('./RootContext', () => ({
     useRootContext: vi.fn(),
 }));
 
-// Mock utility
 vi.mock("@/utils/utility", () => ({
     getRandomColor: vi.fn(() => "#FFFFFF"),
 }));
 
 
-// Mock global fetch
 const globalFetch = vi.fn();
 global.fetch = globalFetch;
 
 
-// Wrapper component
 const wrapper = ({ children }: { children: React.ReactNode }) => (
     <FinProvider>{children}</FinProvider>
 );
@@ -32,14 +28,12 @@ describe('FinContext', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        // Default root context
         mockUseRootContext.mockReturnValue({
             isUserRegistered: true,
             userId: 'user-123',
             setLoader: mockSetLoader,
         } as unknown as RootContextType);
 
-        // Default empty fetch
         globalFetch.mockResolvedValue({
             json: async () => ({ data: [] }),
         });
@@ -82,8 +76,8 @@ describe('FinContext', () => {
 
         const data = result.current.financeData[0];
         expect(data.id).toBe("1");
-        expect(data.type).toBe("Equity"); // mapped from platform_type
-        expect(data.category).toBe("Stocks"); // mapped
+        expect(data.type).toBe("Equity");
+        expect(data.category).toBe("Stocks");
         expect(data.investedAmount).toBe(1000);
         expect(data.currentAmount).toBe(1200);
 
@@ -127,7 +121,7 @@ describe('FinContext', () => {
         expect(summary.totalInvested).toBe(2000);
         expect(summary.totalCurrent).toBe(2200);
         expect(summary.totalAbsReturn).toBe(200);
-        expect(summary.totalAbsReturnPercentage).toBe(10); // (200/2000)*100
+        expect(summary.totalAbsReturnPercentage).toBe(10);
         expect(summary.totalOwners).toBe(2);
         expect(summary.totalPlatforms).toBe(2);
     });
@@ -159,8 +153,6 @@ describe('FinContext', () => {
             method: "POST",
             body: expect.stringContaining("Alice")
         }));
-        // Should fetch again
-        // 1 (Initial GET) + 1 (POST) + 1 (Refresh GET) = 3
         expect(globalFetch).toHaveBeenCalledTimes(3);
     });
 

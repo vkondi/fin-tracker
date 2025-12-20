@@ -4,7 +4,6 @@ import AddNewPromoCard from './AddNewPromoCard';
 import * as ROOT_CONTEXT from "@/context/RootContext";
 import { RootContextType } from "@/context/RootContext";
 
-// Mock dependencies
 vi.mock("@/context/RootContext", () => ({
     useRootContext: vi.fn(),
 }));
@@ -13,7 +12,6 @@ vi.mock("../DashboardCard/DashboardCard", () => ({
     default: ({ children }: { children: React.ReactNode }) => <div data-testid="dashboard-card">{children}</div>
 }));
 
-// Mock icons
 vi.mock("react-icons/im", () => ({ ImCheckmark: () => <span>check</span> }));
 vi.mock("react-icons/io5", () => ({ IoPieChartSharp: () => <span>pie</span> }));
 vi.mock("react-icons/ai", () => ({ AiFillThunderbolt: () => <span>bolt</span> }));

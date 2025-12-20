@@ -6,7 +6,6 @@ import * as FinContext from '@/context/FinContext';
 import { RootContextType } from '@/context/RootContext';
 import { FinContextType } from '@/context/FinContext';
 
-// Mock contexts
 vi.mock('@/context/RootContext', () => ({
     useRootContext: vi.fn(),
 }));
@@ -15,7 +14,6 @@ vi.mock('@/context/FinContext', () => ({
     useFinContext: vi.fn(),
 }));
 
-// Mock react-icons
 vi.mock('react-icons/lia', () => ({
     LiaWindowCloseSolid: () => <span data-testid="close-icon" />,
 }));
@@ -58,7 +56,6 @@ describe('FinanceFormPopup', () => {
         mockUseRootContext.mockReturnValue(defaultRootContext as unknown as RootContextType);
         mockUseFinContext.mockReturnValue(defaultFinContext as unknown as FinContextType);
 
-        // Mock promises for fin actions
         mockAddFinance.mockResolvedValue({ success: true });
         mockUpdateFinance.mockResolvedValue({ success: true });
         mockDeleteFinance.mockResolvedValue({ success: true });
@@ -66,7 +63,6 @@ describe('FinanceFormPopup', () => {
 
     it('should not render anything when isVisible is false', () => {
         render(<FinanceFormPopup />);
-        // Since it uses portal, container might be empty, but we check document body or query
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
@@ -80,7 +76,7 @@ describe('FinanceFormPopup', () => {
 
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByText('Add New Finance')).toBeInTheDocument();
-        expect(screen.getByLabelText('Add')).toBeInTheDocument(); // Button text
+        expect(screen.getByLabelText('Add')).toBeInTheDocument();
     });
 
     it('should handle form submission in Add mode', async () => {
@@ -91,14 +87,12 @@ describe('FinanceFormPopup', () => {
 
         render(<FinanceFormPopup />);
 
-        // Fill form
         fireEvent.change(screen.getByLabelText('Platform'), { target: { value: 'Zerodha' } });
         fireEvent.change(screen.getByLabelText('Type/Instruments'), { target: { value: 'Equity' } });
         fireEvent.change(screen.getByLabelText('Owner'), { target: { value: 'John' } });
         fireEvent.change(screen.getByLabelText('Invested Amount'), { target: { value: '1000' } });
         fireEvent.change(screen.getByLabelText('Current Amount'), { target: { value: '1200' } });
 
-        // Submit
         fireEvent.click(screen.getByLabelText('Add'));
 
         await waitFor(() => {
@@ -109,7 +103,7 @@ describe('FinanceFormPopup', () => {
                 owner: 'John',
                 investedAmount: 1000,
                 currentAmount: 1200,
-                category: 'Stocks', // Derived from platform
+                category: 'Stocks',
             });
             expect(mockToast.success).toHaveBeenCalledWith("Finance record added successfully!", expect.any(Object));
             expect(mockHideFinanceForm).toHaveBeenCalled();
@@ -174,6 +168,6 @@ describe('FinanceFormPopup', () => {
         const overlay = screen.getAllByRole('button', { name: 'Close overlay' })[0];
         fireEvent.click(overlay);
 
-        expect(mockHideFinanceForm).toHaveBeenCalled(); // via closePopup which calls reset then hide
+        expect(mockHideFinanceForm).toHaveBeenCalled();
     });
 });

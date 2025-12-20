@@ -6,7 +6,6 @@ import { RootContextType } from '@/context/RootContext';
 import { useSession, signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
-// Mock dependencies
 vi.mock('@/context/RootContext', () => ({
     useRootContext: vi.fn(),
 }));
@@ -21,7 +20,6 @@ vi.mock("next/navigation", () => ({
     usePathname: vi.fn(),
 }));
 
-// Mock Link since it's used
 vi.mock("next/link", () => {
     return {
         default: ({ children, href, onClick, className }: { children: React.ReactNode, href: string, onClick?: React.MouseEventHandler, className?: string }) => {
@@ -112,19 +110,12 @@ describe('Header Component', () => {
         render(<Header />);
         const toggleButton = screen.getByLabelText('Open navigation menu');
 
-        // Open
         fireEvent.click(toggleButton);
         expect(screen.getByText('Sign In')).toBeInTheDocument(); // Drawer item
 
-        // Close via close button (rendered inside drawer when open)
-        // Note: The close button has text "✕", we can find by text or class. 
-        // The implementation uses <button>✕</button>
         const closeButton = screen.getByText('✕');
         fireEvent.click(closeButton);
 
-        // Wait purely for state update if needed, but synchronous in React usually.
-        // However, if the menu items are hidden, we check if they are gone.
-        // In the implementation, if !isDrawerOpen, the drawer div is not rendered at all.
         expect(screen.queryByText('✕')).not.toBeInTheDocument();
     });
 });

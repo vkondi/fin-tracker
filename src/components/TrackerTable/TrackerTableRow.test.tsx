@@ -36,9 +36,7 @@ describe('TrackerTableRow', () => {
         } as unknown as RootContextType);
     });
 
-    it('should render row data in desktop view', () => {
-        // Need to wrap in table/tbody/tr structure or render just the row if it was just <tr>
-        // But TrackerTableRow returns <tr> in desktop mode.
+    it('should render desktop view correctly', () => {
         render(
             <table>
                 <tbody>
@@ -51,7 +49,7 @@ describe('TrackerTableRow', () => {
         expect(screen.getByText('Alice')).toBeInTheDocument();
         expect(screen.getByText('₹1000')).toBeInTheDocument();
         expect(screen.getByText('₹1200')).toBeInTheDocument();
-        expect(screen.getByText('20.00%')).toBeInTheDocument(); // Abs return %
+        expect(screen.getByText('20.00%')).toBeInTheDocument();
     });
 
     it('should call edit on click', () => {
@@ -63,11 +61,6 @@ describe('TrackerTableRow', () => {
             </table>
         );
 
-
-        // Implementation: <button ...><FaEdit /></button>. No aria-label in desktop view code?
-        // Wait, looking at code: desktop view buttons are just icons.
-        // Let's rely on finding by role button.
-        // There are 2 buttons: Edit and Delete.
         const editBtn = screen.getByRole('button', { name: "Edit entry" });
         fireEvent.click(editBtn);
 
@@ -83,9 +76,7 @@ describe('TrackerTableRow', () => {
 
         render(<TrackerTableRow data={mockData} memberColorMap={mockMemberColorMap} />);
 
-        // In mobile it returns a div, no need for table wrapper
         expect(screen.getByText('Zerodha')).toBeInTheDocument();
-        // Check for expand capability
         expect(screen.getByLabelText('Expand details')).toBeInTheDocument();
     });
 
@@ -100,7 +91,6 @@ describe('TrackerTableRow', () => {
 
         fireEvent.click(screen.getByLabelText('Expand details'));
 
-        // Now details should be visible (check for expanded class or existence of detail items)
         expect(screen.getByText('Invested Amount')).toBeInTheDocument();
         expect(screen.getByLabelText('Collapse details')).toBeInTheDocument();
     });

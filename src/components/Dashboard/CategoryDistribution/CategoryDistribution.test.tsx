@@ -57,8 +57,6 @@ describe('CategoryDistribution', () => {
         render(<CategoryDistribution />);
 
         expect(screen.getByText('Category Allocation')).toBeInTheDocument();
-        // Check items 
-        // 500/1000 = 50%
         expect(screen.getByText('Stocks - ₹500 (50%)')).toBeInTheDocument();
         expect(screen.getByText('MF - ₹500 (50%)')).toBeInTheDocument();
     });

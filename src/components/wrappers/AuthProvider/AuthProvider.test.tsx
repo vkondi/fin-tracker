@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import AuthProvider from './AuthProvider';
 
-// Mock SessionProvider
 vi.mock("next-auth/react", () => ({
     SessionProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="session-provider">{children}</div>,
 }));

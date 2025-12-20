@@ -19,7 +19,6 @@ vi.mock("../DashboardCard/DashboardCard", () => ({
     default: ({ children }: { children: React.ReactNode }) => <div data-testid="dashboard-card">{children}</div>
 }));
 
-// Mock utility
 vi.mock("@/utils/utility", () => ({
     formattedAmount: (val: number) => `₹${val}`,
 }));
@@ -85,12 +84,10 @@ describe('MembersCard', () => {
 
         render(<MembersCard />);
 
-        // Bob should be first (2000 > 1000)
         const names = screen.getAllByText(/Alice|Bob/);
         expect(names[0]).toHaveTextContent('Bob');
         expect(names[1]).toHaveTextContent('Alice');
 
-        // Check values rendering
         expect(screen.getByText('₹2000')).toBeInTheDocument();
         expect(screen.getByText('₹1000')).toBeInTheDocument();
         expect(screen.getByText('(33.33%)')).toBeInTheDocument();

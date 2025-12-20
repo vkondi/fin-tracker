@@ -61,9 +61,8 @@ describe('Summary', () => {
         expect(screen.getByText('₹1000')).toBeInTheDocument();
 
         expect(screen.getByText('Total Absolute Return')).toBeInTheDocument();
-        expect(screen.getByText('₹200')).toBeInTheDocument(); // Positive, check class?
+        expect(screen.getByText('₹200')).toBeInTheDocument();
 
-        // Check for class on positive return
         const returnVal = screen.getByText('₹200');
         expect(returnVal).toHaveClass('text-[var(--text-green)]');
     });

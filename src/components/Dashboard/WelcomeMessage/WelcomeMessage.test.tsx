@@ -15,7 +15,6 @@ describe('WelcomeMessage', () => {
         mockUseRootContext.mockReturnValue({ name: 'User', isMobile: false } as unknown as RootContextType);
         render(<WelcomeMessage />);
 
-        // Greeting depends on time, but will likely contain "Good"
         expect(screen.getByText(/Good/)).toBeInTheDocument();
         expect(screen.getByText(/User/)).toBeInTheDocument();
         expect(screen.getByText(/👋/)).toBeInTheDocument();
@@ -27,7 +26,6 @@ describe('WelcomeMessage', () => {
 
         const heading = screen.getByRole('heading', { level: 1 });
         expect(heading).toHaveTextContent(/Good/);
-        // Should not have undefined or null printed
         expect(heading).not.toHaveTextContent('null');
         expect(heading).not.toHaveTextContent('undefined');
     });
@@ -36,13 +34,10 @@ describe('WelcomeMessage', () => {
         mockUseRootContext.mockReturnValue({ name: 'User', isMobile: false } as unknown as RootContextType);
         render(<WelcomeMessage />);
 
-        // Identify the p tag that holds the greeting.
-        // Structure: h1 -> p
         const heading = screen.getByRole('heading', { level: 1 });
         const greetingElement = heading.nextSibling;
 
         expect(greetingElement).toBeInTheDocument();
-        // Verify it has some text content
         expect(greetingElement).toHaveTextContent(/./);
     });
 });

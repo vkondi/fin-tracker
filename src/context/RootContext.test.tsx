@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useMediaQuery } from "react-responsive";
 import { FinanceFormDataType } from '@/components/component.types';
 
-// Mock dependencies
 vi.mock("next-auth/react", () => ({
     useSession: vi.fn(),
 }));
@@ -14,17 +13,14 @@ vi.mock("react-responsive", () => ({
     useMediaQuery: vi.fn(),
 }));
 
-// Mock react-toastify to avoid rendering issues and verify it's exported
 vi.mock("react-toastify", () => ({
     toast: { success: vi.fn(), error: vi.fn() },
     ToastContainer: () => <div data-testid="toast-container" />,
 }));
 
-// Mock global fetch
 const globalFetch = vi.fn();
 global.fetch = globalFetch;
 
-// Wrapper component for renderHook
 const wrapper = ({ children }: { children: React.ReactNode }) => (
     <RootProvider>{children}</RootProvider>
 );
@@ -35,11 +31,8 @@ describe('RootContext', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        // Default session: not logged in
         mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" } as unknown as ReturnType<typeof useSession>);
-        // Default media query: desktop
         mockUseMediaQuery.mockReturnValue(false);
-        // Default fetch mismatch
         globalFetch.mockResolvedValue({
             json: async () => ({ data: {} }),
         });
@@ -56,7 +49,6 @@ describe('RootContext', () => {
     });
 
     it('should throw error if used outside provider', () => {
-        // Suppress console.error for this specific test as React will log validation error
         const originalConsoleError = console.error;
         console.error = vi.fn();
 
@@ -107,14 +99,11 @@ describe('RootContext', () => {
 
         const { result } = renderHook(() => useRootContext(), { wrapper });
 
-        // Initial check might be empty depending on effect timing
-        // But effect should run and trigger update
         await waitFor(() => {
             expect(result.current.name).toBe('API User Name');
             expect(result.current.userId).toBe('user-123');
         });
 
-        // Verify fetch call
         expect(globalFetch).toHaveBeenCalledWith("/api/profile", expect.objectContaining({
             method: "POST",
             body: JSON.stringify({ email: 'test@example.com', name: 'Test User' })
@@ -122,20 +111,17 @@ describe('RootContext', () => {
     });
 
     it('should fetch configurations when user is registered', async () => {
-        // Setup state where user becomes registered
         mockUseSession.mockReturnValue({
             data: { user: { email: 'test@example.com', name: 'Test User' } },
             status: "authenticated",
         } as unknown as ReturnType<typeof useSession>);
 
-        // Mock Register response
         globalFetch.mockResolvedValueOnce({
             json: async () => ({
                 data: { id: 'user-123', name: 'API User Name' }
             }),
         });
 
-        // Mock Config response
         globalFetch.mockResolvedValueOnce({
             json: async () => ({
                 data: { platforms: [{ name: 'Zerodha', id: 'p1' }] }
@@ -144,12 +130,10 @@ describe('RootContext', () => {
 
         const { result } = renderHook(() => useRootContext(), { wrapper });
 
-        // Wait for registration
         await waitFor(() => {
             expect(result.current.name).toBe('API User Name');
         });
 
-        // Effect for config should trigger after registration
         await waitFor(() => {
             expect(result.current.platforms).toHaveLength(1);
             expect(result.current.platforms?.[0].name).toBe('Zerodha');

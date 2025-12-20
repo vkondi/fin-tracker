@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import * as ROOT_CONTEXT from "@/context/RootContext";
 import { RootContextType } from "@/context/RootContext";
 
-// Mock hooks
 vi.mock("next-auth/react", () => ({
     useSession: vi.fn(),
 }));
@@ -18,7 +17,6 @@ vi.mock("@/context/FinContext", () => ({
     useFinContext: vi.fn(),
 }));
 
-// Mock child components to verify Dashboard renders them
 vi.mock('./WelcomeMessage/WelcomeMessage', () => ({
     default: () => <div data-testid="welcome-message">WelcomeMessage</div>
 }));
@@ -50,17 +48,12 @@ describe('Dashboard Component', () => {
     const mockUseRootContext = vi.mocked(ROOT_CONTEXT.useRootContext);
 
     it('should render dashboard content correctly', () => {
-        // Setup mocks
         mockUseSession.mockReturnValue({ data: { user: { name: 'Test User' } }, status: 'authenticated' } as unknown as ReturnType<typeof useSession>);
         mockUseRootContext.mockReturnValue({ isMobile: false } as unknown as RootContextType);
-        // Assuming Dashboard might use financeData to decide showing empty state or not? 
-        // Need to check Dashboard.tsx content but based on file list it seems to just render components.
-        // Let's assume it renders everything.
 
         render(<Dashboard />);
 
         expect(screen.getByTestId('welcome-message')).toBeInTheDocument();
         expect(screen.getByTestId('summary')).toBeInTheDocument();
-        // Check for other components that should be present
     });
 });
