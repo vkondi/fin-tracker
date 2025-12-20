@@ -9,7 +9,7 @@ interface CustomTooltipProps  {
 
 const CustomTooltip = ({ total, active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
-    const { name, value } = payload[0].payload;
+    const { name, value } = payload[0].payload as { name: string; value: number };
     const percent = ((value / total) * 100).toFixed(2);
 
     return (

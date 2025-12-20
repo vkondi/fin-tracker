@@ -12,7 +12,13 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ]
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -44,7 +50,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "husky": "^9.1.7",
     "jsdom": "^27.3.0",
+    "lint-staged": "^16.2.7",
     "postcss": "8.4.31",
     "tailwindcss": "3.2.7",
     "typescript": "^5",
