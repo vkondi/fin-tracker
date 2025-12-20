@@ -199,6 +199,7 @@ const TrackerTableRow = ({
           onClick={handleEdit}
           disabled={loading}
           className="text-blue-500 hover:text-blue-700 pl-2"
+          aria-label="Edit entry"
         >
           <FaEdit />
         </button>
@@ -206,6 +207,7 @@ const TrackerTableRow = ({
           onClick={handleDelete}
           disabled={loading}
           className="text-red-500 hover:text-red-700 pl-2"
+          aria-label="Delete entry"
         >
           <FaTrash />
         </button>

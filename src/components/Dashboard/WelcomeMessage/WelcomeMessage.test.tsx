@@ -1,0 +1,47 @@
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import WelcomeMessage from './WelcomeMessage';
+import * as ROOT_CONTEXT from "@/context/RootContext";
+
+vi.mock("@/context/RootContext", () => ({
+    useRootContext: vi.fn(),
+}));
+
+describe('WelcomeMessage', () => {
+    const mockUseRootContext = ROOT_CONTEXT.useRootContext as any;
+
+    it('should render greeting with name', () => {
+        mockUseRootContext.mockReturnValue({ name: 'User', isMobile: false });
+        render(<WelcomeMessage />);
+        
+        // Greeting depends on time, but will likely contain "Good"
+        expect(screen.getByText(/Good/)).toBeInTheDocument();
+        expect(screen.getByText(/User/)).toBeInTheDocument();
+        expect(screen.getByText(/👋/)).toBeInTheDocument();
+    });
+
+    it('should render greeting without name', () => {
+        mockUseRootContext.mockReturnValue({ name: '', isMobile: false });
+        render(<WelcomeMessage />);
+        
+        const heading = screen.getByRole('heading', { level: 1 });
+        expect(heading).toHaveTextContent(/Good/);
+        // Should not have undefined or null printed
+        expect(heading).not.toHaveTextContent('null');
+        expect(heading).not.toHaveTextContent('undefined');
+    });
+
+    it('should render a valid greeting message', () => {
+         mockUseRootContext.mockReturnValue({ name: 'User', isMobile: false });
+         render(<WelcomeMessage />);
+         
+         // Identify the p tag that holds the greeting.
+         // Structure: h1 -> p
+         const heading = screen.getByRole('heading', { level: 1 });
+         const greetingElement = heading.nextSibling;
+         
+         expect(greetingElement).toBeInTheDocument();
+         // Verify it has some text content
+         expect(greetingElement).toHaveTextContent(/./);
+    });
+});

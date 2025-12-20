@@ -82,9 +82,7 @@ const FinanceFormPopup = () => {
   }, [hideFinanceForm]);
 
   const handleClickOutside = (e: MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
-    if (overlayRef.current && e.target === overlayRef.current) {
-      closePopup();
-    }
+    closePopup();
   };
 
   const handleChange = useCallback(
