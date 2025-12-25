@@ -15,7 +15,7 @@ vi.mock('@/context/FinContext', () => ({
 }));
 
 vi.mock('react-icons/lia', () => ({
-    LiaWindowCloseSolid: () => <span data-testid="close-icon" />,
+    LiaWindowCloseSolid: () => <span aria-label="close icon" />,
 }));
 
 describe('FinanceFormPopup', () => {

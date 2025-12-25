@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import AuthProvider from './AuthProvider';
 
 vi.mock("next-auth/react", () => ({
-    SessionProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="session-provider">{children}</div>,
+    SessionProvider: ({ children }: { children: React.ReactNode }) => <div role="region" aria-label="session provider">{children}</div>,
 }));
 
 describe('AuthProvider', () => {
@@ -14,7 +14,7 @@ describe('AuthProvider', () => {
             </AuthProvider>
         );
 
-        expect(screen.getByTestId('session-provider')).toBeInTheDocument();
+        expect(screen.getByLabelText('session provider')).toBeInTheDocument();
         expect(screen.getByText('Child')).toBeInTheDocument();
     });
 });

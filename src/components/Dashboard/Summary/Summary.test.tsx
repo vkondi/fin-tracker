@@ -16,7 +16,7 @@ vi.mock("@/context/FinContext", () => ({
 }));
 
 vi.mock("../DashboardCard/DashboardCard", () => ({
-    default: ({ children, title }: { children: React.ReactNode; title: string }) => <div data-testid="dashboard-card" title={title}>{children}</div>
+    default: ({ children, title }: { children: React.ReactNode; title: string }) => <article aria-label={`dashboard card ${title}`}>{children}</article>
 }));
 
 vi.mock("@/utils/utility", () => ({

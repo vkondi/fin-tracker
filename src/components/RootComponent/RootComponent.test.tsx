@@ -8,20 +8,20 @@ vi.mock("@/context/RootContext", () => ({
 }));
 
 vi.mock("@/components/Header/Header", () => ({
-    default: () => <div data-testid="header">Header</div>,
+    default: () => <header aria-label="site header">Header</header>,
 }));
 
 vi.mock("@/components/Footer/Footer", () => ({
-    default: () => <div data-testid="footer">Footer</div>,
+    default: () => <footer aria-label="site footer">Footer</footer>,
 }));
 
 vi.mock("@/components/FinanceFormPopup/FinanceFormPopup", () => ({
-    default: () => <div data-testid="finance-popup">FinanceFormPopup</div>,
+    default: () => <div role="dialog" aria-label="finance popup">FinanceFormPopup</div>,
 }));
 
 vi.mock("@/components/Loader/Loader", () => ({
     default: ({ show, loadingMessage }: { show: boolean; loadingMessage?: string }) => (
-        show ? <div data-testid="loader">{loadingMessage}</div> : null
+        show ? <div role="status" aria-label="loading indicator">{loadingMessage}</div> : null
     ),
 }));
 
@@ -35,15 +35,15 @@ describe('RootComponent', () => {
 
         render(
             <RootComponent>
-                <div data-testid="child">Main Content</div>
+                <main aria-label="main content">Main Content</main>
             </RootComponent>
         );
 
-        expect(screen.getByTestId('header')).toBeInTheDocument();
-        expect(screen.getByTestId('footer')).toBeInTheDocument();
-        expect(screen.getByTestId('finance-popup')).toBeInTheDocument();
-        expect(screen.getByTestId('child')).toBeInTheDocument();
-        expect(screen.queryByTestId('loader')).not.toBeInTheDocument();
+        expect(screen.getByLabelText('site header')).toBeInTheDocument();
+        expect(screen.getByLabelText('site footer')).toBeInTheDocument();
+        expect(screen.getByLabelText('finance popup')).toBeInTheDocument();
+        expect(screen.getByLabelText('main content')).toBeInTheDocument();
+        expect(screen.queryByLabelText('loading indicator')).not.toBeInTheDocument();
     });
 
     it('should show loader when context says so', () => {
@@ -57,7 +57,7 @@ describe('RootComponent', () => {
             </RootComponent>
         );
 
-        expect(screen.getByTestId('loader')).toBeInTheDocument();
+        expect(screen.getByLabelText('loading indicator')).toBeInTheDocument();
         expect(screen.getByText("Wait...")).toBeInTheDocument();
     });
 });

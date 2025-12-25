@@ -16,14 +16,14 @@ vi.mock("@/context/FinContext", () => ({
 
 vi.mock("../DistributionChartTable/DistributionChartTable", () => ({
     default: ({ title, chartData }: { title: string; chartData: { name: string; valueFormatted: string }[] }) => (
-        <div data-testid="distribution-chart-table">
+        <section aria-label="distribution chart table">
             <h1>{title}</h1>
             <ul>
                 {chartData.map((item, idx) => (
-                    <li key={idx} data-testid="chart-item">{item.name} - {item.valueFormatted}</li>
+                    <li key={idx} aria-label={`chart item ${idx}`}>{item.name} - {item.valueFormatted}</li>
                 ))}
             </ul>
-        </div>
+        </section>
     ),
 }));
 
