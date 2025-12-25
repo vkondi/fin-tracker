@@ -24,12 +24,18 @@ jobs:
       - run: yarn lint
 
   test:
-    name: Unit tests (Vitest)
+    name: Unit tests (Vitest) & coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-yarn
-      - run: yarn test:run
+      - run: yarn test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: true
 
   build:
     name: Build
