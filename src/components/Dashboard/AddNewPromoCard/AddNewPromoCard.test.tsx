@@ -9,7 +9,7 @@ vi.mock("@/context/RootContext", () => ({
 }));
 
 vi.mock("../DashboardCard/DashboardCard", () => ({
-    default: ({ children }: { children: React.ReactNode }) => <div data-testid="dashboard-card">{children}</div>
+    default: ({ children }: { children: React.ReactNode }) => <article aria-label="add new promo card">{children}</article>
 }));
 
 vi.mock("react-icons/im", () => ({ ImCheckmark: () => <span>check</span> }));

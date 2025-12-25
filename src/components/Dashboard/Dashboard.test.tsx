@@ -18,28 +18,28 @@ vi.mock("@/context/FinContext", () => ({
 }));
 
 vi.mock('./WelcomeMessage/WelcomeMessage', () => ({
-    default: () => <div data-testid="welcome-message">WelcomeMessage</div>
+    default: () => <section aria-label="welcome message">WelcomeMessage</section>
 }));
 vi.mock('./AddNewPromoCard/AddNewPromoCard', () => ({
-    default: () => <div data-testid="add-new-promo">AddNewPromoCard</div>
+    default: () => <section aria-label="add new promo">AddNewPromoCard</section>
 }));
 vi.mock('./Summary/Summary', () => ({
-    default: () => <div data-testid="summary">Summary</div>
+    default: () => <section aria-label="summary">Summary</section>
 }));
 vi.mock('./DashboardCard/DashboardCard', () => ({
-    default: ({ title }: { title: string }) => <div data-testid="dashboard-card">{title}</div>
+    default: ({ title }: { title: string }) => <article aria-label={`dashboard card ${title}`}>{title}</article>
 }));
 vi.mock('./DistributionChartTable/DistributionChartTable', () => ({
-    default: () => <div data-testid="distribution-chart">DistributionChartTable</div>
+    default: () => <section aria-label="distribution chart">DistributionChartTable</section>
 }));
 vi.mock('./CategoryDistribution/CategoryDistribution', () => ({
-    default: () => <div data-testid="category-distribution">CategoryDistribution</div>
+    default: () => <section aria-label="category distribution">CategoryDistribution</section>
 }));
 vi.mock('./OwnerDistribution/OwnerDistribution', () => ({
-    default: () => <div data-testid="owner-distribution">OwnerDistribution</div>
+    default: () => <section aria-label="owner distribution">OwnerDistribution</section>
 }));
 vi.mock('./MembersCard/MembersCard', () => ({
-    default: () => <div data-testid="members-card">MembersCard</div>
+    default: () => <section aria-label="members card">MembersCard</section>
 }));
 
 
@@ -53,7 +53,7 @@ describe('Dashboard Component', () => {
 
         render(<Dashboard />);
 
-        expect(screen.getByTestId('welcome-message')).toBeInTheDocument();
-        expect(screen.getByTestId('summary')).toBeInTheDocument();
+        expect(screen.getByLabelText('welcome message')).toBeInTheDocument();
+        expect(screen.getByLabelText('summary')).toBeInTheDocument();
     });
 });

@@ -15,7 +15,7 @@ vi.mock("react-responsive", () => ({
 
 vi.mock("react-toastify", () => ({
     toast: { success: vi.fn(), error: vi.fn() },
-    ToastContainer: () => <div data-testid="toast-container" />,
+    ToastContainer: () => <div role="region" aria-label="toast notifications" />,
 }));
 
 const globalFetch = vi.fn();
