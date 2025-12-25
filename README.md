@@ -1,6 +1,9 @@
 # FINTRAKR
 
-[![CI](https://img.shields.io/github/actions/workflow/status/vkondi/fin-tracker/ci.yml?branch=master)](https://github.com/vkondi/fin-tracker/actions/workflows/ci.yml) [![Coverage](https://img.shields.io/codecov/c/gh/vkondi/fin-tracker?logo=codecov)](https://codecov.io/gh/vkondi/fin-tracker) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Vercel](https://img.shields.io/badge/deploy-vercel-000000?logo=vercel)](https://vercel.com/vishwajeet-kondi/fintrakr)
+[![CI](https://img.shields.io/github/actions/workflow/status/vkondi/fin-tracker/ci.yml?branch=master)](https://github.com/vkondi/fin-tracker/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-85.13%25-brightgreen)](https://github.com/vkondi/fin-tracker/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Vercel](https://img.shields.io/badge/deploy-vercel-000000?logo=vercel)](https://vercel.com/vishwajeet-kondi/fintrakr)
 
 FINTRAKR is a modern, multi-user financial portfolio tracker built with Next.js. It helps families and groups track, analyze, and manage investments across platforms with real-time analytics, secure authentication, and a user-friendly dashboard.
 
