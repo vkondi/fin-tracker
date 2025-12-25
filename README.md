@@ -1,6 +1,6 @@
 # FINTRAKR
 
-[![CI](https://img.shields.io/github/actions/workflow/status/vkondi/fin-tracker/ci.yml?branch=master)](https://github.com/vkondi/fin-tracker/actions/workflows/ci.yml)
+[![CI](https://github.com/vkondi/fin-tracker/workflows/CI/badge.svg)](https://github.com/vkondi/fin-tracker/actions?query=workflow%3ACI)
 [![Coverage](https://img.shields.io/badge/coverage-85.13%25-brightgreen)](https://github.com/vkondi/fin-tracker/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Vercel](https://img.shields.io/badge/deploy-vercel-000000?logo=vercel)](https://vercel.com/vishwajeet-kondi/fintrakr)
