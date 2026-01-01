@@ -132,7 +132,7 @@ Deploy easily on [Vercel](https://vercel.com):
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
 
 The `docs/` directory contains additional documentation:
-- [Test Cases Guidelines](docs/test-cases-guidelines.md)
+- [Test Cases Guidelines](docs/TEST-CASES-GUIDELINES.md)
 
 ---
 
