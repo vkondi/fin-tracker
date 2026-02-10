@@ -36,7 +36,7 @@
 
 - I discovered that **two-layer authentication** (middleware + client wrapper) provides defense-in-depth: middleware blocks unauthorized API calls at the edge (fast, cookie-based), while client-side `ProtectedRoute` handles UX redirects with `callbackUrl` preservation.
 
-- I learned that middleware checking cookie presence (`next-auth.session-token`) doesn't validate token authenticity—it's a fast gate, not full verification. NextAuth validates server-side, so this asymmetry is safe but must be understood.
+- I learned that middleware checking for NextAuth session cookie presence (e.g., `next-auth.session-token` or `__Secure-next-auth.session-token` over HTTPS) doesn't validate token authenticity—it's a fast gate, not full verification. NextAuth validates server-side, so this asymmetry is safe but must be understood.
 
 - I realized that returning `null` during authentication redirects prevents flash-of-unauthenticated-content (FOUC). This is better than showing a loading spinner or partial UI.
 
