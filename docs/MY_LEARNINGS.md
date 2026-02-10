@@ -1,6 +1,6 @@
 # My Learnings
 
-**Last Updated:** February 10, 2026
+**Last Updated:** 2026-02-10
 
 ## Technical Learnings
 
@@ -14,7 +14,7 @@
 
 - I discovered that database-level triggers for timestamp management eliminate client-side clock skew issues. The `BEFORE UPDATE` trigger pattern ensures `updated_date` is always accurate, regardless of client timezone or system time drift.
 
-- I learned that serverless environments require **global initialization guards** (`let isInitialized = false`) to prevent race conditions during concurrent cold starts. Running migrations at module-load time (not per-request) is critical for database safety.
+- I learned that **global initialization guards** (`let isInitialized = false`) prevent redundant migration runs within a single serverless runtime instance. This pattern ensures migrations run once per process, not per-request, though it doesn't coordinate across parallel instances—for true cross-instance safety, you'd need DB-level locks or idempotent migrations.
 
 - I realized that `Pool` connection management in PostgreSQL is more efficient than creating clients per-request. The pool automatically handles connection lifecycle, preventing connection exhaustion in serverless environments.
 
@@ -22,7 +22,7 @@
 
 - I learned that testing hooks with `renderHook()` + provider wrappers is more realistic than isolated mocks. Wrapping in actual `<RootProvider>` catches integration issues that unit tests miss.
 
-- I realized that mocking `fetch` globally (`vi.stubGlobal('fetch', ...)`) with `beforeEach` cleanup prevents test pollution. Resetting mocks per-test is mandatory when testing context methods that share the same mock surface.
+- I realized that mocking `fetch` globally (`global.fetch = vi.fn()`) with `vi.clearAllMocks()` in `beforeEach` prevents test pollution. Resetting mocks per-test is mandatory when testing context methods that share the same mock surface.
 
 ## Architecture & Design Decisions
 
