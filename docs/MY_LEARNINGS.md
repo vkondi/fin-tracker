@@ -1,22 +1,16 @@
 # My Learnings
 
-**Last Updated:** February 10, 2025
+**Last Updated:** February 10, 2026
 
 ## Technical Learnings
-
-### Context Architecture
 
 - I learned that splitting contexts into a **hierarchical dependency chain** (RootContext → FinContext) prevents circular dependencies while keeping concerns separated. FinContext explicitly depends on RootContext's `userId` and `setLoader`, creating an implicit initialization order that's clearer than flattening everything into global state.
 
 - I discovered that using `useRef<Map<string, string>>()` for owner-to-color mappings prevents unnecessary re-renders while maintaining color stability across renders. This pattern is superior to `useState` for memoizing derived UI properties that don't need to trigger updates.
 
-### State Management Patterns
-
 - I realized that cascading `useMemo` hooks with precise dependencies outperforms a single expensive computation. By splitting aggregations (e.g., `totalInvested` → `totalAbsReturn` → `totalAbsReturnPercentage`), React only recomputes what changed, avoiding redundant calculations.
 
 - I learned to avoid optimistic updates in financial applications—always re-fetch after mutations. The UX cost is acceptable when data accuracy and consistency outweigh perceived speed. This simplifies error handling and prevents stale state bugs.
-
-### Database & API Design
 
 - I discovered that database-level triggers for timestamp management eliminate client-side clock skew issues. The `BEFORE UPDATE` trigger pattern ensures `updated_date` is always accurate, regardless of client timezone or system time drift.
 
@@ -24,21 +18,7 @@
 
 - I realized that `Pool` connection management in PostgreSQL is more efficient than creating clients per-request. The pool automatically handles connection lifecycle, preventing connection exhaustion in serverless environments.
 
-### Authentication & Security
-
-- I discovered that **two-layer authentication** (middleware + client wrapper) provides defense-in-depth: middleware blocks unauthorized API calls at the edge (fast, cookie-based), while client-side `ProtectedRoute` handles UX redirects with `callbackUrl` preservation.
-
-- I learned that middleware checking cookie presence (`next-auth.session-token`) doesn't validate token authenticity—it's a fast gate, not full verification. NextAuth validates server-side, so this asymmetry is safe but must be understood.
-
-- I realized that returning `null` during authentication redirects prevents flash-of-unauthenticated-content (FOUC). This is better than showing a loading spinner or partial UI.
-
-### Type Safety & Code Quality
-
 - I learned to maintain **explicit mapping layers** between database types (snake_case) and application types (camelCase). Separate `FinanceRecordType` vs `FinanceFormDataType` prevents accidental field mismatches and makes transformations explicit.
-
-- I discovered that ESLint's `@typescript-eslint/no-explicit-any: "error"` combined with `eslint-plugin-jsx-a11y` catches accessibility and type safety issues pre-commit. The Husky hook running `check-types` + `lint-staged` ensures broken code never reaches CI.
-
-### Testing Strategy
 
 - I learned that testing hooks with `renderHook()` + provider wrappers is more realistic than isolated mocks. Wrapping in actual `<RootProvider>` catches integration issues that unit tests miss.
 
@@ -52,6 +32,14 @@
 
 - I learned that `ssl: { rejectUnauthorized: false }` is necessary for Neon database connections but should never be used for production-critical security. This is a pragmatic choice for hosted Postgres services with self-signed certificates.
 
+## Authentication / Authorization
+
+- I discovered that **two-layer authentication** (middleware + client wrapper) provides defense-in-depth: middleware blocks unauthorized API calls at the edge (fast, cookie-based), while client-side `ProtectedRoute` handles UX redirects with `callbackUrl` preservation.
+
+- I learned that middleware checking cookie presence (`next-auth.session-token`) doesn't validate token authenticity—it's a fast gate, not full verification. NextAuth validates server-side, so this asymmetry is safe but must be understood.
+
+- I realized that returning `null` during authentication redirects prevents flash-of-unauthenticated-content (FOUC). This is better than showing a loading spinner or partial UI.
+
 ## Code Quality & Maintainability
 
 - I discovered that **prefix logging** (`console.log("[FinContext][addFinance] >> ...")`) makes debugging in production significantly easier. Consistent prefixes enable log filtering and pattern matching in observability tools.
@@ -59,6 +47,8 @@
 - I learned that pre-commit hooks running `check-types` before `lint-staged` catch type errors early. TypeScript strict mode errors fail locally, preventing broken PRs from reaching CI.
 
 - I realized that organizing API routes by resource (`/api/finance`, `/api/profile`) with sub-routes (`/api/finance/config`) creates a clear RESTful structure. This pattern scales better than flat route hierarchies.
+
+- I discovered that ESLint's `@typescript-eslint/no-explicit-any: "error"` combined with `eslint-plugin-jsx-a11y` catches accessibility and type safety issues pre-commit. The Husky hook running `check-types` + `lint-staged` ensures broken code never reaches CI.
 
 ## Tooling & Developer Experience
 
