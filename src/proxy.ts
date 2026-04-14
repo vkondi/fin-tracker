@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function middleware(request: Request) {
+export async function proxy(request: Request) {
   // Extract cookies from the request
   const cookies = request.headers.get("cookie");
 

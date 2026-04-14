@@ -36,6 +36,7 @@ const Header: FC<{ title?: string }> = ({ title = "FINTRAKR" }) => {
   ];
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHydrated(true); // Set hydrated to true after the component mounts
   }, []);
 

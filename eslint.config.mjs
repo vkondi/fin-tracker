@@ -1,25 +1,21 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 // Import the plugin
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import nextConfig from "eslint-config-next/core-web-vitals";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
 
 const eslintConfig = [
   {
     ignores: ["**/node_modules/", ".next/", "dist/", "build/"],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  // Add the plugin and recommended config
+  ...nextConfig,
+  // Add jsx-a11y recommended rules and custom overrides
   {
-    plugins: {
-      "jsx-a11y": jsxA11yPlugin,
+    settings: {
+      react: { version: "19" },
     },
     rules: {
       ...jsxA11yPlugin.configs.recommended.rules,

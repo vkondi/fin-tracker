@@ -1,4 +1,4 @@
-import { Pie, PieChart, ResponsiveContainer, Tooltip, TooltipProps } from "recharts";
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import CustomTooltip from "../../Chart/CustomTooltip/CustomTooltip";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import React, { ReactNode } from "react";
@@ -81,14 +81,14 @@ const DistributionChartTable = <T extends Record<string, unknown>>({
               display: "flex",
             }}
           >
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Tooltip
-                  content={({ active, payload }: TooltipProps<number, string>) => (
+                  content={(props) => (
                     <CustomTooltip
                       total={total}
-                      active={active}
-                      payload={Array.isArray(payload) ? (payload as Payload<number, string>[]) : []}
+                      active={props.active}
+                      payload={Array.isArray(props.payload) ? (props.payload as Payload<number, string>[]) : []}
                     />
                   )}
                 />
