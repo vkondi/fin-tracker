@@ -1,9 +1,16 @@
 import { Pool } from "pg";
 import { migrate } from "./migration";
 
+// Strip sslmode from the connection string so pg-connection-string does not
+// trigger the deprecation warning. SSL behaviour is controlled explicitly below.
+const connectionString = process.env.DATABASE_URL?.replace(
+  /([?&])sslmode=[^&]*(&?)/g,
+  (_, prefix, suffix) => (suffix ? prefix : "")
+);
+
 const dbConfig = {
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Required for Neon
+  connectionString,
+  ssl: { rejectUnauthorized: false }, // Required for Neon serverless environments
 };
 
 // Create a connection pool
