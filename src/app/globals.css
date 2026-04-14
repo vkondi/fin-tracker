@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -10,6 +8,10 @@
   --text-red: #a91313;
   --primary-btn: #3b3a3a;
   --primary-btn-hover: #6d6a6a;
+}
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 @theme inline {
