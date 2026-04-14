@@ -16,7 +16,8 @@ describe('CustomTooltip', () => {
             payload: { name: 'Stocks', value: 50 },
             value: 50,
             name: 'Stocks',
-            dataKey: 'value' 
+            dataKey: 'value',
+            graphicalItemId: ''
         }];
 
         render(<CustomTooltip total={100} active={true} payload={payload} />);
@@ -35,7 +36,8 @@ describe('CustomTooltip', () => {
             payload: { name: 'Stocks', value: 50 },
             value: 50,
             name: 'Stocks',
-            dataKey: 'value'
+            dataKey: 'value',
+            graphicalItemId: ''
         }];
 
         const { container } = render(<CustomTooltip total={100} active={false} payload={payload} />);
