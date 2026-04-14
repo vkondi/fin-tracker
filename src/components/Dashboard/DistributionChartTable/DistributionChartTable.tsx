@@ -81,7 +81,7 @@ const DistributionChartTable = <T extends Record<string, unknown>>({
               display: "flex",
             }}
           >
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Tooltip
                   content={(props) => (
