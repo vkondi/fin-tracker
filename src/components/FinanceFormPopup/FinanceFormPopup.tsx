@@ -55,16 +55,23 @@ const FinanceFormPopup = () => {
   const buttonText = mode && modeDetails[mode].buttonText;
   const [formData, setFormData] =
     useState<FinanceFormDataType>(formDefaultState);
-  const [typeOptions, setTypeOptions] = useState<string[]>([]);
-
   const category = useMemo(
     () =>
-      formData?.platform
+      formData.platform
         ? (platforms ?? []).find((rec) => rec.name === formData.platform)
           ?.category
         : null,
-    [formData?.platform, platforms]
+    [formData.platform, platforms]
   ); // Retrive "category" based on selected "platform"
+
+  const typeOptions = useMemo(
+    () =>
+      formData.platform
+        ? (platforms ?? []).find((rec) => rec.name === formData.platform)
+            ?.instruments ?? []
+        : [],
+    [formData.platform, platforms]
+  ); // Retrieve instruments based on selected platform
   const isValidForm = useMemo(
     () =>
       !!formData?.platform &&
@@ -395,20 +402,10 @@ const FinanceFormPopup = () => {
   // Prepopulates data for edit mode
   useEffect(() => {
     if (financeData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(financeData);
     }
   }, [financeData]);
-
-  useEffect(() => {
-    if (formData.platform) {
-      const value = (platforms ?? []).find(
-        (rec) => rec.name === formData.platform
-      );
-      if (value) {
-        setTypeOptions(value?.instruments ?? []);
-      }
-    }
-  }, [formData.platform, platforms]);
 
   // Don't render if not visible
   if (!isVisible) return null;
