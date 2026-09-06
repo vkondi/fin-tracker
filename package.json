@@ -12,7 +12,8 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:run": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "qa": "yarn check-types && yarn lint && yarn test:coverage"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -54,7 +55,7 @@
     "lint-staged": "^17.4.1",
     "postcss": "8.5.26",
     "tailwindcss": "4.3.3",
-    "typescript": "^7",
+    "typescript": "5.6.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.11"
   }
