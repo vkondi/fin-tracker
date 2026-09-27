@@ -25,6 +25,8 @@ const eslintConfig = [
         ecmaFeatures: {
           jsx: true,
         },
+        projectService: true,
+        tsconfigRootDir: __dirname,
       },
       globals: {
         React: "readonly",
