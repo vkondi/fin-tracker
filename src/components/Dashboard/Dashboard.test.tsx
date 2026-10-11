@@ -41,6 +41,9 @@ vi.mock('./OwnerDistribution/OwnerDistribution', () => ({
 vi.mock('./MembersCard/MembersCard', () => ({
     default: () => <section aria-label="members card">MembersCard</section>
 }));
+vi.mock('./FinancialTimeline/FinancialTimeline', () => ({
+    default: () => <section aria-label="financial timeline">FinancialTimeline</section>
+}));
 
 
 describe('Dashboard Component', () => {

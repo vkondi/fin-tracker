@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FinProvider, useFinContext } from './FinContext';
 import * as RootContext from './RootContext';
 import { RootContextType } from './RootContext';
-import { FinanceFormDataType } from '@/components/component.types';
+import { APIResponseType, FinanceFormDataType } from '@/components/component.types';
 
 vi.mock('./RootContext', () => ({
     useRootContext: vi.fn(),
@@ -153,7 +153,7 @@ describe('FinContext', () => {
             method: "POST",
             body: expect.stringContaining("Alice")
         }));
-        expect(globalFetch).toHaveBeenCalledTimes(3);
+        expect(globalFetch).toHaveBeenCalledTimes(4);
     });
 
     it('should update finance record', async () => {
@@ -201,5 +201,49 @@ describe('FinContext', () => {
             method: "DELETE",
             body: JSON.stringify({ id: "1" })
         }));
+    });
+
+    it('should capture snapshot successfully', async () => {
+        const { result } = renderHook(() => useFinContext(), { wrapper });
+
+        globalFetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ message: "Snapshot captured successfully" }),
+        });
+
+        let response: APIResponseType | undefined;
+        await act(async () => {
+            response = await result.current.captureSnapshot();
+        });
+
+        expect(response?.success).toBe(true);
+        expect(globalFetch).toHaveBeenCalledWith("/api/finance/snapshots", expect.objectContaining({
+            method: "POST",
+        }));
+    });
+
+    it('should fetch snapshots and set canTriggerSnapshot', async () => {
+        globalFetch.mockImplementation(async (url: string) => {
+            if (url.includes("/api/finance/snapshots")) {
+                return {
+                    json: async () => ({
+                        data: [{ snapshot_date: "2026-10-01", total_invested: 1000, total_current: 1200 }],
+                        canTriggerSnapshot: true,
+                    }),
+                };
+            }
+            return {
+                json: async () => ({ data: [] }),
+            };
+        });
+
+        const { result } = renderHook(() => useFinContext(), { wrapper });
+
+        await act(async () => {
+            await result.current.getSnapshots();
+        });
+
+        expect(result.current.canTriggerSnapshot).toBe(true);
+        expect(result.current.snapshotData.length).toBe(1);
     });
 });
