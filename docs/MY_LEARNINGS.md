@@ -1,79 +1,84 @@
-# My Learnings
+# Engineering Learnings & Architecture Retrospective
 
-**Last Updated:** 2026-02-10
+A synthesized record of technical decisions, architectural patterns, trade-offs, and operational insights gathered while building and scaling **FINTRAKR**.
 
-## Technical Learnings
+---
 
-- I learned that splitting contexts into a **hierarchical dependency chain** (RootContext → FinContext) prevents circular dependencies while keeping concerns separated. FinContext explicitly depends on RootContext's `userId` and `setLoader`, creating an implicit initialization order that's clearer than flattening everything into global state.
+## 1. State Architecture & React Concurrency
 
-- I discovered that using `useRef<Map<string, string>>()` for owner-to-color mappings prevents unnecessary re-renders while maintaining color stability across renders. This pattern is superior to `useState` for memoizing derived UI properties that don't need to trigger updates.
+- **Hierarchical Dependency Injection over Monolithic State:**  
+  Splitting application state into a clear chain (`RootContext` → `FinContext`) enforces single-responsibility boundaries and eliminates circular dependencies. `FinContext` explicitly consumes `userId` and `setLoader` from `RootContext`, establishing a predictable initialization order without polluting global state with unrelated UI concerns.
 
-- I realized that cascading `useMemo` hooks with precise dependencies outperforms a single expensive computation. By splitting aggregations (e.g., `totalInvested` → `totalAbsReturn` → `totalAbsReturnPercentage`), React only recomputes what changed, avoiding redundant calculations.
+- **Authoritative Consistency over Optimistic UI:**  
+  For financial tracking applications, data precision must always take precedence over perceived latency. The system intentionally avoids optimistic state mutations; every write operation performs a server mutation followed by a fresh database re-fetch. This guarantees that aggregations, absolute returns, and percentage returns reflect authoritative server state and eliminates edge-case rollback bugs.
 
-- I learned to avoid optimistic updates in financial applications—always re-fetch after mutations. The UX cost is acceptable when data accuracy and consistency outweigh perceived speed. This simplifies error handling and prevents stale state bugs.
+- **Non-Reactive State Caching with `useRef`:**  
+  Assigning stable, dynamic color assignments across family members/owners is handled via `useRef<Map<string, string>>()`. Storing visual mappings in a ref rather than in component state maintains color consistency across re-renders without triggering cascading render cycles.
 
-- I discovered that database-level triggers for timestamp management eliminate client-side clock skew issues. The `BEFORE UPDATE` trigger pattern ensures `updated_date` is always accurate, regardless of client timezone or system time drift.
+- **Fine-Grained Memoization Cascades:**  
+  Aggregations are split across chained, dependency-isolated `useMemo` hooks (e.g., `totalInvested` → `totalAbsReturn` → `totalAbsReturnPercentage`). This fine-grained structure ensures React only recalculates affected metrics when relevant slices of state change, preventing expensive portfolio-wide recalculations on minor UI interactions.
 
-- I learned that **global initialization guards** (`let isInitialized = false`) prevent redundant migration runs within a single serverless runtime instance. This pattern ensures migrations run once per process, not per-request, though it doesn't coordinate across parallel instances—for true cross-instance safety, you'd need DB-level locks or idempotent migrations.
+---
 
-- I realized that `Pool` connection management in PostgreSQL is more efficient than creating clients per-request. The pool automatically handles connection lifecycle, preventing connection exhaustion in serverless environments.
+## 2. Database Engineering & Serverless Postgres
 
-- I learned to maintain **explicit mapping layers** between database types (snake_case) and application types (camelCase). Separate `FinanceRecordType` vs `FinanceFormDataType` prevents accidental field mismatches and makes transformations explicit.
+- **Idempotent Snapshot Upserts:**  
+  Historical monthly snapshots utilize a database-level composite unique constraint `UNIQUE(user_id, snapshot_date)` paired with `INSERT ... ON CONFLICT (user_id, snapshot_date) DO UPDATE SET`. This guarantees that automated cron jobs, manual trigger requests, and administrative backfill scripts can safely re-run without producing duplicate records.
 
-- I learned that testing hooks with `renderHook()` + provider wrappers is more realistic than isolated mocks. Wrapping in actual `<RootProvider>` catches integration issues that unit tests miss.
+- **Time-Drift Resistance via Database Triggers:**  
+  Relying on client-side timestamps introduces clock-skew and timezone discrepancies across multi-device usage. Automated `BEFORE UPDATE` database triggers maintain `updated_date` centrally, ensuring all modification audits remain consistent regardless of the client system's local clock.
 
-- I realized that mocking `fetch` globally (`global.fetch = vi.fn()`) with `vi.clearAllMocks()` in `beforeEach` prevents test pollution. Resetting mocks per-test is mandatory when testing context methods that share the same mock surface.
+- **Serverless Connection Pool Management:**  
+  Instantiating a shared PostgreSQL `Pool` across API routes rather than opening per-request client connections significantly reduces overhead and guards against connection pool exhaustion in serverless environments.
 
-## Architecture & Design Decisions
+- **Strict Schema-to-Domain Mapping Boundaries:**  
+  The system enforces strict type boundaries between database storage schemas (`snake_case`, e.g., `FinanceRecordType`) and application domain state (`camelCase`, e.g., `FinanceFormDataType`). Explicit mapping transforms data at API edges, preventing accidental attribute leakage or runtime property misses.
 
-- I chose parameterized queries (`$1, $2`) for all database operations to prevent SQL injection. Using `RETURNING *` after INSERT/UPDATE confirms mutations server-side, eliminating client-side optimistic update complexity.
+---
 
-- I decided against optimistic updates in FinContext because financial data must be authoritative. Re-fetching from the database after every mutation guarantees consistency, even if it adds latency. This trade-off favors correctness over perceived performance.
+## 3. Security, RBAC & Defense-in-Depth
 
-- I learned that extracting shared database and business logic into a **dedicated service layer** (`src/services/snapshotService.ts`) adheres to the DRY principle across multiple entry points: background cron jobs (`/api/cron/snapshot`), client API endpoints (`/api/finance/snapshots`), and administrative CLI scripts (`scripts/run_snapshot.js`) all invoke the same audited service functions with zero logic duplication.
+- **Confidential RBAC with Zero Client Exposure:**  
+  Role-based feature gating (e.g., manual snapshot execution) is strictly resolved on the server by cross-referencing user IDs and verified OAuth emails against environment variables (`AUTHORIZED_SNAPSHOT_USER_IDS`, `AUTHORIZED_SNAPSHOT_EMAILS`) with zero hardcoded defaults. The client receives only a boolean capability flag (`canTriggerSnapshot`), ensuring authorized user lists and admin credentials never leak into client JavaScript bundles.
 
-- I discovered that database-level idempotency via `UNIQUE(user_id, snapshot_date)` constraint coupled with `INSERT ... ON CONFLICT (user_id, snapshot_date) DO UPDATE SET` guarantees zero duplicate monthly entries regardless of multiple manual triggers or retry attempts by cron handlers.
+- **Two-Layer Defense-in-Depth Authentication:**  
+  Authentication combines edge middleware with client-side route guards. The Next.js edge middleware evaluates session cookie presence for rapid edge rejection, while `ProtectedRoute` manages graceful client redirects and preserves `callbackUrl` for seamless re-authentication.
 
-- I learned that for multi-year financial timeline tracking, a compact `<select>` dropdown scales effortlessly to any number of historical years without horizontal card overflow, unlike button tabs which quickly break layout beyond 3 years. Furthermore, because the selected year is always explicit in the filter, the X-axis only needs to display clean Month names; configuring `interval={0}` on `<XAxis>` ensures Recharts renders all 12 month labels without dropping any on mobile screens.
+- **Automated Cron Request Verification:**  
+  Background scheduled jobs (`/api/cron/snapshot`) are guarded via standard `Bearer` token authentication (`CRON_SECRET`). Comparing incoming request authorization headers against configured secrets ensures external schedulers (such as Vercel Cron) trigger automated snapshots securely while blocking unauthorized public invocations.
 
-- I learned that `ssl: { rejectUnauthorized: false }` is necessary for Neon database connections but should never be used for production-critical security. This is a pragmatic choice for hosted Postgres services with self-signed certificates.
+---
 
-## Authentication / Authorization
+## 4. Data Visualization & Responsive Charting
 
-- I discovered that **two-layer authentication** (middleware + client wrapper) provides defense-in-depth: middleware blocks unauthorized API calls at the edge (fast, cookie-based), while client-side `ProtectedRoute` handles UX redirects with `callbackUrl` preservation.
+- **Recharts Mobile Collision Overrides:**  
+  In SVG charting libraries like Recharts, `<XAxis>` defaults to `interval="preserveEnd"`, which applies conservative text-width heuristics to drop ticks on mobile screens (causing 10 out of 12 month labels to disappear). Explicitly specifying `interval={0}` combined with tailored mobile font sizes and padding guarantees that all 12 monthly data points remain legible across small viewports.
 
-- I learned that middleware checking for NextAuth session cookie presence (e.g., `next-auth.session-token` or `__Secure-next-auth.session-token` over HTTPS) doesn't validate token authenticity—it's a fast gate, not full verification. NextAuth validates server-side, so this asymmetry is safe but must be understood.
+- **Scalable Temporal Filtering via Dropdowns:**  
+  While horizontal tab buttons work for 2–3 periods, multi-year portfolios quickly overflow card headers as history accumulates. Replacing horizontal button tabs with an accessible, compact `<select>` dropdown (`timeline-year-select`) effortlessly scales to decades of historical snapshots without breaking dashboard layouts.
 
-- I realized that returning `null` during authentication redirects prevents flash-of-unauthenticated-content (FOUC). This is better than showing a loading spinner or partial UI.
+---
 
-- I learned that role-based access control should never embed authorized identifiers into client bundles. Enforcing access on the server via environment variables (`AUTHORIZED_SNAPSHOT_USER_IDS`, `AUTHORIZED_SNAPSHOT_EMAILS`) with zero hardcoded defaults and returning a simple boolean flag (`canTriggerSnapshot`) keeps user lists confidential and allows instant permission rotation without code changes.
+## 5. Testing Philosophy & Developer Ergonomics
 
-## Code Quality & Maintainability
+- **Accessible, Semantic Assertions:**  
+  Tests strictly avoid implementation-dependent `data-testid` assertions in favor of accessible queries (`getByRole`, `getByLabelText`, `getByText`). This ensures test suites validate actual user-facing behavior and accessibility trees rather than internal DOM structures.
 
-- I discovered that **prefix logging** (`console.log("[FinContext][addFinance] >> ...")`) makes debugging in production significantly easier. Consistent prefixes enable log filtering and pattern matching in observability tools.
+- **Integration Hook Harnesses:**  
+  Custom React hooks and Context providers are tested using `@testing-library/react`'s `renderHook()` wrapped inside real provider hierarchies (`<FinProvider>`, `<RootProvider>`). This catches real-world propagation and lifecycle issues that shallow unit mocks miss.
 
-- I learned that pre-commit hooks running `check-types` before `lint-staged` catch type errors early. TypeScript strict mode errors fail locally, preventing broken PRs from reaching CI.
+- **Automated Local Gatekeeping:**  
+  Pre-commit automation via Husky and `lint-staged` executes type checking (`tsc --noEmit`), linting (`eslint`), and formatting before commits are finalized, ensuring that defective code is caught immediately on local machines before reaching remote CI pipelines.
 
-- I realized that organizing API routes by resource (`/api/finance`, `/api/profile`) with sub-routes (`/api/finance/config`) creates a clear RESTful structure. This pattern scales better than flat route hierarchies.
+---
 
-- I discovered that ESLint's `@typescript-eslint/no-explicit-any: "error"` combined with `eslint-plugin-jsx-a11y` catches accessibility and type safety issues pre-commit. The Husky hook running `check-types` + `lint-staged` ensures broken code never reaches CI.
+## 6. Architectural Retrospective & Future Roadmap
 
-## Tooling & Developer Experience
+- **Atomic Multi-Table Transactions:**  
+  While current single-table mutations are reliable, future composite flows (e.g., user account registration coupled with initial default portfolio provisioning) should be wrapped in explicit `BEGIN ... COMMIT` database transactions to guarantee atomicity.
 
-- I learned that Vitest's `globals: true` and `tsconfigPaths()` plugin eliminate import boilerplate. Combined with `jsdom` environment, tests run faster than Jest and require minimal configuration.
+- **Runtime Boundary Schema Validation (Zod):**  
+  Introducing Zod validation at Next.js API boundaries will provide runtime type verification and structured error messages, preventing malformed requests from reaching database queries.
 
-- I discovered that `next dev --turbopack` in the dev script significantly speeds up local development. The Windows-specific `start http://localhost:3000 &` auto-opens browsers, improving DX on that platform.
-
-- I realized that `coverage.exclude` configuration should be comprehensive. Excluding `**/*.test.{ts,tsx}`, config files, and CSS prevents false coverage inflation.
-
-## What I'd Do Differently Next Time
-
-- I would add **API route tests** for the `/api/finance` endpoints. Currently, only context and component tests exist, leaving server-side logic untested. Integration tests with `msw` or `supertest` would catch database query bugs.
-
-- I would implement **connection pool monitoring** (e.g., `pool.on('error')` handlers) to catch connection leaks in production. Silent pool exhaustion is difficult to debug without explicit logging.
-
-- I would add **OpenAPI/Swagger documentation** for API routes. As the API surface grows, manually tracking request/response schemas becomes error-prone. Auto-generated docs from TypeScript types would reduce ambiguity.
-
-- I would implement **request validation** using Zod or similar at API boundaries. Currently, malformed payloads could crash routes or cause database errors. Schema validation would provide better error messages and type safety.
-
-- I would add **database transactions** for multi-step operations (e.g., user registration + initial configuration). Currently, partial failures could leave inconsistent state. Using `pool.connect()` + `BEGIN/COMMIT` would ensure atomicity.
+- **HTTP Integration Test Suite:**  
+  Expanding the test suite with dedicated API route integration tests (using `supertest` or native `fetch` against ephemeral test databases) will test SQL query correctness and HTTP response contracts independently of the UI layer.
