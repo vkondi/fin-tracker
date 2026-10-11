@@ -13,7 +13,7 @@
 ## Table of Contents
 
 - [Core Capabilities](#core-capabilities)
-- [Architecture & Tech Stack](#architecture--tech-stack)
+- [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Scripts & Developer Workflows](#scripts--developer-workflows)
@@ -28,40 +28,25 @@
 
 ## Core Capabilities
 
-### 1. Multi-Member Portfolio Tracking
-- **Multi-Owner Allocation:** Track assets across different family members, partners, or entities with dynamic, stable color coding.
-- **Categorization & Platform Aggregation:** Organize investments across Equity, Mutual Funds, Fixed Deposits, Crypto, Real Estate, and custom asset categories.
-- **Instant Metrics:** Real-time calculation of Total Invested, Current Valuation, Absolute Return, and Return Percentage ($Abs\%$).
+- **Multi-Member Portfolio Tracking:** Manage and aggregate investments across family members, partners, or entities with dynamic color coding, platform breakdown, and instant returns calculation ($Abs\%$).
+- **Financial Growth Timeline:** Interactive SVG trend charts visualizing historical invested capital vs. portfolio valuation across calendar years and macro annual trajectory.
+- **Automated & On-Demand Snapshots:** Point-in-time wealth milestones captured automatically on monthly schedules or on-demand by authorized portfolio owners.
+- **Privacy-First Security & RBAC:** Edge-protected routes, NextAuth OAuth 2.0 integration, and server-evaluated capability-based access control.
 
-### 2. Financial Growth Timeline & Visual Analytics
-- **Historical Area Visualization:** High-performance SVG trend charts rendered with Recharts, plotting total invested capital versus portfolio current valuation.
-- **Multi-Period Temporal Filtering:** Seamlessly filter by specific calendar year or switch to the macro **All (Annual)** view for year-over-year wealth trajectory.
-- **Mobile-Optimized Tick Layout:** Tailored X-axis tick formatting (`interval={0}`) ensures all 12 monthly data points remain visible and spaced cleanly across small screens.
-- **Scalable Dropdown Navigation:** Future-proof `<select>` dropdown handles decades of historical tracking without header overflow.
-
-### 3. Automated & On-Demand Portfolio Snapshots
-- **Automated Monthly Snapshots:** Background cron job triggered via Vercel Cron on the 1st of every month at midnight UTC.
-- **On-Demand Capture:** Authorized users can capture snapshots on-demand right from the dashboard.
-- **Database Idempotency:** Compound unique constraint `UNIQUE(user_id, snapshot_date)` ensures zero duplicate monthly snapshots across retries or multiple triggers.
-
-### 4. Enterprise Security & Privacy Guardrails
-- **Confidential RBAC:** Access to snapshot triggers is evaluated strictly server-side against environment variables (`AUTHORIZED_SNAPSHOT_USER_IDS`, `AUTHORIZED_SNAPSHOT_EMAILS`) with zero hardcoded defaults. The frontend only receives a boolean capability flag (`canTriggerSnapshot`).
-- **Two-Tier Authentication:** Edge middleware session cookie validation provides rapid gatekeeping, while client-side `ProtectedRoute` preserves `callbackUrl` redirects.
-- **Protected Cron Endpoints:** Secret bearer token validation (`CRON_SECRET`) prevents unauthorized automated invocations.
+> 📖 *For technical deep-dives into database schemas, state management, RBAC enforcement, and background worker design, refer to the [Technical Architecture & System Design Guide](docs/ARCHITECTURE.md).*
 
 ---
 
-## Architecture & Tech Stack
+## Tech Stack
 
-| Layer | Technology | Key Highlights |
-|---|---|---|
-| **Framework** | [Next.js 16](https://nextjs.org) (App Router) | Turbopack compilation, React 19, server actions, REST API routes |
-| **Database** | [PostgreSQL](https://www.postgresql.org) (Neon Serverless) | Connection pooling via `pg`, automated schema migrations, triggers |
-| **Authentication** | [NextAuth.js](https://next-auth.js.org) | Google OAuth 2.0 provider, JWT session strategy |
-| **Visualization** | [Recharts](https://recharts.org) | Responsive area charts, custom tooltips, SVG vector rendering |
-| **Styling** | [Tailwind CSS 4](https://tailwindcss.com) | Responsive utility design, mobile-first layouts |
-| **Testing** | [Vitest](https://vitest.dev) + Testing Library | 120+ unit and integration tests, strict WCAG accessibility queries |
-| **Developer Tools** | Husky + lint-staged + ESLint | Pre-commit automated type checks (`tsc`) and accessibility linter |
+- **Framework & Runtime:** [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, TypeScript
+- **Database:** [PostgreSQL](https://www.postgresql.org) via direct parameterized connection pool (`pg`)
+- **Authentication:** [NextAuth.js](https://next-auth.js.org) (Google OAuth 2.0, JWT session strategy)
+- **Visualization:** [Recharts](https://recharts.org) (SVG AreaChart & PieChart)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com) (Mobile-first utility design)
+- **Testing & QA:** [Vitest](https://vitest.dev), React Testing Library, ESLint, Husky
+
+> 📖 *For detailed system topology, database schemas, and data flow diagrams, refer to the [Technical Architecture & System Design Guide](docs/ARCHITECTURE.md).*
 
 ---
 
@@ -143,6 +128,7 @@
 ```
 fin-tracker/
 ├── docs/                        # Architecture, test guidelines, & learnings
+│   ├── ARCHITECTURE.md          # Technical architecture & system design
 │   ├── MY_LEARNINGS.md          # Architectural decisions & retrospective
 │   ├── test-cases-guidelines.md # Semantic testing & accessibility standards
 │   └── PROJECT_ESSENTIALS_CHECKLIST.md
@@ -195,6 +181,7 @@ Every pull request to `main` triggers GitHub Actions (`.github/workflows/ci.yml`
 
 ## Documentation & Resources
 
+- [Technical Architecture & System Design](docs/ARCHITECTURE.md)
 - [Engineering Learnings & Architecture Retrospective](docs/MY_LEARNINGS.md)
 - [Test Cases Guidelines](docs/test-cases-guidelines.md)
 - [Project Essentials Checklist](docs/PROJECT_ESSENTIALS_CHECKLIST.md)
