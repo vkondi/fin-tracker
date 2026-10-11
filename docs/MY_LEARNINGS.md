@@ -34,7 +34,7 @@
 
 - I discovered that database-level idempotency via `UNIQUE(user_id, snapshot_date)` constraint coupled with `INSERT ... ON CONFLICT (user_id, snapshot_date) DO UPDATE SET` guarantees zero duplicate monthly entries regardless of multiple manual triggers or retry attempts by cron handlers.
 
-- I learned that in SVG-based charting libraries like Recharts, `<XAxis>` does not auto-wrap text on spaces. Implementing a custom `<CustomXAxisTick>` using `<tspan>` tags to render month on line 1 and year on line 2 reduces horizontal label footprint by >60%, preventing tick collision on mobile viewports.
+- I learned that for multi-year financial timeline tracking, a compact `<select>` dropdown scales effortlessly to any number of historical years without horizontal card overflow, unlike button tabs which quickly break layout beyond 3 years. Furthermore, because the selected year is always explicit in the filter, the X-axis only needs to display clean Month names; configuring `interval={0}` on `<XAxis>` ensures Recharts renders all 12 month labels without dropping any on mobile screens.
 
 - I learned that `ssl: { rejectUnauthorized: false }` is necessary for Neon database connections but should never be used for production-critical security. This is a pragmatic choice for hosted Postgres services with self-signed certificates.
 

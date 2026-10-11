@@ -13,6 +13,7 @@ import { useFinContext } from "@/context/FinContext";
 import { formattedAmount } from "@/utils/utility";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { RiCameraLensLine } from "react-icons/ri";
+import { FaChevronDown } from "react-icons/fa";
 
 const formatMonth = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -29,13 +30,20 @@ interface CustomTickProps {
     value: string;
   };
   isYearly?: boolean;
+  isMobile?: boolean;
 }
 
 /**
- * Custom X-Axis Tick that splits "Month Year" into two lines for monthly views
- * to avoid horizontal cramping on mobile/narrow screens, and renders single line for yearly views.
+ * Custom X-Axis Tick that renders Month for monthly views (since year is already filtered)
+ * and Year for annual macro view.
  */
-const CustomXAxisTick = ({ x = 0, y = 0, payload, isYearly = false }: CustomTickProps) => {
+const CustomXAxisTick = ({
+  x = 0,
+  y = 0,
+  payload,
+  isYearly = false,
+  isMobile = false,
+}: CustomTickProps) => {
   if (!payload || !payload.value) return null;
 
   if (isYearly) {
@@ -47,7 +55,7 @@ const CustomXAxisTick = ({ x = 0, y = 0, payload, isYearly = false }: CustomTick
           dy={14}
           textAnchor="middle"
           fill="#4b5563"
-          fontSize={11}
+          fontSize={isMobile ? 10 : 11}
           fontWeight={600}
         >
           {payload.value}
@@ -56,26 +64,22 @@ const CustomXAxisTick = ({ x = 0, y = 0, payload, isYearly = false }: CustomTick
     );
   }
 
-  // Monthly view: two lines (Month on line 1, Year on line 2)
+  // Monthly view: render only Month name (Year is already selected in filter)
   const date = new Date(payload.value);
   const month = date.toLocaleDateString("en-IN", { month: "short" });
-  const year = date.toLocaleDateString("en-IN", { year: "numeric" });
 
   return (
     <g transform={`translate(${x},${y})`}>
       <text
         x={0}
         y={0}
+        dy={14}
         textAnchor="middle"
         fill="#4b5563"
-        fontSize={11}
+        fontSize={isMobile ? 10 : 11}
+        fontWeight={500}
       >
-        <tspan x={0} dy={12} fontWeight={600}>
-          {month}
-        </tspan>
-        <tspan x={0} dy={14} fontSize={10} fill="#9ca3af">
-          {year}
-        </tspan>
+        {month}
       </text>
     </g>
   );
@@ -285,37 +289,35 @@ const FinancialTimeline = () => {
       <div className={`w-full ${isMobile ? "px-2 py-4" : "p-6"}`}>
         {/* Controls Bar: Yearly Filter & Trigger Button */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-3 border-b border-gray-100">
-          {/* Yearly Filter Tabs (without "Period:" label) */}
+          {/* Yearly Filter Dropdown */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-md text-xs">
-              {availableYears.map((yr) => (
-                <button
-                  key={yr}
-                  onClick={() => setSelectedYear(yr)}
-                  className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
-                    selectedYear === yr
-                      ? "bg-white text-gray-900 shadow-xs font-semibold"
-                      : "text-gray-500 hover:text-gray-900"
-                  }`}
-                  aria-pressed={selectedYear === yr}
-                >
-                  {yr}
-                </button>
-              ))}
-              <button
-                onClick={() => setSelectedYear("all")}
-                className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
-                  isAllYearMode
-                    ? "bg-white text-gray-900 shadow-xs font-semibold"
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-                aria-pressed={isAllYearMode}
+            <div className="relative inline-flex items-center">
+              <select
+                id="timeline-year-select"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="appearance-none bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold py-1.5 pl-3 pr-8 rounded-md cursor-pointer border border-transparent focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 transition-colors"
+                aria-label="Filter timeline by year"
               >
-                All (Annual)
-              </button>
+                {availableYears.map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+                <option value="all">All (Annual)</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-gray-500">
+                <FaChevronDown size={9} />
+              </div>
             </div>
             <span className="text-xs text-gray-400">
-              ({displayChartData.length} {isAllYearMode ? "years" : displayChartData.length === 1 ? "snapshot" : "snapshots"})
+              ({displayChartData.length}{" "}
+              {isAllYearMode
+                ? "years"
+                : displayChartData.length === 1
+                ? "snapshot"
+                : "snapshots"}
+              )
             </span>
           </div>
 
@@ -381,13 +383,20 @@ const FinancialTimeline = () => {
 
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
-                {/* Responsive multi-line tick (Month on top, Year on bottom) */}
+                {/* XAxis showing month names with interval={0} to render all months */}
                 <XAxis
                   dataKey="snapshot_date"
-                  tick={<CustomXAxisTick isYearly={isAllYearMode} />}
+                  interval={0}
+                  tick={
+                    <CustomXAxisTick
+                      isYearly={isAllYearMode}
+                      isMobile={isMobile}
+                    />
+                  }
                   axisLine={{ stroke: "#d1d5db" }}
                   tickLine={false}
-                  height={48}
+                  height={32}
+                  padding={{ left: isMobile ? 8 : 14, right: isMobile ? 8 : 14 }}
                 />
 
                 <YAxis
@@ -396,10 +405,10 @@ const FinancialTimeline = () => {
                       ? `₹${(val / 100000).toFixed(1)}L`
                       : formattedAmount(val)
                   }
-                  tick={{ fontSize: 11, fill: "#6b7280" }}
+                  tick={{ fontSize: isMobile ? 10 : 11, fill: "#6b7280" }}
                   axisLine={false}
                   tickLine={false}
-                  width={isMobile ? 55 : 70}
+                  width={isMobile ? 44 : 70}
                 />
 
                 <Tooltip content={<TimelineTooltip />} />

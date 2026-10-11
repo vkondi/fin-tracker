@@ -120,38 +120,44 @@ describe("FinancialTimeline Component", () => {
     expect(lastUpdatedNote).toHaveClass("text-gray-400");
   });
 
-  it("should render yearly filter without Period label and default to 2026", () => {
+  it("should render yearly filter dropdown and default to 2026", () => {
     render(<FinancialTimeline />);
 
     expect(screen.getByText("Financial Timeline")).toBeInTheDocument();
     expect(screen.queryByText("Period:")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "2026" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "2025" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "All (Annual)" })).toBeInTheDocument();
 
-    // 2026 is default selected
-    expect(screen.getByRole("button", { name: "2026" })).toHaveAttribute("aria-pressed", "true");
+    const select = screen.getByRole("combobox", {
+      name: "Filter timeline by year",
+    }) as HTMLSelectElement;
+    expect(select).toBeInTheDocument();
+    expect(select.value).toBe("2026");
+    expect(screen.getByRole("option", { name: "2026" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "2025" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "All (Annual)" })
+    ).toBeInTheDocument();
     expect(screen.getByText("(2 snapshots)")).toBeInTheDocument();
   });
 
-  it("should switch to year-by-year mode when 'All (Annual)' is clicked", () => {
+  it("should switch to year-by-year mode when 'All (Annual)' is selected", () => {
     render(<FinancialTimeline />);
 
-    const allBtn = screen.getByRole("button", { name: "All (Annual)" });
-    fireEvent.click(allBtn);
+    const select = screen.getByRole("combobox", {
+      name: "Filter timeline by year",
+    });
+    fireEvent.change(select, { target: { value: "all" } });
 
-    expect(allBtn).toHaveAttribute("aria-pressed", "true");
-    // Should show year-by-year count (2 years: 2025 and 2026)
     expect(screen.getByText("(2 years)")).toBeInTheDocument();
   });
 
-  it("should switch period when 2025 is clicked", () => {
+  it("should switch period when 2025 is selected", () => {
     render(<FinancialTimeline />);
 
-    const y2025Btn = screen.getByRole("button", { name: "2025" });
-    fireEvent.click(y2025Btn);
+    const select = screen.getByRole("combobox", {
+      name: "Filter timeline by year",
+    });
+    fireEvent.change(select, { target: { value: "2025" } });
 
-    expect(y2025Btn).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("(2 snapshots)")).toBeInTheDocument();
   });
 
