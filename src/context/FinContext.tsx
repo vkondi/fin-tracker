@@ -4,6 +4,7 @@ import {
   APIResponseType,
   FinanceFormDataType,
   FinanceRecordType,
+  FinancialSnapshotType,
   MemberWiseSummary,
 } from "@/components/component.types";
 import { getRandomColor } from "@/utils/utility";
@@ -23,6 +24,8 @@ export type FinContextType = {
   addFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
   deleteFinance: (id: string) => Promise<APIResponseType>;
   updateFinance: (data: FinanceFormDataType) => Promise<APIResponseType>;
+  captureSnapshot: (date?: string) => Promise<APIResponseType>;
+  getSnapshots: () => Promise<void>;
   financeData: FinanceFormDataType[];
   memberWiseData: MemberWiseSummary[];
   financeSummaryData: {
@@ -34,14 +37,18 @@ export type FinContextType = {
     totalAbsReturnPercentage: number;
   };
   hasNoFinanceData: boolean;
+  snapshotData: FinancialSnapshotType[];
+  canTriggerSnapshot: boolean;
 };
 
 const FinContext = createContext<FinContextType | undefined>(undefined);
 
 export const FinProvider = ({ children }: { children: ReactNode }) => {
-  const { isUserRegistered, userId, setLoader } = useRootContext();
+  const { isUserRegistered, userId, email, setLoader } = useRootContext();
 
   const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
+  const [snapshotData, setSnapshotData] = useState<FinancialSnapshotType[]>([]);
+  const [canTriggerSnapshot, setCanTriggerSnapshot] = useState<boolean>(false);
   const ownerColorMapRef = useRef<Map<string, string>>(new Map());
 
   // Get or assign a color for an owner
@@ -237,12 +244,65 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const getSnapshots = useCallback(async () => {
+    try {
+      const url = `/api/finance/snapshots?userId=${userId}${
+        email ? `&email=${encodeURIComponent(email)}` : ""
+      }`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setSnapshotData(data?.data ?? []);
+      setCanTriggerSnapshot(Boolean(data?.canTriggerSnapshot));
+    } catch (error) {
+      console.error("[FinContext][getSnapshots] >> Exception:", error);
+    }
+  }, [userId, email]);
+
+  const captureSnapshot = useCallback(
+    async (date?: string): Promise<APIResponseType> => {
+      try {
+        const response = await fetch("/api/finance/snapshots", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, email, date }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          await getSnapshots();
+          return {
+            success: true,
+            message: data.message || "Financial snapshot captured successfully!",
+          };
+        }
+        return {
+          success: false,
+          message: data.error || "Failed to capture snapshot.",
+        };
+      } catch (error) {
+        console.error("[FinContext][captureSnapshot] >> Exception:", error);
+        return {
+          success: false,
+          message: "Failed to capture snapshot. Please try again.",
+        };
+      }
+    },
+    [userId, email, getSnapshots]
+  );
+
   // Fetch data only when registered user is logged in
   useEffect(() => {
     if (isUserRegistered) {
       getAllFinances();
+      getSnapshots();
     }
-  }, [isUserRegistered, getAllFinances]);
+  }, [isUserRegistered, getAllFinances, getSnapshots]);
 
   return (
     <FinContext.Provider
@@ -250,6 +310,8 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         addFinance,
         deleteFinance,
         updateFinance,
+        captureSnapshot,
+        getSnapshots,
         financeData,
         memberWiseData,
         financeSummaryData: {
@@ -261,6 +323,8 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
           totalAbsReturnPercentage: parseFloat(totalAbsReturnPercentage),
         },
         hasNoFinanceData: Array.isArray(financeData) && !financeData.length,
+        snapshotData,
+        canTriggerSnapshot,
       }}
     >
       {children}
