@@ -1,7 +1,40 @@
+const fs = require('fs');
+const path = require('path');
 const { Pool } = require('pg');
 
+// If DATABASE_URL is not set in the environment, attempt to read from .env / .env.local
+if (!process.env.DATABASE_URL) {
+  for (const envFile of ['.env.local', '.env']) {
+    const envPath = path.resolve(__dirname, '..', envFile);
+    if (fs.existsSync(envPath)) {
+      const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/);
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const eqIdx = trimmed.indexOf('=');
+          if (eqIdx !== -1) {
+            const key = trimmed.slice(0, eqIdx).trim();
+            const val = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+            if (!process.env[key]) {
+              process.env[key] = val;
+            }
+          }
+        }
+      }
+      if (process.env.DATABASE_URL) break;
+    }
+  }
+}
+
+const rawConnectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+const connectionString = rawConnectionString?.replace(
+  /([?&])sslmode=[^&]*(&?)/g,
+  (_, prefix, suffix) => (suffix ? prefix : '')
+);
+
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: connectionString || process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }, // Required for Neon serverless environments
 });
 
 async function runSnapshotForUser(userId) {
