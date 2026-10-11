@@ -1,4 +1,4 @@
-import { FINANCES_TABLE, SYS_USERS_TABLE } from "@/utils/constants";
+import { FINANCES_TABLE, FINANCIAL_SNAPSHOTS_TABLE, SYS_USERS_TABLE } from "@/utils/constants";
 import { pool } from "./database";
 
 const createTable = async ({
@@ -58,6 +58,25 @@ export const migrate = async () => {
     BEFORE UPDATE ON ${FINANCES_TABLE}
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_date();`,
+      },
+      {
+        name: FINANCIAL_SNAPSHOTS_TABLE,
+        query: `CREATE TABLE IF NOT EXISTS ${FINANCIAL_SNAPSHOTS_TABLE} (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      snapshot_date DATE NOT NULL,
+      total_invested NUMERIC NOT NULL DEFAULT 0,
+      total_current NUMERIC NOT NULL DEFAULT 0,
+      total_platforms INTEGER NOT NULL DEFAULT 0,
+      total_owners INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT fk_snapshot_user
+        FOREIGN KEY(user_id)
+        REFERENCES ${SYS_USERS_TABLE}(id)
+        ON DELETE CASCADE,
+      CONSTRAINT uq_user_snapshot_date
+        UNIQUE(user_id, snapshot_date)
+    );`,
       },
     ];
 

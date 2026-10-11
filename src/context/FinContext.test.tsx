@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FinProvider, useFinContext } from './FinContext';
 import * as RootContext from './RootContext';
 import { RootContextType } from './RootContext';
-import { FinanceFormDataType } from '@/components/component.types';
+import { APIResponseType, FinanceFormDataType } from '@/components/component.types';
 
 vi.mock('./RootContext', () => ({
     useRootContext: vi.fn(),
@@ -153,7 +153,7 @@ describe('FinContext', () => {
             method: "POST",
             body: expect.stringContaining("Alice")
         }));
-        expect(globalFetch).toHaveBeenCalledTimes(3);
+        expect(globalFetch).toHaveBeenCalledTimes(4);
     });
 
     it('should update finance record', async () => {
@@ -200,6 +200,25 @@ describe('FinContext', () => {
         expect(globalFetch).toHaveBeenCalledWith("/api/finance", expect.objectContaining({
             method: "DELETE",
             body: JSON.stringify({ id: "1" })
+        }));
+    });
+
+    it('should capture snapshot successfully', async () => {
+        const { result } = renderHook(() => useFinContext(), { wrapper });
+
+        globalFetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ message: "Snapshot captured successfully" }),
+        });
+
+        let response: APIResponseType | undefined;
+        await act(async () => {
+            response = await result.current.captureSnapshot();
+        });
+
+        expect(response?.success).toBe(true);
+        expect(globalFetch).toHaveBeenCalledWith("/api/finance/snapshots", expect.objectContaining({
+            method: "POST",
         }));
     });
 });

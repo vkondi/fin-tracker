@@ -6,6 +6,7 @@ import OwnerDistribution from "./OwnerDistribution/OwnerDistribution";
 import MembersCard from "./MembersCard/MembersCard";
 import AddNewPromoCard from "./AddNewPromoCard/AddNewPromoCard";
 import CategoryDistribution from "./CategoryDistribution/CategoryDistribution";
+import FinancialTimeline from "./FinancialTimeline/FinancialTimeline";
 
 const Dashboard = () => {
   const { isMobile } = useRootContext();
@@ -40,6 +41,11 @@ const Dashboard = () => {
           <div className={gridRowCls}>
             <OwnerDistribution />
             <CategoryDistribution />
+          </div>
+
+          {/* Third Row — Financial Timeline */}
+          <div className={`flex w-full items-center justify-center`}>
+            <FinancialTimeline />
           </div>
         </div>
       </main>

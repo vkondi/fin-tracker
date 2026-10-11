@@ -57,3 +57,12 @@ export type MemberWiseSummary = SectionWiseSummary & {
 export type CategoryWiseSummary = SectionWiseSummary & {
   category: string;
 };
+
+export type FinancialSnapshotType = {
+  snapshot_date: string;
+  total_invested: number;
+  total_current: number;
+  total_platforms: number;
+  total_owners: number;
+  created_at?: string;
+};
