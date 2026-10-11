@@ -20,8 +20,9 @@ async function runSnapshotForUser(userId) {
 
   const agg = aggregation[0];
   const snapshotDate = new Date();
-  snapshotDate.setDate(1);
-  const snapshotDateStr = snapshotDate.toISOString().split('T')[0];
+  const year = snapshotDate.getFullYear();
+  const month = String(snapshotDate.getMonth() + 1).padStart(2, '0');
+  const snapshotDateStr = `${year}-${month}-01`;
 
   const { rows } = await pool.query(
     `INSERT INTO FINANCIAL_SNAPSHOTS (

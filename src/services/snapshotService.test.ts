@@ -113,6 +113,12 @@ describe("snapshotService", () => {
       const result = formatSnapshotDate();
       expect(result).toMatch(/^\d{4}-\d{2}-01$/);
     });
+
+    it("should derive the 1st of the month using local components even when early morning in timezones ahead of UTC", () => {
+      const date = new Date(2026, 9, 10, 2, 0, 0);
+      const result = formatSnapshotDate(date);
+      expect(result).toBe("2026-10-01");
+    });
   });
 
   describe("createSnapshotForUser", () => {
