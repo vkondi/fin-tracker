@@ -94,6 +94,25 @@ export const isUserAuthorizedForSnapshot = async (
     }
   }
 
+  if (email && !userId) {
+    try {
+      const { rows } = await db.query(
+        `SELECT id FROM ${SYS_USERS_TABLE} WHERE LOWER(email) = LOWER($1) LIMIT 1;`,
+        [String(email).trim()]
+      );
+      if (rows.length > 0 && rows[0].id) {
+        if (getAuthorizedSnapshotUserIds().includes(String(rows[0].id))) {
+          return true;
+        }
+      }
+    } catch (err) {
+      console.error(
+        "[isUserAuthorizedForSnapshot] Failed to query user ID by email:",
+        err
+      );
+    }
+  }
+
   return false;
 };
 

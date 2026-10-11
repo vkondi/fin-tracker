@@ -100,6 +100,33 @@ describe("snapshotService", () => {
 
       process.env.AUTHORIZED_SNAPSHOT_EMAILS = originalEnv;
     });
+
+    it("should query DB for user ID if only email is provided and matches an authorized user ID", async () => {
+      const originalEnvIds = process.env.AUTHORIZED_SNAPSHOT_USER_IDS;
+      const originalEnvEmails = process.env.AUTHORIZED_SNAPSHOT_EMAILS;
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = "100";
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = "admin@fin.com";
+
+      const mockDb = {
+        query: vi.fn().mockResolvedValue({
+          rows: [{ id: 100 }],
+        }),
+      } as unknown as Pool;
+
+      const result = await isUserAuthorizedForSnapshot(
+        undefined,
+        "user@fin.com",
+        mockDb
+      );
+      expect(result).toBe(true);
+      expect(mockDb.query).toHaveBeenCalledWith(
+        expect.stringContaining("SELECT id FROM"),
+        ["user@fin.com"]
+      );
+
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = originalEnvIds;
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = originalEnvEmails;
+    });
   });
 
   describe("formatSnapshotDate", () => {
