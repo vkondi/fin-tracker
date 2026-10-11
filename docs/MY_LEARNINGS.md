@@ -30,6 +30,12 @@
 
 - I decided against optimistic updates in FinContext because financial data must be authoritative. Re-fetching from the database after every mutation guarantees consistency, even if it adds latency. This trade-off favors correctness over perceived performance.
 
+- I learned that extracting shared database and business logic into a **dedicated service layer** (`src/services/snapshotService.ts`) adheres to the DRY principle across multiple entry points: background cron jobs (`/api/cron/snapshot`), client API endpoints (`/api/finance/snapshots`), and administrative CLI scripts (`scripts/run_snapshot.js`) all invoke the same audited service functions with zero logic duplication.
+
+- I discovered that database-level idempotency via `UNIQUE(user_id, snapshot_date)` constraint coupled with `INSERT ... ON CONFLICT (user_id, snapshot_date) DO UPDATE SET` guarantees zero duplicate monthly entries regardless of multiple manual triggers or retry attempts by cron handlers.
+
+- I learned that in SVG-based charting libraries like Recharts, `<XAxis>` does not auto-wrap text on spaces. Implementing a custom `<CustomXAxisTick>` using `<tspan>` tags to render month on line 1 and year on line 2 reduces horizontal label footprint by >60%, preventing tick collision on mobile viewports.
+
 - I learned that `ssl: { rejectUnauthorized: false }` is necessary for Neon database connections but should never be used for production-critical security. This is a pragmatic choice for hosted Postgres services with self-signed certificates.
 
 ## Authentication / Authorization
@@ -39,6 +45,8 @@
 - I learned that middleware checking for NextAuth session cookie presence (e.g., `next-auth.session-token` or `__Secure-next-auth.session-token` over HTTPS) doesn't validate token authenticity—it's a fast gate, not full verification. NextAuth validates server-side, so this asymmetry is safe but must be understood.
 
 - I realized that returning `null` during authentication redirects prevents flash-of-unauthenticated-content (FOUC). This is better than showing a loading spinner or partial UI.
+
+- I learned that role-based access control should never embed authorized identifiers into client bundles. Enforcing access on the server via environment variables (`AUTHORIZED_SNAPSHOT_USER_IDS`, `AUTHORIZED_SNAPSHOT_EMAILS`) with zero hardcoded defaults and returning a simple boolean flag (`canTriggerSnapshot`) keeps user lists confidential and allows instant permission rotation without code changes.
 
 ## Code Quality & Maintainability
 

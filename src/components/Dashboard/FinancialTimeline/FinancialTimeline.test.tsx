@@ -19,7 +19,7 @@ vi.mock("recharts", async () => {
   return {
     ...original,
     ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
-      <div data-testid="responsive-container" style={{ width: 800, height: 400 }}>
+      <div style={{ width: 800, height: 400 }}>
         {children}
       </div>
     ),
@@ -85,6 +85,7 @@ describe("FinancialTimeline Component", () => {
       snapshotData: sampleSnapshots,
       hasNoFinanceData: false,
       captureSnapshot: mockCaptureSnapshot,
+      canTriggerSnapshot: true,
     } as unknown as FIN_CONTEXT.FinContextType);
   });
 
@@ -111,18 +112,19 @@ describe("FinancialTimeline Component", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("should render last updated date in header and badge", () => {
+  it("should render last updated side note at bottom right", () => {
     render(<FinancialTimeline />);
 
-    expect(screen.getByTestId("header-last-updated")).toBeInTheDocument();
-    expect(screen.getByTestId("header-last-updated")).toHaveTextContent("Last updated:");
+    const lastUpdatedNote = screen.getByText(/last updated:/i);
+    expect(lastUpdatedNote).toBeInTheDocument();
+    expect(lastUpdatedNote).toHaveClass("text-gray-400");
   });
 
-  it("should render yearly filter with default current year (2026)", () => {
+  it("should render yearly filter without Period label and default to 2026", () => {
     render(<FinancialTimeline />);
 
     expect(screen.getByText("Financial Timeline")).toBeInTheDocument();
-    expect(screen.getByText("Period:")).toBeInTheDocument();
+    expect(screen.queryByText("Period:")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "2026" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "2025" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "All (Annual)" })).toBeInTheDocument();
@@ -153,20 +155,45 @@ describe("FinancialTimeline Component", () => {
     expect(screen.getByText("(2 snapshots)")).toBeInTheDocument();
   });
 
-  it("should render 'Take a Snapshot' button for authorized user (userId: 2)", () => {
+  it("should render notice when selected period has fewer than 2 snapshots", () => {
+    // Only 1 snapshot in 2026
+    const single2026Snapshot: FinancialSnapshotType[] = [
+      {
+        snapshot_date: "2026-10-01",
+        total_invested: 560540,
+        total_current: 601250,
+        total_platforms: 6,
+        total_owners: 3,
+        created_at: "2026-10-01T10:00:00.000Z",
+      },
+    ];
+
+    mockUseFinContext.mockReturnValue({
+      snapshotData: single2026Snapshot,
+      hasNoFinanceData: false,
+      captureSnapshot: mockCaptureSnapshot,
+    } as unknown as FIN_CONTEXT.FinContextType);
+
+    render(<FinancialTimeline />);
+
+    expect(screen.getByText(/1 snapshot recorded for 2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/last updated:/i)).toBeInTheDocument();
+  });
+
+  it("should render 'Take a Snapshot' button when canTriggerSnapshot is true", () => {
     render(<FinancialTimeline />);
 
     const triggerBtn = screen.getByRole("button", { name: "Take a Snapshot" });
     expect(triggerBtn).toBeInTheDocument();
   });
 
-  it("should NOT render 'Take a Snapshot' button for unauthorized user (userId: 99)", () => {
-    mockUseRootContext.mockReturnValue({
-      isMobile: false,
-      loader: { show: false },
-      userId: "99", // Unauthorized user
-      toast: mockToast,
-    } as unknown as ROOT_CONTEXT.RootContextType);
+  it("should NOT render 'Take a Snapshot' button when canTriggerSnapshot is false", () => {
+    mockUseFinContext.mockReturnValue({
+      snapshotData: sampleSnapshots,
+      hasNoFinanceData: false,
+      captureSnapshot: mockCaptureSnapshot,
+      canTriggerSnapshot: false,
+    } as unknown as FIN_CONTEXT.FinContextType);
 
     render(<FinancialTimeline />);
 

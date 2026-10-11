@@ -221,4 +221,29 @@ describe('FinContext', () => {
             method: "POST",
         }));
     });
+
+    it('should fetch snapshots and set canTriggerSnapshot', async () => {
+        globalFetch.mockImplementation(async (url: string) => {
+            if (url.includes("/api/finance/snapshots")) {
+                return {
+                    json: async () => ({
+                        data: [{ snapshot_date: "2026-10-01", total_invested: 1000, total_current: 1200 }],
+                        canTriggerSnapshot: true,
+                    }),
+                };
+            }
+            return {
+                json: async () => ({ data: [] }),
+            };
+        });
+
+        const { result } = renderHook(() => useFinContext(), { wrapper });
+
+        await act(async () => {
+            await result.current.getSnapshots();
+        });
+
+        expect(result.current.canTriggerSnapshot).toBe(true);
+        expect(result.current.snapshotData.length).toBe(1);
+    });
 });

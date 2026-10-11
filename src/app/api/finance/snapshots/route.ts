@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   createSnapshotForUser,
   getSnapshotsForUser,
-  isAuthorizedForSnapshot,
+  isUserAuthorizedForSnapshot,
   seedMockHistoricalSnapshots,
 } from "@/services/snapshotService";
 
@@ -12,6 +12,7 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const userId = url.searchParams.get("userId");
     const year = url.searchParams.get("year");
+    const email = url.searchParams.get("email");
 
     if (!userId) {
       return NextResponse.json(
@@ -21,9 +22,13 @@ export async function GET(request: Request) {
     }
 
     const rows = await getSnapshotsForUser(userId, year ?? undefined);
+    const canTriggerSnapshot = await isUserAuthorizedForSnapshot(
+      userId,
+      email ?? undefined
+    );
 
     return NextResponse.json(
-      { message: "success", data: rows },
+      { message: "success", data: rows, canTriggerSnapshot },
       { status: 200 }
     );
   } catch (error) {
@@ -40,7 +45,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, date, action } = body;
+    const { userId, email, date, action } = body;
 
     if (!userId) {
       return NextResponse.json(
@@ -49,8 +54,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Role / Access Guardrail: Restrict trigger to authorized user IDs only
-    if (!isAuthorizedForSnapshot(userId)) {
+    // Role / Access Guardrail: Restrict trigger to authorized users only
+    const authorized = await isUserAuthorizedForSnapshot(userId, email);
+    if (!authorized) {
       return NextResponse.json(
         { error: "Forbidden: You are not authorized to trigger snapshots." },
         { status: 403 }

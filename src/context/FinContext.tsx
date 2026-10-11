@@ -38,15 +38,17 @@ export type FinContextType = {
   };
   hasNoFinanceData: boolean;
   snapshotData: FinancialSnapshotType[];
+  canTriggerSnapshot: boolean;
 };
 
 const FinContext = createContext<FinContextType | undefined>(undefined);
 
 export const FinProvider = ({ children }: { children: ReactNode }) => {
-  const { isUserRegistered, userId, setLoader } = useRootContext();
+  const { isUserRegistered, userId, email, setLoader } = useRootContext();
 
   const [financeData, setFinanceData] = useState<FinanceFormDataType[]>([]);
   const [snapshotData, setSnapshotData] = useState<FinancialSnapshotType[]>([]);
+  const [canTriggerSnapshot, setCanTriggerSnapshot] = useState<boolean>(false);
   const ownerColorMapRef = useRef<Map<string, string>>(new Map());
 
   // Get or assign a color for an owner
@@ -244,7 +246,10 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
 
   const getSnapshots = useCallback(async () => {
     try {
-      const response = await fetch(`/api/finance/snapshots?userId=${userId}`, {
+      const url = `/api/finance/snapshots?userId=${userId}${
+        email ? `&email=${encodeURIComponent(email)}` : ""
+      }`;
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -252,10 +257,11 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
       });
       const data = await response.json();
       setSnapshotData(data?.data ?? []);
+      setCanTriggerSnapshot(Boolean(data?.canTriggerSnapshot));
     } catch (error) {
       console.error("[FinContext][getSnapshots] >> Exception:", error);
     }
-  }, [userId]);
+  }, [userId, email]);
 
   const captureSnapshot = useCallback(
     async (date?: string): Promise<APIResponseType> => {
@@ -265,7 +271,7 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId, date }),
+          body: JSON.stringify({ userId, email, date }),
         });
         const data = await response.json();
         if (response.ok) {
@@ -287,7 +293,7 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         };
       }
     },
-    [userId, getSnapshots]
+    [userId, email, getSnapshots]
   );
 
   // Fetch data only when registered user is logged in
@@ -318,6 +324,7 @@ export const FinProvider = ({ children }: { children: ReactNode }) => {
         },
         hasNoFinanceData: Array.isArray(financeData) && !financeData.length,
         snapshotData,
+        canTriggerSnapshot,
       }}
     >
       {children}

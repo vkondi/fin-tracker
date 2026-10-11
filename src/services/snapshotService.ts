@@ -3,7 +3,6 @@ import {
   FINANCES_TABLE,
   FINANCIAL_SNAPSHOTS_TABLE,
   SYS_USERS_TABLE,
-  AUTHORIZED_SNAPSHOT_USER_IDS,
 } from "@/utils/constants";
 import { Pool } from "pg";
 
@@ -19,11 +18,83 @@ export interface SnapshotRecord {
 }
 
 /**
- * Checks whether a given user is authorized to manually trigger snapshots
+ * Retrieves authorized user IDs from environment variable AUTHORIZED_SNAPSHOT_USER_IDS.
+ * If not configured in environment variables, returns an empty list (restricted by default).
  */
-export const isAuthorizedForSnapshot = (userId: number | string | undefined | null): boolean => {
-  if (!userId) return false;
-  return AUTHORIZED_SNAPSHOT_USER_IDS.includes(String(userId));
+export const getAuthorizedSnapshotUserIds = (): string[] => {
+  const envVal = process.env.AUTHORIZED_SNAPSHOT_USER_IDS;
+  if (!envVal) return [];
+  return envVal
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+};
+
+/**
+ * Retrieves authorized emails from environment variable AUTHORIZED_SNAPSHOT_EMAILS.
+ */
+export const getAuthorizedSnapshotEmails = (): string[] => {
+  const envVal = process.env.AUTHORIZED_SNAPSHOT_EMAILS;
+  if (!envVal) return [];
+  return envVal
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+};
+
+/**
+ * Synchronously checks whether a given userId or email is authorized to manually trigger snapshots.
+ */
+export const isAuthorizedForSnapshot = (
+  userId?: number | string | null,
+  email?: string | null
+): boolean => {
+  if (userId && getAuthorizedSnapshotUserIds().includes(String(userId))) {
+    return true;
+  }
+  if (
+    email &&
+    getAuthorizedSnapshotEmails().includes(String(email).trim().toLowerCase())
+  ) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Async authorization check that validates userId and email against environment variables,
+ * falling back to a database lookup on SYS_USERS if only userId is provided.
+ */
+export const isUserAuthorizedForSnapshot = async (
+  userId?: number | string | null,
+  email?: string | null,
+  db: Pool = pool
+): Promise<boolean> => {
+  if (isAuthorizedForSnapshot(userId, email)) {
+    return true;
+  }
+
+  if (userId) {
+    try {
+      const { rows } = await db.query(
+        `SELECT email FROM ${SYS_USERS_TABLE} WHERE id = $1 LIMIT 1;`,
+        [userId]
+      );
+      if (rows.length > 0 && rows[0].email) {
+        const userEmail = String(rows[0].email).trim().toLowerCase();
+        if (getAuthorizedSnapshotEmails().includes(userEmail)) {
+          return true;
+        }
+      }
+    } catch (err) {
+      console.error(
+        "[isUserAuthorizedForSnapshot] Failed to query user email:",
+        err
+      );
+    }
+  }
+
+  return false;
 };
 
 /**

@@ -11,7 +11,6 @@ import {
 import { useRootContext } from "@/context/RootContext";
 import { useFinContext } from "@/context/FinContext";
 import { formattedAmount } from "@/utils/utility";
-import { AUTHORIZED_SNAPSHOT_USER_IDS } from "@/utils/constants";
 import DashboardCard from "../DashboardCard/DashboardCard";
 import { RiCameraLensLine } from "react-icons/ri";
 
@@ -139,12 +138,16 @@ const FinancialTimeline = () => {
   const {
     isMobile,
     loader,
-    userId,
     toast,
   } = useRootContext();
   const loading = loader?.show ?? false;
 
-  const { snapshotData, hasNoFinanceData, captureSnapshot } = useFinContext();
+  const {
+    snapshotData,
+    hasNoFinanceData,
+    captureSnapshot,
+    canTriggerSnapshot,
+  } = useFinContext();
   const [isCapturing, setIsCapturing] = useState(false);
 
   // Default to current year
@@ -152,7 +155,7 @@ const FinancialTimeline = () => {
   const [selectedYear, setSelectedYear] = useState<string>(currentYearStr);
 
   // Role / Access Guardrail: only authorized users can trigger manual snapshots
-  const isAuthorized = AUTHORIZED_SNAPSHOT_USER_IDS.includes(String(userId));
+  const isAuthorized = canTriggerSnapshot;
 
   // Extract available years from snapshots
   const availableYears = useMemo(() => {
@@ -257,18 +260,7 @@ const FinancialTimeline = () => {
   // Entirely empty state (no snapshots at all)
   if (snapshotData.length === 0) {
     return (
-      <DashboardCard
-        title="Financial Timeline"
-        headerRight={
-          lastUpdatedDisplay ? (
-            <span className="text-xs font-normal opacity-90">
-              Last updated: {lastUpdatedDisplay}
-            </span>
-          ) : undefined
-        }
-        flex={1}
-        fullWidth
-      >
+      <DashboardCard title="Financial Timeline" flex={1} fullWidth>
         <div className={`w-full flex flex-col items-center justify-center gap-4 ${isMobile ? "p-4" : "p-6"}`}>
           <p className="text-sm text-gray-500 text-center max-w-md">
             No snapshots captured yet. Snapshots track your overall portfolio growth over time.
@@ -289,24 +281,12 @@ const FinancialTimeline = () => {
   }
 
   return (
-    <DashboardCard
-      title="Financial Timeline"
-      headerRight={
-        lastUpdatedDisplay ? (
-          <span className="text-xs font-normal opacity-90" data-testid="header-last-updated">
-            Last updated: {lastUpdatedDisplay}
-          </span>
-        ) : undefined
-      }
-      flex={1}
-      fullWidth
-    >
+    <DashboardCard title="Financial Timeline" flex={1} fullWidth>
       <div className={`w-full ${isMobile ? "px-2 py-4" : "p-6"}`}>
-        {/* Controls Bar: Yearly Filter, Last Updated Notice & Trigger Button */}
+        {/* Controls Bar: Yearly Filter & Trigger Button */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-3 border-b border-gray-100">
-          {/* Yearly Filter Tabs */}
+          {/* Yearly Filter Tabs (without "Period:" label) */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-gray-500">Period:</span>
             <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-md text-xs">
               {availableYears.map((yr) => (
                 <button
@@ -339,136 +319,139 @@ const FinancialTimeline = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Enhancement 1: Last updated badge */}
-            {lastUpdatedDisplay && (
-              <div className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 px-2.5 py-1 rounded border border-gray-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>
-                  Last updated: <strong className="text-gray-700">{lastUpdatedDisplay}</strong>
-                </span>
-              </div>
-            )}
-
-            {/* Role/Access Guardrail: Trigger visible ONLY to authorized user IDs */}
-            {isAuthorized && (
-              <button
-                onClick={handleManualCapture}
-                disabled={isCapturing}
-                className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded bg-[var(--primary-btn)] text-[var(--background)] hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer shadow-xs"
-                title="Capture or update current month snapshot"
-                aria-label="Take a Snapshot"
-              >
-                <RiCameraLensLine size={13} />
-                <span>{isCapturing ? "Capturing..." : "Take a Snapshot"}</span>
-              </button>
-            )}
-          </div>
+          {/* Role/Access Guardrail: Trigger visible ONLY to authorized user IDs */}
+          {isAuthorized && (
+            <button
+              onClick={handleManualCapture}
+              disabled={isCapturing}
+              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded bg-[var(--primary-btn)] text-[var(--background)] hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer shadow-xs"
+              title="Capture or update current month snapshot"
+              aria-label="Take a Snapshot"
+            >
+              <RiCameraLensLine size={13} />
+              <span>{isCapturing ? "Capturing..." : "Take a Snapshot"}</span>
+            </button>
+          )}
         </div>
 
         {/* Chart or Single-Point Notice */}
         {displayChartData.length < 2 ? (
-          <div className="flex flex-col items-center justify-center p-8 gap-2 bg-gray-50 rounded-lg text-center">
-            <p className="text-sm font-medium text-gray-700">
-              {displayChartData.length === 1
-                ? isAllYearMode
-                  ? "Only 1 year of snapshot data recorded."
-                  : `1 snapshot recorded for ${selectedYear} (${displayChartData[0].label}).`
-                : `No snapshots recorded for ${selectedYear}.`}
-            </p>
-            <p className="text-xs text-gray-500 max-w-md">
-              A minimum of 2 data points are required to plot trend lines.
-              Switch to another year or select <strong>&quot;All (Annual)&quot;</strong> to view multi-period trends.
-            </p>
+          <div>
+            <div className="flex flex-col items-center justify-center p-8 gap-2 bg-gray-50 rounded-lg text-center">
+              <p className="text-sm font-medium text-gray-700">
+                {displayChartData.length === 1
+                  ? isAllYearMode
+                    ? "Only 1 year of snapshot data recorded."
+                    : `1 snapshot recorded for ${selectedYear} (${displayChartData[0].label}).`
+                  : `No snapshots recorded for ${selectedYear}.`}
+              </p>
+              <p className="text-xs text-gray-500 max-w-md">
+                A minimum of 2 data points are required to plot trend lines.
+                Switch to another year or select <strong>&quot;All (Annual)&quot;</strong> to view multi-period trends.
+              </p>
+            </div>
+            {lastUpdatedDisplay && (
+              <div className="flex justify-end w-full mt-3 text-[11px] text-gray-400">
+                <span>Last updated: {lastUpdatedDisplay}</span>
+              </div>
+            )}
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={isMobile ? 260 : 360}>
-            <AreaChart
-              data={displayChartData}
-              margin={{
-                top: 10,
-                right: isMobile ? 10 : 30,
-                left: isMobile ? 0 : 20,
-                bottom: 10,
-              }}
-            >
-              <defs>
-                <linearGradient id="gradientInvested" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b3a3a" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#3b3a3a" stopOpacity={0.02} />
-                </linearGradient>
-                <linearGradient id="gradientCurrent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f8d410" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#f8d410" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
+          <div>
+            <ResponsiveContainer width="100%" height={isMobile ? 260 : 360}>
+              <AreaChart
+                data={displayChartData}
+                margin={{
+                  top: 10,
+                  right: isMobile ? 10 : 30,
+                  left: isMobile ? 0 : 20,
+                  bottom: 10,
+                }}
+              >
+                <defs>
+                  <linearGradient id="gradientInvested" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b3a3a" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#3b3a3a" stopOpacity={0.02} />
+                  </linearGradient>
+                  <linearGradient id="gradientCurrent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f8d410" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f8d410" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
 
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
-              {/* Enhancement 3: Responsive multi-line tick (Month on top, Year on bottom) */}
-              <XAxis
-                dataKey="snapshot_date"
-                tick={<CustomXAxisTick isYearly={isAllYearMode} />}
-                axisLine={{ stroke: "#d1d5db" }}
-                tickLine={false}
-                height={48}
-              />
+                {/* Responsive multi-line tick (Month on top, Year on bottom) */}
+                <XAxis
+                  dataKey="snapshot_date"
+                  tick={<CustomXAxisTick isYearly={isAllYearMode} />}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={false}
+                  height={48}
+                />
 
-              <YAxis
-                tickFormatter={(val: number) =>
-                  val >= 100000
-                    ? `₹${(val / 100000).toFixed(1)}L`
-                    : formattedAmount(val)
-                }
-                tick={{ fontSize: 11, fill: "#6b7280" }}
-                axisLine={false}
-                tickLine={false}
-                width={isMobile ? 55 : 70}
-              />
+                <YAxis
+                  tickFormatter={(val: number) =>
+                    val >= 100000
+                      ? `₹${(val / 100000).toFixed(1)}L`
+                      : formattedAmount(val)
+                  }
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={isMobile ? 55 : 70}
+                />
 
-              <Tooltip content={<TimelineTooltip />} />
+                <Tooltip content={<TimelineTooltip />} />
 
-              <Area
-                type="monotone"
-                dataKey="total_invested"
-                name="Invested"
-                stroke="#3b3a3a"
-                strokeWidth={2}
-                fill="url(#gradientInvested)"
-                dot={{ r: 3, fill: "#3b3a3a", strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: "#3b3a3a", strokeWidth: 2, stroke: "#fff" }}
-              />
+                <Area
+                  type="monotone"
+                  dataKey="total_invested"
+                  name="Invested"
+                  stroke="#3b3a3a"
+                  strokeWidth={2}
+                  fill="url(#gradientInvested)"
+                  dot={{ r: 3, fill: "#3b3a3a", strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: "#3b3a3a", strokeWidth: 2, stroke: "#fff" }}
+                />
 
-              <Area
-                type="monotone"
-                dataKey="total_current"
-                name="Current"
-                stroke="#f8d410"
-                strokeWidth={2.5}
-                fill="url(#gradientCurrent)"
-                dot={{ r: 3, fill: "#f8d410", strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: "#f8d410", strokeWidth: 2, stroke: "#fff" }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        )}
+                <Area
+                  type="monotone"
+                  dataKey="total_current"
+                  name="Current"
+                  stroke="#f8d410"
+                  strokeWidth={2.5}
+                  fill="url(#gradientCurrent)"
+                  dot={{ r: 3, fill: "#f8d410", strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: "#f8d410", strokeWidth: 2, stroke: "#fff" }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
 
-        {/* Legend */}
-        {displayChartData.length >= 2 && (
-          <div className="flex items-center justify-center gap-6 mt-3 text-xs text-gray-600">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: "#3b3a3a" }}
-              />
-              <span>Invested</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: "#f8d410" }}
-              />
-              <span>Current</span>
+            {/* Bottom Footer: Legend & Last Updated side note at bottom right */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-3 pt-2 text-xs">
+              <div className="hidden sm:block w-36" />
+              <div className="flex items-center justify-center gap-6 text-xs text-gray-600 sm:mx-auto">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: "#3b3a3a" }}
+                  />
+                  <span>Invested</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: "#f8d410" }}
+                  />
+                  <span>Current</span>
+                </div>
+              </div>
+              {lastUpdatedDisplay && (
+                <span className="text-[11px] text-gray-400 text-right self-end sm:self-center">
+                  Last updated: {lastUpdatedDisplay}
+                </span>
+              )}
             </div>
           </div>
         )}

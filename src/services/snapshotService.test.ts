@@ -1,5 +1,6 @@
 import {
   isAuthorizedForSnapshot,
+  isUserAuthorizedForSnapshot,
   formatSnapshotDate,
   createSnapshotForUser,
   createSnapshotsForAllUsers,
@@ -16,18 +17,88 @@ vi.mock("@/app/api/database", () => ({
 
 describe("snapshotService", () => {
   describe("isAuthorizedForSnapshot", () => {
-    it("should return true for authorized user IDs", () => {
-      expect(isAuthorizedForSnapshot("1")).toBe(true);
-      expect(isAuthorizedForSnapshot("2")).toBe(true);
-      expect(isAuthorizedForSnapshot(1)).toBe(true);
-      expect(isAuthorizedForSnapshot(2)).toBe(true);
+    it("should return true for configured user IDs in environment", () => {
+      const originalEnv = process.env.AUTHORIZED_SNAPSHOT_USER_IDS;
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = "100,200";
+
+      expect(isAuthorizedForSnapshot("100")).toBe(true);
+      expect(isAuthorizedForSnapshot(200)).toBe(true);
+      expect(isAuthorizedForSnapshot("300")).toBe(false);
+
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = originalEnv;
     });
 
-    it("should return false for unauthorized user IDs or empty values", () => {
-      expect(isAuthorizedForSnapshot("3")).toBe(false);
+    it("should return true for authorized emails", () => {
+      const originalEnv = process.env.AUTHORIZED_SNAPSHOT_EMAILS;
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = "admin@example.com,test@fin.com";
+
+      expect(isAuthorizedForSnapshot(undefined, "admin@example.com")).toBe(true);
+      expect(isAuthorizedForSnapshot(undefined, "ADMIN@EXAMPLE.COM")).toBe(true);
+      expect(isAuthorizedForSnapshot(undefined, "other@example.com")).toBe(false);
+
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = originalEnv;
+    });
+
+    it("should strictly restrict access when environment variable is unset", () => {
+      const originalEnv = process.env.AUTHORIZED_SNAPSHOT_USER_IDS;
+      delete process.env.AUTHORIZED_SNAPSHOT_USER_IDS;
+
+      expect(isAuthorizedForSnapshot("100")).toBe(false);
       expect(isAuthorizedForSnapshot("99")).toBe(false);
       expect(isAuthorizedForSnapshot(null)).toBe(false);
       expect(isAuthorizedForSnapshot(undefined)).toBe(false);
+
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = originalEnv;
+    });
+  });
+
+  describe("isUserAuthorizedForSnapshot", () => {
+    it("should return true immediately if user ID is authorized in env", async () => {
+      const originalEnv = process.env.AUTHORIZED_SNAPSHOT_USER_IDS;
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = "100";
+
+      const mockDb = { query: vi.fn() } as unknown as Pool;
+      const result = await isUserAuthorizedForSnapshot("100", undefined, mockDb);
+      expect(result).toBe(true);
+      expect(mockDb.query).not.toHaveBeenCalled();
+
+      process.env.AUTHORIZED_SNAPSHOT_USER_IDS = originalEnv;
+    });
+
+    it("should query DB for user email if user ID is not directly in ID list", async () => {
+      const originalEnv = process.env.AUTHORIZED_SNAPSHOT_EMAILS;
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = "authorized@fin.com";
+
+      const mockDb = {
+        query: vi.fn().mockResolvedValue({
+          rows: [{ email: "authorized@fin.com" }],
+        }),
+      } as unknown as Pool;
+
+      const result = await isUserAuthorizedForSnapshot("42", undefined, mockDb);
+      expect(result).toBe(true);
+      expect(mockDb.query).toHaveBeenCalledWith(
+        expect.stringContaining("SELECT email FROM"),
+        ["42"]
+      );
+
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = originalEnv;
+    });
+
+    it("should return false if DB user email is not authorized", async () => {
+      const originalEnv = process.env.AUTHORIZED_SNAPSHOT_EMAILS;
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = "authorized@fin.com";
+
+      const mockDb = {
+        query: vi.fn().mockResolvedValue({
+          rows: [{ email: "unauthorized@fin.com" }],
+        }),
+      } as unknown as Pool;
+
+      const result = await isUserAuthorizedForSnapshot("42", undefined, mockDb);
+      expect(result).toBe(false);
+
+      process.env.AUTHORIZED_SNAPSHOT_EMAILS = originalEnv;
     });
   });
 

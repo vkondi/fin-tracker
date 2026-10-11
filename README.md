@@ -49,6 +49,10 @@ FINTRAKR is a modern, multi-user financial portfolio tracker built with Next.js.
 - Responsive dashboard for mobile and desktop
 - Real-time portfolio analytics and charts
 - Member-wise and category-wise investment tracking
+- Financial timeline visualization tracking portfolio growth over time (Recharts AreaChart)
+- Automated monthly snapshots (Vercel Cron) & on-demand capture with role-based access guardrails
+- Multi-period timeline filters (current year, historical years, and annual year-by-year macro view)
+- Responsive multi-line axis formatting for optimal mobile & desktop readability
 - Add, edit, and delete investments with instant calculations
 - Accessible UI (WCAG, keyboard, screen reader friendly)
 - Toast notifications for user actions
@@ -64,6 +68,9 @@ Set these in your `.env.local` (only the ones your setup needs):
 - `NEXTAUTH_SECRET` — secret used by next-auth
 - `NEXTAUTH_DEBUG` — optional; set to `true` for verbose next-auth logs
 - `GOOGLE_ID`, `GOOGLE_SECRET` — for Google OAuth (set OAuth callback/redirect to `http://localhost:3000/api/auth/callback/google`)
+- `CRON_SECRET` — secret bearer token used to authenticate Vercel Cron automated snapshot triggers
+- `AUTHORIZED_SNAPSHOT_USER_IDS` — optional comma-separated list of user IDs authorized to manually capture snapshots (strictly restricted if not configured)
+- `AUTHORIZED_SNAPSHOT_EMAILS` — optional comma-separated list of user emails authorized to manually capture snapshots (strictly restricted if not configured)
 - `CLOUDFLARE_WEB_ANALYTICS_TOKEN` — optional; if present Cloudflare Web Analytics will be enabled in production
 
 > Note: The previous README listed multiple Postgres-related env var names; this repo primarily uses `DATABASE_URL` as the connection string (see `src/app/api/database.ts`).
@@ -105,6 +112,7 @@ A quick map to important folders:
 - `src/app` — Next.js app routes and pages
 - `src/components` — React UI components and tests
 - `src/context` — React context providers (e.g., `FinContext`, `RootContext`)
+- `src/services` — Shared business logic services (e.g., `snapshotService`)
 - `src/lib` — reusable libs (e.g., `authOptions`)
 - `src/app/api` — server API routes (database, auth, migrations)
 - `src/utils` — constants and utility functions
