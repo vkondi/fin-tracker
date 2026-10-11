@@ -3,7 +3,6 @@ import {
   createSnapshotForUser,
   getSnapshotsForUser,
   isUserAuthorizedForSnapshot,
-  seedMockHistoricalSnapshots,
 } from "@/services/snapshotService";
 
 // Get financial snapshots for a user (timeline data, with optional year filter)
@@ -45,7 +44,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, email, date, action } = body;
+    const { userId, email, date } = body;
 
     if (!userId) {
       return NextResponse.json(
@@ -60,17 +59,6 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Forbidden: You are not authorized to trigger snapshots." },
         { status: 403 }
-      );
-    }
-
-    // Mock data seeding action
-    if (action === "seed") {
-      const seeded = await seedMockHistoricalSnapshots(userId);
-      return NextResponse.json(
-        {
-          message: `Successfully seeded ${seeded} historical snapshots (Jan 2025 – Oct 2026)`,
-        },
-        { status: 200 }
       );
     }
 
